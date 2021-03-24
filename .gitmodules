@@ -1,0 +1,3 @@
+[submodule "TestDex"]
+	path = TestDex
+	url = https://github.com/austintgriffith/scaffold-eth.git
