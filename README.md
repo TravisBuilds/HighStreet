@@ -9,6 +9,7 @@ Staking incentives are our way of creating monetary and governance incentives fo
 ##Governance 
 Owning platform token enable users to participate in the governance process through a decentralized organization, with proposals and voting structures. They are also able to vote on issues related to operations and how to streamline and onboard future products. 
 
+[![allocation](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/whiteal.png?raw=true "allocation")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/whiteal.png?raw=true "allocation")
 
 #Tech Breakdown 
 ##Backend: Ethereum/Solidity 
@@ -17,7 +18,27 @@ Smart contract written in Solidity using Hardhat Framework will govern every pee
 ##Frontend: Web and VR
 The DAO interface will be a web application built on React and wrapped with web3JS. Buying, Trading, and Redemption of tokens can be performed on the web app interface. Redeeming a product token will send it to address 0, effectively burning it and removing it from circulation forever. 
 
+[![sample](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/sample.png?raw=true "sample")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/sample.png?raw=true "sample")
+
 The virutal market extension built in Unity is also fully accessible on PC and Stand Alone VR platforms. It act as a a completely interactive metaverse for user to buy, trade, and redeem tokens in a more social enviornment. Every brand and product along with their associated token can be bought at Virtual Shops. Bigger brands will have more custom user experiences built into their stores depending on their partnership with us. All user tokens will be represented as interactive 3D objects once logged into our Virtual Market. We are working to include support for external tokens as well, for example a user with cryptokitties in their metamask wallet will have their PNG file converted to a completely rigged and animated 3D model. 
 
-We believe the future home of digital assets will most certainly be in Virtual Reality. We are building the shopping component of the shared metaverse. 
+[![market](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/market.png?raw=true "market")](http://https://github.com/TravisBuilds/virtualmarket/blob/master/resources/market.png?raw=true "market")
 
+##Features
+We believe the future home of digital assets will most certainly be in Virtual Reality. We are building the shopping component of the shared metaverse. 
+[![feature](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/feature.png?raw=true "feature")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/feature.png?raw=true "feature")
+
+#Investors and Partners 
+### As leading innovators in the digital space since 2015, we've established strong investor relations as well as brand partnerships with Tier One companies
+
+[![partnerships](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/backing.png?raw=true "partnerships")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/backing.png?raw=true "partnerships")
+
+##Launch Product Lineups 
+[![launch](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/launch.png?raw=true "launch")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/launch.png?raw=true "launch")
+
+#Market Maker and Price Discovery of Products 
+## Why Would Brands Want This? 
+Secondary market of limited edition assets had always been difficult for tier 1 brands to handle. Forgery and Fraud is rampent and the logistics of aftermarket product transfer always required a little too much faith between transacting users. Using a token based system of trading solves this problem by removing the asset completely during transactions. Buyers who are interested in Alt Assets for the lucrative returns only have to deal with buying and selling token on the exchanges, while real collectors can redeem their tokens with full confidence that the product is coming directly from brand. 
+
+### Bonding Curve based Price Discovery 
+## vAMMs 
