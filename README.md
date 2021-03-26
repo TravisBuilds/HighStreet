@@ -44,19 +44,20 @@ Staking incentives are our way of creating monetary and governance incentives fo
 
 [![allocation](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/whiteal.png?raw=true "allocation")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/whiteal.png?raw=true "allocation")
 
-## Distribution
+## Token Distribution
 coming soon 
 
 # Tech Breakdown 
 ## Backend: Ethereum/Solidity 
 Smart contracts written in solidity are forked from credible projects like Uniswap. 
 
-## Frontend: Web and VR
-The DAO interface will be a web application built on React and wrapped with web3JS. Buying, Trading, and Redemption of tokens can be performed on the web app interface. Redeeming a product token will send it to address 0, effectively burning it and removing it from circulation forever. 
+## Frontend: Web
+The DAO's front end interface will be a web application built on React. Buying, Trading, and Redemption of tokens can be performed on the web app interface. Redeeming a product token will send it to address 0, effectively burning it and removing it from circulation forever. 
 
 [![sample](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/sample.png?raw=true "sample")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/sample.png?raw=true "sample")
 
-The virutal market extension built in Unity is also fully accessible on PC and Stand Alone VR platforms. It act as a a completely interactive metaverse for user to buy, trade, and redeem tokens in a more social enviornment. Every brand and product along with their associated token can be bought at Virtual Shops. Bigger brands will have more custom user experiences built into their stores depending on their partnership with us. All user tokens will be represented as interactive 3D objects once logged into our Virtual Market. We are working to include support for external tokens as well, for example a user with cryptokitties in their metamask wallet will have their PNG file converted to a completely rigged and animated 3D model. 
+## Virtual Reality 
+The VR Component is an extension to the marketplace built in Unity. The VR Market is fully accessible on PC and Stand Alone VR platforms. It act as a a completely interactive metaverse for user to buy, trade, and redeem tokens in a more social enviornment. Every brand and product along with their associated token can be bought at Virtual Shops. Bigger brands will have more custom user experiences built into their stores depending on their partnership with us. All user tokens will be represented as interactive 3D objects once logged into our Virtual Market. We are working to include support for external tokens as well, for example a user with cryptokitties in their metamask wallet will have their PNG file converted to a completely rigged and animated 3D model. 
 
 [![market](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/market.png?raw=true "market")](http://https://github.com/TravisBuilds/virtualmarket/blob/master/resources/market.png?raw=true "market")
  
