@@ -52,7 +52,7 @@ coming soon
 Smart contracts written in solidity are forked from credible projects like Uniswap. 
 
 ## Frontend: Web
-The DAO's front end interface will be a web application built on React. Buying, Trading, and Redemption of tokens can be performed on the web app interface. Redeeming a product token will send it to address 0, effectively burning it and removing it from circulation forever. 
+The market place's front end interface will be a web application built on React. Buying, Trading, and Redemption of tokens can be performed on the web app interface. Redeeming a product token will send it to address 0, effectively burning it and removing it from circulation forever. 
 
 [![sample](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/sample.png?raw=true "sample")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/sample.png?raw=true "sample")
 
