@@ -49,7 +49,7 @@ coming soon
 
 # Tech Breakdown 
 ## Backend: Ethereum/Solidity 
-Smart contract written in Solidity using Hardhat Framework will govern every peer to peer user interaction. All builds will be tested using Ganache and peer reviewed. 
+Smart contracts written in solidity are forked from credible projects like Uniswap. 
 
 ## Frontend: Web and VR
 The DAO interface will be a web application built on React and wrapped with web3JS. Buying, Trading, and Redemption of tokens can be performed on the web app interface. Redeeming a product token will send it to address 0, effectively burning it and removing it from circulation forever. 
