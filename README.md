@@ -20,10 +20,10 @@ For our product tokens, first a user can stake tokens into the bonding curve's r
 Although there are many bonding curve formulas out there, we are adopting the Bancor Formula 
 [![bancor](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/bancor.png?raw=true "bancor")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/bancor.png?raw=true "bancor")
 
-- Reserve Token refers to the token that is users initially stake into the bonding curve
-- Continuous Token is the product token received once Reserve Tokens are staked 
-- Reserve Ratio is a fixed ratio from 0 to 1 between the Continuous Token's market cap and the value of the Reserve Token Balance.
-- Since the Reserve Ratio is directly related to price sensitivity, this ratio will vary depending on the type of product being minted
+- **Reserve Token** refers to the token that is users initially stake into the bonding curve
+- **Continuous Token** is the product token received once **Reserve Tokens** are staked 
+- **Reserve Ratio** is a fixed ratio from 0 to 1 between the **Continuous Token's** market cap and the value of the **Reserve Token** Balance.
+- Since the **Reserve Ratio** is directly related to price sensitivity, this ratio will vary depending on the type of product being minted
 
 Every buy and sell moves the Reserve Token Balance and Continuous Token Market cap, so in order to maintain our Reserve Ratio, the price of the Continuous(Product) Token will be continuously recalculated.
 
