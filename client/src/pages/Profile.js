@@ -1,9 +1,12 @@
-import React from 'react'
+import React, {useContext} from 'react'
+import {UserProvider} from "../contexts/UserProvider"; 
 
 export const Profile = () => {
+
+    const userAccount = useContext(UserProvider.context); 
     return (
         <div>
-            user profile goes here 
+            My Eth address = {userAccount} 
         </div>
     )
 }

@@ -1,40 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import Web3 from 'web3';
+import {Home} from "./pages/Home";
+import {Profile} from "./pages/Profile";
+import {Trade} from "./pages/Trade";
+import {Discover} from "./pages/Discover";
+import{Router, Route, BrowserRouter} from 'react-router-dom'; 
+import {UserProvider} from './contexts/UserProvider'; 
 
 
 
 
 
 function App() {
-  const [userAccount, setUserAccount] = useState(""); 
-
-  window.addEventListener('load', async ()=>{
-    if(window.ethereum){
-      window.web3 = new Web3(Web3.givenProvider || "http://localhost:8485" );
-      
-      try{
-        const network = await window.web3.eth.net.getNetworkType()
-        console.log("network:", network);
-        const account =  await window.web3.eth.getAccounts(); 
-        console.log("account", account[0]);
-        console.log("this is the type of ", typeof account[0]);
-        setUserAccount (account[0]);
-      }catch(error){
-        console.log(error);
-      }
-    }else{
-      console.log("need metamask")
-    
-    }
-  })
+  
 
  
   return (
+    <BrowserRouter>
+      <UserProvider>
+        {/* <Route path="/" component= {NavBar}/> */}
+        <Route path='/profile' component = {Profile}/>
+        <Route path='/trade' component = {Trade}/>
+        <Route path='/discover' component = {Discover}/>
 
-    <div className="App">
-      your Ethereum address is: {userAccount}
-    </div>
+      </UserProvider>
+    </BrowserRouter>
+    
   );
 }
 
