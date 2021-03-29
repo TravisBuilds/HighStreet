@@ -49,7 +49,7 @@ coming soon
 
 # Tech Breakdown 
 ## Backend: Ethereum/Solidity 
-Smart contracts written in solidity will mint new product tokens everytime a user deposits DAI into the Product Reserve Pool. The Product Token Value is calculated via a pricing function that you can directly inspect in this respository. 
+Smart contracts written in solidity will mint new product tokens everytime a user deposits DAI or ETH into the Product Reserve Pools. The Product Token Value is calculated via a pricing function that you can directly inspect in this respository. 
 
 ## Frontend: Web
 The market place's front end interface is a web application built on React. Buying, Trading, and Redemption of tokens can be performed on the web app interface. Redeeming a product token will send it to address 0, effectively burning it and removing it from circulation forever. Users interact with the market place the same way they would any other web application with the exception that Metamask is required to fully use the service.  
