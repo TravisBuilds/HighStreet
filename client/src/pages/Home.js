@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useState}from 'react'
 import Web3 from 'web3';
 import{Router, Route, BrowserRouter, Redirect, Switch} from 'react-router-dom'; 
 

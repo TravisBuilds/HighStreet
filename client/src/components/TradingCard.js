@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components';
 import {Link} from 'react-router-dom'; 
 import Tilt from 'react-tilt'
-import {PriceProvider} from '../contexts/PriceProvider'
+import Gallery from './Gallery';
 
 export default function TradingCard(totalSupply, dollarPrice, reserveSOCKSToken ) {
     const placeholder = "Product 1";
@@ -20,11 +20,11 @@ export default function TradingCard(totalSupply, dollarPrice, reserveSOCKSToken 
           <MarketData>
             <span>
               <CurrentPrice>{priceholder}</CurrentPrice>
-              <SockCount>
+              {/* <SockCount>
                 {reserveSOCKSToken && totalSupply
                   ? `${PriceProvider(reserveSOCKSToken, 18, 0)}/${totalSupply} available`
                   : ''}
-              </SockCount>
+              </SockCount> */}
             </span>
             <Link to="/stats">
               <Info>
