@@ -1,9 +1,11 @@
 const Dex = artifacts.require("DEX.sol");
+const Token = artifacts.require("Balloons.sol");
 
-module.exports = async function (deployer, network, addresses) {
-  await deployer.deploy(Dex, addresses[0]);
+module.exports = async function (deployer) {
+	await deployer.deploy(Token);
+	const token = await Token.deployed();
+	let tokenAddress = token.address;
+  await deployer.deploy(Dex, tokenAddress);
   const dex = await Dex.deployed();
-
-  await dex.init(10*10**18);
 };
    
