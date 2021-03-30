@@ -1,8 +1,8 @@
 import { ethers } from 'ethers'
 
-//import ERC20_ABI from './erc20.json'
-//import EXCHANGE_ABI from './exchange.json'
-//import FACTORY_ABI from './factory.json'
+import ERC20_ABI from './erc20.json'
+import EXCHANGE_ABI from './exchange.json'
+import FACTORY_ABI from './factory.json'
 
 import UncheckedJsonRpcSigner from './signer'
 

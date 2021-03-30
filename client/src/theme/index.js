@@ -45,5 +45,7 @@ export const Spinner = styled.img`
 `
 
 export function ThemeProvider({ children }) {
-  return <StyledComponentsThemeProvider theme={theme}>{children}</StyledComponentsThemeProvider>
+  return (
+  <StyledComponentsThemeProvider theme={theme}>{children}</StyledComponentsThemeProvider>
+  )
 }
