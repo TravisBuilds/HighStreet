@@ -1,7 +1,5 @@
 import React from 'react'
 import styled from 'styled-components' 
-import {useAppContext} from '../contexts'
-import { TRADE_TYPES} from '../utils';
 import Button from './Button'
 
 
@@ -30,11 +28,11 @@ const ButtonFrame = styled(Button)`
 // `
 
 export default function BuyButtons(props) {
-  const [, setState] = useAppContext()
+  // const [, setState] = useAppContext()
 
-  function handleToggleCheckout(tradeType) {
-    setState(state => ({ ...state, visible: !state.visible, tradeType }))
-  }
+  // function handleToggleCheckout(tradeType) {
+  //   setState(state => ({ ...state, visible: !state.visible, tradeType }))
+  // }
 
   return (
     <BuyButtonFrame>
@@ -43,7 +41,7 @@ export default function BuyButtons(props) {
         text={'Buy'}
         type={'cta'}
         onClick={() => {
-        handleToggleCheckout(TRADE_TYPES.BUY)
+        // handleToggleCheckout(TRADE_TYPES.BUY)
         console.log("button Clicked")
         }}
       />
