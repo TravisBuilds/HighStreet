@@ -12,6 +12,7 @@ import {Trade} from "./pages/Trade";
 import {Download} from "./pages/Download";
 import {Discover} from "./pages/Discover";
 import {NavBar} from "./components/NavBar";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
 
