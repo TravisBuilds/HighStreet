@@ -29,8 +29,7 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function",
-      "constant": true
+      "type": "function"
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token_addr\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"ownership\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/sd/Documents/GitHub/virtualmarket/contracts/Dex.sol\":\"Dex\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/sd/Documents/GitHub/virtualmarket/contracts/Dex.sol\":{\"keccak256\":\"0x81dfede204f8be0d6be0f8634b7efa504c6793f185bea0fe146c5aed232e6739\",\"urls\":[\"bzz-raw://520b96a075fbf402a96d9a610f4908314e4f416a28ff5f96df33b1f890c77a62\",\"dweb:/ipfs/QmcwgkPCivmD7sm2bwAy4Pz2oSSaSNYtFiYfwLCFPAMLJF\"]},\"@openzeppelin/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x9a9cf02622cd7a64261b10534fc3260449da25c98c9e96d1b4ae8110a20e5806\",\"urls\":[\"bzz-raw://2df142592d1dc267d9549049ee3317fa190d2f87eaa565f86ab05ec83f7ab8f5\",\"dweb:/ipfs/QmSkJtcfWo7c42KnL5hho6GFxK6HRNV91XABx1P7xDtfLV\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x5c26b39d26f7ed489e555d955dcd3e01872972e71fdd1528e93ec164e4f23385\",\"urls\":[\"bzz-raw://efdc632af6960cf865dbc113665ea1f5b90eab75cc40ec062b2f6ae6da582017\",\"dweb:/ipfs/QmfAZFDuG62vxmAN9DnXApv7e7PMzPqi4RkqqZHLMSQiY5\"]}},\"version\":1}",
@@ -68,7 +67,7 @@
         "id": 214,
         "nodeType": "ImportDirective",
         "scope": 238,
-        "sourceUnit": 2822,
+        "sourceUnit": 3023,
         "src": "25:51:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -79,7 +78,7 @@
         "id": 215,
         "nodeType": "ImportDirective",
         "scope": 238,
-        "sourceUnit": 3407,
+        "sourceUnit": 3608,
         "src": "77:56:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -105,10 +104,10 @@
               "id": 216,
               "name": "SafeMath",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 2821,
+              "referencedDeclaration": 3022,
               "src": "177:8:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_SafeMath_$2821",
+                "typeIdentifier": "t_contract$_SafeMath_$3022",
                 "typeString": "library SafeMath"
               }
             },
@@ -137,7 +136,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IERC20_$3406",
+              "typeIdentifier": "t_contract$_IERC20_$3607",
               "typeString": "contract IERC20"
             },
             "typeName": {
@@ -145,10 +144,10 @@
               "id": 219,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3406,
+              "referencedDeclaration": 3607,
               "src": "201:6:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$3406",
+                "typeIdentifier": "t_contract$_IERC20_$3607",
                 "typeString": "contract IERC20"
               }
             },
@@ -226,7 +225,7 @@
                       "referencedDeclaration": 220,
                       "src": "313:5:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IERC20_$3406",
+                        "typeIdentifier": "t_contract$_IERC20_$3607",
                         "typeString": "contract IERC20"
                       }
                     },
@@ -260,10 +259,10 @@
                         "name": "IERC20",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3406,
+                        "referencedDeclaration": 3607,
                         "src": "321:6:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IERC20_$3406_$",
+                          "typeIdentifier": "t_type$_t_contract$_IERC20_$3607_$",
                           "typeString": "type(contract IERC20)"
                         }
                       },
@@ -278,13 +277,13 @@
                       "src": "321:18:1",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IERC20_$3406",
+                        "typeIdentifier": "t_contract$_IERC20_$3607",
                         "typeString": "contract IERC20"
                       }
                     },
                     "src": "313:26:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IERC20_$3406",
+                      "typeIdentifier": "t_contract$_IERC20_$3607",
                       "typeString": "contract IERC20"
                     }
                   },
@@ -382,7 +381,7 @@
       },
       {
         "attributes": {
-          "SourceUnit": 2822,
+          "SourceUnit": 3023,
           "absolutePath": "@openzeppelin/contracts/math/SafeMath.sol",
           "file": "@openzeppelin/contracts/math/SafeMath.sol",
           "scope": 238,
@@ -397,7 +396,7 @@
       },
       {
         "attributes": {
-          "SourceUnit": 3407,
+          "SourceUnit": 3608,
           "absolutePath": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
           "file": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
           "scope": 238,
@@ -435,7 +434,7 @@
                 "attributes": {
                   "contractScope": null,
                   "name": "SafeMath",
-                  "referencedDeclaration": 2821,
+                  "referencedDeclaration": 3022,
                   "type": "library SafeMath"
                 },
                 "id": 216,
@@ -474,7 +473,7 @@
                 "attributes": {
                   "contractScope": null,
                   "name": "IERC20",
-                  "referencedDeclaration": 3406,
+                  "referencedDeclaration": 3607,
                   "type": "contract IERC20"
                 },
                 "id": 219,
@@ -654,7 +653,7 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 3406,
+                                  "referencedDeclaration": 3607,
                                   "type": "type(contract IERC20)",
                                   "value": "IERC20"
                                 },
@@ -724,8 +723,7 @@
     }
   },
   "schemaVersion": "3.3.4",
-  "updatedAt": "2021-03-30T19:55:15.818Z",
-  "networkType": "ethereum",
+  "updatedAt": "2021-03-31T00:35:56.924Z",
   "devdoc": {
     "methods": {}
   },

@@ -43,7 +43,7 @@ contract BancorBondingCurve is Power {
     if (_reserveRatio == MAX_RESERVE_RATIO) {
       return _supply.mul(_depositAmount).div(_reserveBalance);
     }
-     uint256 result;
+    uint256 result;
     uint8 precision;
     uint256 baseN = _depositAmount.add(_reserveBalance);
     (result, precision) = power(
@@ -52,6 +52,7 @@ contract BancorBondingCurve is Power {
     uint256 newTokenSupply = _supply.mul(result) >> precision;
     return newTokenSupply - _supply;
   }
+
    /**
    * @dev given a continuous token supply, reserve token balance, reserve ratio and a sell amount (in the continuous token),
    * calculates the return for a given conversion (in the reserve token)
