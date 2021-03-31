@@ -10,8 +10,33 @@ import "./Power.sol"; // Efficient power function.
 * and to You under the Apache License, Version 2.0. "
 */
 contract BancorBondingCurve is Power {
-   using SafeMath for uint256;
-   uint32 private constant MAX_RESERVE_RATIO = 1000000;
+  using SafeMath for uint256;
+  uint32 private constant MAX_RESERVE_RATIO = 1000000;
+
+ /**
+   * @dev Try to compute the current price for a given token
+   *
+   * Formula:
+   * Return = balance / (supply * reserve ratio)
+   *
+   * @param _supply              continuous token total supply
+   * @param _reserveBalance    total reserve token balance
+   * @param _reserveRatio     reserve ratio, represented in ppm, 1-1000000
+   *
+   *  @return unit price per token (as of function call)
+  */
+  function calculateUnitPrice(
+    uint256 _supply,
+    uint256 _reserveBalance,
+    uint32 _reserveRatio
+  ) public view returns (uint256) 
+  {
+     // validate input
+    require(_supply > 0 && _reserveBalance > 0 && _reserveRatio > 0 && _reserveRatio <= MAX_RESERVE_RATIO);
+    uint256 numerator =  _reserveBalance.mul(MAX_RESERVE_RATIO);
+    uint256 denumerator = _supply.mul(_reserveRatio);   // this returns the price based on reserve unit.
+    return numerator.div(denumerator);
+  }
 
    /**
    * @dev given a continuous token supply, reserve token balance, reserve ratio, and a deposit amount (in the reserve token),
@@ -87,7 +112,7 @@ contract BancorBondingCurve is Power {
     if (_reserveRatio == MAX_RESERVE_RATIO) {
       return _reserveBalance.mul(_sellAmount).div(_supply);
     }
-     uint256 result;
+    uint256 result;
     uint8 precision;
     uint256 baseD = _supply - _sellAmount;
     (result, precision) = power(

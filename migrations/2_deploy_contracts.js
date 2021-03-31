@@ -6,7 +6,7 @@ module.exports = async function (deployer, network) {
 	if (network === "mainnet") {
 		tokenAddress = "";
 	} else {
-		await deployer.deploy(Token, 330000);			// initialize reserve ratio for the token in ppm
+		await deployer.deploy(Token, 330000, 500);			// initialize reserve ratio for the token in ppm
 		const token = await Token.deployed();
 		tokenAddress = token.address;
 	}
