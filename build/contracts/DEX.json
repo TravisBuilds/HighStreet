@@ -32,13 +32,13 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token_addr\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"ownership\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/sd/Documents/GitHub/virtualmarket/contracts/Dex.sol\":\"Dex\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/sd/Documents/GitHub/virtualmarket/contracts/Dex.sol\":{\"keccak256\":\"0x81dfede204f8be0d6be0f8634b7efa504c6793f185bea0fe146c5aed232e6739\",\"urls\":[\"bzz-raw://520b96a075fbf402a96d9a610f4908314e4f416a28ff5f96df33b1f890c77a62\",\"dweb:/ipfs/QmcwgkPCivmD7sm2bwAy4Pz2oSSaSNYtFiYfwLCFPAMLJF\"]},\"@openzeppelin/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x9a9cf02622cd7a64261b10534fc3260449da25c98c9e96d1b4ae8110a20e5806\",\"urls\":[\"bzz-raw://2df142592d1dc267d9549049ee3317fa190d2f87eaa565f86ab05ec83f7ab8f5\",\"dweb:/ipfs/QmSkJtcfWo7c42KnL5hho6GFxK6HRNV91XABx1P7xDtfLV\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x5c26b39d26f7ed489e555d955dcd3e01872972e71fdd1528e93ec164e4f23385\",\"urls\":[\"bzz-raw://efdc632af6960cf865dbc113665ea1f5b90eab75cc40ec062b2f6ae6da582017\",\"dweb:/ipfs/QmfAZFDuG62vxmAN9DnXApv7e7PMzPqi4RkqqZHLMSQiY5\"]}},\"version\":1}",
-  "bytecode": "0x608060405234801561001057600080fd5b506040516101633803806101638339818101604052602081101561003357600080fd5b8101908080519060200190929190505050806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055505060d0806100936000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c806327d6d6e014602d575b600080fd5b606c60048036036020811015604157600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506082565b6040518082815260200191505060405180910390f35b6001602052806000526040600020600091509050548156fea2646970667358221220c9e562ea5610efa4344566d0ffb847d6b444027a9a3b223391d91e6713e7cf2764736f6c63430006060033",
-  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c806327d6d6e014602d575b600080fd5b606c60048036036020811015604157600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506082565b6040518082815260200191505060405180910390f35b6001602052806000526040600020600091509050548156fea2646970667358221220c9e562ea5610efa4344566d0ffb847d6b444027a9a3b223391d91e6713e7cf2764736f6c63430006060033",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token_addr\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"ownership\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/sd/Documents/GitHub/virtualmarket/contracts/Dex.sol\":\"Dex\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/sd/Documents/GitHub/virtualmarket/contracts/Dex.sol\":{\"keccak256\":\"0xb71e40bf8b5dd266ab81fb0c15c4d96871192cbefe11fb59208ec8f9c9fc0d36\",\"urls\":[\"bzz-raw://8ccd0133075ea861110c61ad6242d2dcc6e9e1b1e0447becfb6db9d6017b318c\",\"dweb:/ipfs/QmPr2AEcBJD1KZNnSSdHm1Y1GY4tS5wH5HKPLrFVoP84ie\"]},\"@openzeppelin/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x9a9cf02622cd7a64261b10534fc3260449da25c98c9e96d1b4ae8110a20e5806\",\"urls\":[\"bzz-raw://2df142592d1dc267d9549049ee3317fa190d2f87eaa565f86ab05ec83f7ab8f5\",\"dweb:/ipfs/QmSkJtcfWo7c42KnL5hho6GFxK6HRNV91XABx1P7xDtfLV\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x5c26b39d26f7ed489e555d955dcd3e01872972e71fdd1528e93ec164e4f23385\",\"urls\":[\"bzz-raw://efdc632af6960cf865dbc113665ea1f5b90eab75cc40ec062b2f6ae6da582017\",\"dweb:/ipfs/QmfAZFDuG62vxmAN9DnXApv7e7PMzPqi4RkqqZHLMSQiY5\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b506040516101633803806101638339818101604052602081101561003357600080fd5b8101908080519060200190929190505050806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055505060d0806100936000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c806327d6d6e014602d575b600080fd5b606c60048036036020811015604157600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506082565b6040518082815260200191505060405180910390f35b6001602052806000526040600020600091509050548156fea26469706673582212203eaa1bf84e28760b49698946f95e05bf6fd7ba0fbc15a4f340f9fe6f458f6a5564736f6c63430006060033",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c806327d6d6e014602d575b600080fd5b606c60048036036020811015604157600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506082565b6040518082815260200191505060405180910390f35b6001602052806000526040600020600091509050548156fea26469706673582212203eaa1bf84e28760b49698946f95e05bf6fd7ba0fbc15a4f340f9fe6f458f6a5564736f6c63430006060033",
   "immutableReferences": {},
-  "sourceMap": "135:211:1:-:0;;;268:76;5:9:-1;2:2;;;27:1;24;17:12;2:2;268:76:1;;;;;;;;;;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;268:76:1;;;;;;;;;;;;;;;;328:10;313:5;;:26;;;;;;;;;;;;;;;;;;268:76;135:211;;;;;;",
-  "deployedSourceMap": "135:211:1:-:0;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;135:211:1;;;;;;;;;;;;;;;;12:1:-1;9;2:12;218:45:1;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;218:45:1;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o",
-  "source": "pragma solidity ^0.6.6;\n\nimport \"@openzeppelin/contracts/math/SafeMath.sol\";\nimport \"@openzeppelin/contracts/token/ERC20/IERC20.sol\";\n\ncontract Dex {\n\n\t// Library usage\n  using SafeMath for uint256;\n  IERC20 token;\n\n  mapping (address => uint256) public ownership;\n\n  constructor(address token_addr) public {\n    token = IERC20(token_addr);\n  }\n}\n",
+  "sourceMap": "135:192:1:-:0;;;249:76;5:9:-1;2:2;;;27:1;24;17:12;2:2;249:76:1;;;;;;;;;;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;249:76:1;;;;;;;;;;;;;;;;309:10;294:5;;:26;;;;;;;;;;;;;;;;;;249:76;135:192;;;;;;",
+  "deployedSourceMap": "135:192:1:-:0;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;135:192:1;;;;;;;;;;;;;;;;12:1:-1;9;2:12;199:45:1;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;199:45:1;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o",
+  "source": "pragma solidity ^0.6.6;\n\nimport \"@openzeppelin/contracts/math/SafeMath.sol\";\nimport \"@openzeppelin/contracts/token/ERC20/IERC20.sol\";\n\ncontract Dex {\n  using SafeMath for uint256;\n  IERC20 token;\n\n  mapping (address => uint256) public ownership;\n\n  constructor(address token_addr) public {\n    token = IERC20(token_addr);\n  }\n}\n",
   "sourcePath": "/Users/sd/Documents/GitHub/virtualmarket/contracts/Dex.sol",
   "ast": {
     "absolutePath": "/Users/sd/Documents/GitHub/virtualmarket/contracts/Dex.sol",
@@ -67,7 +67,7 @@
         "id": 214,
         "nodeType": "ImportDirective",
         "scope": 238,
-        "sourceUnit": 3023,
+        "sourceUnit": 3008,
         "src": "25:51:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -78,7 +78,7 @@
         "id": 215,
         "nodeType": "ImportDirective",
         "scope": 238,
-        "sourceUnit": 3608,
+        "sourceUnit": 3593,
         "src": "77:56:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -104,20 +104,20 @@
               "id": 216,
               "name": "SafeMath",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3022,
-              "src": "177:8:1",
+              "referencedDeclaration": 3007,
+              "src": "158:8:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_SafeMath_$3022",
+                "typeIdentifier": "t_contract$_SafeMath_$3007",
                 "typeString": "library SafeMath"
               }
             },
             "nodeType": "UsingForDirective",
-            "src": "171:27:1",
+            "src": "152:27:1",
             "typeName": {
               "id": 217,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "190:7:1",
+              "src": "171:7:1",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -132,11 +132,11 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 237,
-            "src": "201:12:1",
+            "src": "182:12:1",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IERC20_$3607",
+              "typeIdentifier": "t_contract$_IERC20_$3592",
               "typeString": "contract IERC20"
             },
             "typeName": {
@@ -144,10 +144,10 @@
               "id": 219,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3607,
-              "src": "201:6:1",
+              "referencedDeclaration": 3592,
+              "src": "182:6:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$3607",
+                "typeIdentifier": "t_contract$_IERC20_$3592",
                 "typeString": "contract IERC20"
               }
             },
@@ -163,7 +163,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 237,
-            "src": "218:45:1",
+            "src": "199:45:1",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -176,14 +176,14 @@
                 "id": 221,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
-                "src": "227:7:1",
+                "src": "208:7:1",
                 "typeDescriptions": {
                   "typeIdentifier": "t_address",
                   "typeString": "address"
                 }
               },
               "nodeType": "Mapping",
-              "src": "218:28:1",
+              "src": "199:28:1",
               "typeDescriptions": {
                 "typeIdentifier": "t_mapping$_t_address_$_t_uint256_$",
                 "typeString": "mapping(address => uint256)"
@@ -192,7 +192,7 @@
                 "id": 222,
                 "name": "uint256",
                 "nodeType": "ElementaryTypeName",
-                "src": "238:7:1",
+                "src": "219:7:1",
                 "typeDescriptions": {
                   "typeIdentifier": "t_uint256",
                   "typeString": "uint256"
@@ -206,7 +206,7 @@
             "body": {
               "id": 235,
               "nodeType": "Block",
-              "src": "307:37:1",
+              "src": "288:37:1",
               "statements": [
                 {
                   "expression": {
@@ -223,9 +223,9 @@
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
                       "referencedDeclaration": 220,
-                      "src": "313:5:1",
+                      "src": "294:5:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IERC20_$3607",
+                        "typeIdentifier": "t_contract$_IERC20_$3592",
                         "typeString": "contract IERC20"
                       }
                     },
@@ -241,7 +241,7 @@
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
                           "referencedDeclaration": 226,
-                          "src": "328:10:1",
+                          "src": "309:10:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
                             "typeString": "address"
@@ -259,10 +259,10 @@
                         "name": "IERC20",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3607,
-                        "src": "321:6:1",
+                        "referencedDeclaration": 3592,
+                        "src": "302:6:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IERC20_$3607_$",
+                          "typeIdentifier": "t_type$_t_contract$_IERC20_$3592_$",
                           "typeString": "type(contract IERC20)"
                         }
                       },
@@ -274,22 +274,22 @@
                       "lValueRequested": false,
                       "names": [],
                       "nodeType": "FunctionCall",
-                      "src": "321:18:1",
+                      "src": "302:18:1",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IERC20_$3607",
+                        "typeIdentifier": "t_contract$_IERC20_$3592",
                         "typeString": "contract IERC20"
                       }
                     },
-                    "src": "313:26:1",
+                    "src": "294:26:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IERC20_$3607",
+                      "typeIdentifier": "t_contract$_IERC20_$3592",
                       "typeString": "contract IERC20"
                     }
                   },
                   "id": 234,
                   "nodeType": "ExpressionStatement",
-                  "src": "313:26:1"
+                  "src": "294:26:1"
                 }
               ]
             },
@@ -313,7 +313,7 @@
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
                   "scope": 236,
-                  "src": "280:18:1",
+                  "src": "261:18:1",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -324,7 +324,7 @@
                     "id": 225,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "280:7:1",
+                    "src": "261:7:1",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -335,26 +335,26 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "279:20:1"
+              "src": "260:20:1"
             },
             "returnParameters": {
               "id": 228,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "307:0:1"
+              "src": "288:0:1"
             },
             "scope": 237,
-            "src": "268:76:1",
+            "src": "249:76:1",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           }
         ],
         "scope": 238,
-        "src": "135:211:1"
+        "src": "135:192:1"
       }
     ],
-    "src": "0:347:1"
+    "src": "0:328:1"
   },
   "legacyAST": {
     "attributes": {
@@ -381,7 +381,7 @@
       },
       {
         "attributes": {
-          "SourceUnit": 3023,
+          "SourceUnit": 3008,
           "absolutePath": "@openzeppelin/contracts/math/SafeMath.sol",
           "file": "@openzeppelin/contracts/math/SafeMath.sol",
           "scope": 238,
@@ -396,7 +396,7 @@
       },
       {
         "attributes": {
-          "SourceUnit": 3608,
+          "SourceUnit": 3593,
           "absolutePath": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
           "file": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
           "scope": 238,
@@ -434,12 +434,12 @@
                 "attributes": {
                   "contractScope": null,
                   "name": "SafeMath",
-                  "referencedDeclaration": 3022,
+                  "referencedDeclaration": 3007,
                   "type": "library SafeMath"
                 },
                 "id": 216,
                 "name": "UserDefinedTypeName",
-                "src": "177:8:1"
+                "src": "158:8:1"
               },
               {
                 "attributes": {
@@ -448,12 +448,12 @@
                 },
                 "id": 217,
                 "name": "ElementaryTypeName",
-                "src": "190:7:1"
+                "src": "171:7:1"
               }
             ],
             "id": 218,
             "name": "UsingForDirective",
-            "src": "171:27:1"
+            "src": "152:27:1"
           },
           {
             "attributes": {
@@ -473,17 +473,17 @@
                 "attributes": {
                   "contractScope": null,
                   "name": "IERC20",
-                  "referencedDeclaration": 3607,
+                  "referencedDeclaration": 3592,
                   "type": "contract IERC20"
                 },
                 "id": 219,
                 "name": "UserDefinedTypeName",
-                "src": "201:6:1"
+                "src": "182:6:1"
               }
             ],
             "id": 220,
             "name": "VariableDeclaration",
-            "src": "201:12:1"
+            "src": "182:12:1"
           },
           {
             "attributes": {
@@ -512,7 +512,7 @@
                     },
                     "id": 221,
                     "name": "ElementaryTypeName",
-                    "src": "227:7:1"
+                    "src": "208:7:1"
                   },
                   {
                     "attributes": {
@@ -521,17 +521,17 @@
                     },
                     "id": 222,
                     "name": "ElementaryTypeName",
-                    "src": "238:7:1"
+                    "src": "219:7:1"
                   }
                 ],
                 "id": 223,
                 "name": "Mapping",
-                "src": "218:28:1"
+                "src": "199:28:1"
               }
             ],
             "id": 224,
             "name": "VariableDeclaration",
-            "src": "218:45:1"
+            "src": "199:45:1"
           },
           {
             "attributes": {
@@ -574,17 +574,17 @@
                         },
                         "id": 225,
                         "name": "ElementaryTypeName",
-                        "src": "280:7:1"
+                        "src": "261:7:1"
                       }
                     ],
                     "id": 226,
                     "name": "VariableDeclaration",
-                    "src": "280:18:1"
+                    "src": "261:18:1"
                   }
                 ],
                 "id": 227,
                 "name": "ParameterList",
-                "src": "279:20:1"
+                "src": "260:20:1"
               },
               {
                 "attributes": {
@@ -595,7 +595,7 @@
                 "children": [],
                 "id": 228,
                 "name": "ParameterList",
-                "src": "307:0:1"
+                "src": "288:0:1"
               },
               {
                 "children": [
@@ -624,7 +624,7 @@
                             },
                             "id": 229,
                             "name": "Identifier",
-                            "src": "313:5:1"
+                            "src": "294:5:1"
                           },
                           {
                             "attributes": {
@@ -653,13 +653,13 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 3607,
+                                  "referencedDeclaration": 3592,
                                   "type": "type(contract IERC20)",
                                   "value": "IERC20"
                                 },
                                 "id": 230,
                                 "name": "Identifier",
-                                "src": "321:6:1"
+                                "src": "302:6:1"
                               },
                               {
                                 "attributes": {
@@ -673,42 +673,42 @@
                                 },
                                 "id": 231,
                                 "name": "Identifier",
-                                "src": "328:10:1"
+                                "src": "309:10:1"
                               }
                             ],
                             "id": 232,
                             "name": "FunctionCall",
-                            "src": "321:18:1"
+                            "src": "302:18:1"
                           }
                         ],
                         "id": 233,
                         "name": "Assignment",
-                        "src": "313:26:1"
+                        "src": "294:26:1"
                       }
                     ],
                     "id": 234,
                     "name": "ExpressionStatement",
-                    "src": "313:26:1"
+                    "src": "294:26:1"
                   }
                 ],
                 "id": 235,
                 "name": "Block",
-                "src": "307:37:1"
+                "src": "288:37:1"
               }
             ],
             "id": 236,
             "name": "FunctionDefinition",
-            "src": "268:76:1"
+            "src": "249:76:1"
           }
         ],
         "id": 237,
         "name": "ContractDefinition",
-        "src": "135:211:1"
+        "src": "135:192:1"
       }
     ],
     "id": 238,
     "name": "SourceUnit",
-    "src": "0:347:1"
+    "src": "0:328:1"
   },
   "compiler": {
     "name": "solc",
@@ -723,7 +723,7 @@
     }
   },
   "schemaVersion": "3.3.4",
-  "updatedAt": "2021-03-31T00:35:56.924Z",
+  "updatedAt": "2021-03-31T02:43:31.648Z",
   "devdoc": {
     "methods": {}
   },
