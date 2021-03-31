@@ -2,9 +2,14 @@ import React,{useState}from 'react'
 import Web3 from 'web3';
 import Button from 'react-bootstrap/Button';
 import Jumbotron from 'react-bootstrap/Jumbotron';
+import Card from 'react-bootstrap/Card';
+import CardDeck from 'react-bootstrap/CardDeck';
 import Carousel from 'react-bootstrap/Carousel';
 import{Router, Route, BrowserRouter, Redirect, Switch} from 'react-router-dom'; 
 import styled from 'styled-components'
+import source1 from '../assets/lvmh.png'
+import source2 from '../assets/kalon.png'
+
 
 export const Home = () => {
 
@@ -29,7 +34,7 @@ export const Home = () => {
     return (
         <div class="landing">
             <div id="jumbo">
-                <Jumbotron color="blue">
+                <Jumbotron style={{ background: '#87ceeb' }}>
                         <p><strong>Buy, Trade, and Redeem</strong></p>
                         <p>Limited Edition Products From The Most Exciting Brands</p>
                         <h1>
@@ -43,38 +48,80 @@ export const Home = () => {
             </div>
             <div id="Caro">
                 <Carousel>
-                    <Carousel.Item interval={1000}>
-                        <img
-                        className="d-block w-100"
-                        src="holder.js/800x400?text=First slide&bg=373940"
-                        alt="First slide"
-                        />
-                        <Carousel.Caption>
-                        <h3>First slide label</h3>
-                        <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
-                        </Carousel.Caption>
+                    <Carousel.Item interval={5000}>
+                    <CardDeck>
+                    <Card style={{ width: '30rem' }}>
+                        <Card.Img variant="top" src={source1} />
+                        <Card.Body>
+                            <Card.Title>Making it Real</Card.Title>
+                            <Card.Text>
+                            A timeless first and a vibrant way to touch up both your digital and IRL identity
+                            </Card.Text>
+                            <Button variant="primary">Discover</Button>
+                        </Card.Body>
+                        </Card>
+
+                        <Card style={{ width: '30rem' }}>
+                        <Card.Img variant="top" src={source2} />
+                        <Card.Body>
+                            <Card.Title> Essence of Nature</Card.Title>
+                            <Card.Text>
+                            Nature's first green is gold, infused in a liquor that will make it truly last forever
+                            </Card.Text>
+                            <Button variant="primary">Discover</Button>
+                        </Card.Body>
+                        </Card>
+                        </CardDeck>
                     </Carousel.Item>
-                    <Carousel.Item interval={500}>
-                        <img
-                        className="d-block w-100"
-                        src="holder.js/800x400?text=Second slide&bg=282c34"
-                        alt="Second slide"
-                        />
-                        <Carousel.Caption>
-                        <h3>Second slide label</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                        </Carousel.Caption>
+                    <Carousel.Item interval={5000}>
+                    <CardDeck>
+                    <Card style={{ width: '30rem' }}>
+                        <Card.Img variant="top" src={source1} />
+                        <Card.Body>
+                            <Card.Title>Making it Real</Card.Title>
+                            <Card.Text>
+                            A timeless first and a vibrant way to touch up both your digital and IRL identity
+                            </Card.Text>
+                            <Button variant="primary">Discover</Button>
+                        </Card.Body>
+                        </Card>
+
+                        <Card style={{ width: '30rem' }}>
+                        <Card.Img variant="top" src={source2} />
+                        <Card.Body>
+                            <Card.Title> Essence of Nature</Card.Title>
+                            <Card.Text>
+                            Nature's first green is gold, infused in a liquor that will make it truly last forever
+                            </Card.Text>
+                            <Button variant="primary">Discover</Button>
+                        </Card.Body>
+                        </Card>
+                        </CardDeck>
                     </Carousel.Item>
                     <Carousel.Item>
-                        <img
-                        className="d-block w-100"
-                        src="holder.js/800x400?text=Third slide&bg=20232a"
-                        alt="Third slide"
-                        />
-                        <Carousel.Caption>
-                        <h3>Third slide label</h3>
-                        <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
-                        </Carousel.Caption>
+                    <CardDeck>
+                    <Card style={{ width: '30rem' }}>
+                        <Card.Img variant="top" src={source1} />
+                        <Card.Body>
+                            <Card.Title>Making it Real</Card.Title>
+                            <Card.Text>
+                            A timeless first and a vibrant way to touch up both your digital and IRL identity
+                            </Card.Text>
+                            <Button variant="primary">Discover</Button>
+                        </Card.Body>
+                        </Card>
+
+                        <Card style={{ width: '30rem' }}>
+                        <Card.Img variant="top" src={source2} />
+                        <Card.Body>
+                            <Card.Title> Essence of Nature</Card.Title>
+                            <Card.Text>
+                            Nature's first green is gold, infused in a liquor that will make it truly last forever
+                            </Card.Text>
+                            <Button variant="primary">Discover</Button>
+                        </Card.Body>
+                        </Card>
+                        </CardDeck>
                     </Carousel.Item>
                 </Carousel>
             </div>
