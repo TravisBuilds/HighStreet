@@ -13,6 +13,8 @@ contract BancorBondingCurve is Power {
   using SafeMath for uint256;
   uint32 private constant MAX_RESERVE_RATIO = 1000000;
 
+  event Returned(uint256 supply, uint256 reserve, uint32 ratio, uint256 amount);
+
  /**
    * @dev Try to compute the current price for a given token
    *
@@ -25,20 +27,60 @@ contract BancorBondingCurve is Power {
    *
    *  @return unit price per token (as of function call)
   */
+  // Remember this is a view function. Removed view modifier for testing only
   function calculateUnitPrice(
     uint256 _supply,
     uint256 _reserveBalance,
     uint32 _reserveRatio
-  ) public view returns (uint256) 
+  ) public returns (uint256) 
   {
      // validate input
     require(_supply > 0 && _reserveBalance > 0 && _reserveRatio > 0 && _reserveRatio <= MAX_RESERVE_RATIO);
     uint256 numerator =  _reserveBalance.mul(MAX_RESERVE_RATIO);
-    uint256 denumerator = _supply.mul(_reserveRatio);   // this returns the price based on reserve unit.
-    return numerator.div(denumerator);
+    uint256 denumerator = _supply.mul(uint256(_reserveRatio));   // this returns the price based on reserve unit.
+    emit Returned(_supply, _reserveBalance, _reserveRatio, numerator.div(denumerator));
+    // return numerator.div(denumerator);
+    return 1;
   }
 
-   /**
+  /**
+   * @dev Try to compute the price to purchage n token
+   *
+   * Formula:
+   * Return = _reserveBalance * ((_amount / _supply + 1) ^ (_exponent + 1) -1)
+   *
+   * @param _supply              continuous token total supply
+   * @param _reserveBalance    total reserve token balance
+   * @param _exponent         The exponent component in the bancor curve.
+   * @param _amount           number to tokens one wishes to purchase
+   *
+   *  @return price for N tokens 
+  */
+  function calculatePriceForNTokens(
+    uint256 _supply,
+    uint256 _reserveBalance,
+    uint32 _exponent,
+    uint32 _amount) public returns (uint256)
+  {
+    require(_supply > 0 && _reserveBalance > 0 && _exponent > 0);
+    // special case for 0 tokens
+    if (_amount == 0) {
+      return 0;
+    } 
+    // special case if this is a linear function
+    if (_exponent == 1) {
+      return uint256(_amount).mul(_reserveBalance).div(_supply);
+    }
+    uint256 result;
+    uint8 precision;
+    (result, precision) = power(
+      _amount + _supply, _supply, _exponent + 1, 1
+    );    // need safe math for uint32 here.
+    emit Returned(_supply, _reserveBalance, _exponent, _reserveBalance.mul(result >> precision));
+    return _reserveBalance.mul(result >> precision);
+  }
+
+  /**
    * @dev given a continuous token supply, reserve token balance, reserve ratio, and a deposit amount (in the reserve token),
    * calculates the return for a given conversion (in the continuous token)
    *
@@ -52,11 +94,12 @@ contract BancorBondingCurve is Power {
    *
    *  @return purchase return amount
   */
+  // Remember this is a view function. Removed view modifier for testing only
   function calculatePurchaseReturn(
     uint256 _supply,
     uint256 _reserveBalance,
     uint32 _reserveRatio,
-    uint256 _depositAmount) public view returns (uint256)
+    uint256 _depositAmount) public returns (uint256)
   {
     // validate input
     require(_supply > 0 && _reserveBalance > 0 && _reserveRatio > 0 && _reserveRatio <= MAX_RESERVE_RATIO);
@@ -74,7 +117,8 @@ contract BancorBondingCurve is Power {
     (result, precision) = power(
       baseN, _reserveBalance, _reserveRatio, MAX_RESERVE_RATIO
     );
-    uint256 newTokenSupply = _supply.mul(result) >> precision;
+    uint256 newTokenSupply = _supply.mul(result >> precision);
+    emit Returned(_supply, _depositAmount, uint32(precision), newTokenSupply);
     return newTokenSupply - _supply;
   }
 

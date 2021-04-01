@@ -4,15 +4,16 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./BancorBondingCurve.sol";
 
-contract LumiToken is ERC20, Ownable, BancorBondingCurve {
+contract ProductToken is ERC20, Ownable, BancorBondingCurve {
 	using SafeMath for uint256;
 
-	event Minted(address sender, uint amount, uint deposit);		// event to fire when a new token is minted
-  event Traded(address sender, uint amount, uint refund);			// event to fire when a token has been sold back
-  event Burned(address sender, uint amount);									// event to fire when a token is redeemed in the real world
+	event Minted(address sender, uint32 amount, uint deposit);		// event to fire when a new token is minted
+  event Traded(address sender, uint32 amount, uint refund);			// event to fire when a token has been sold back
+  event Burned(address sender, uint32 amount);									// event to fire when a token is redeemed in the real world
 
-	uint256 public scale = 10**18;
-  uint256 public reserveBalance = 10*scale;		// amount in ether or dai
+  uint256 public reserveBalance = 330000000000000000;		// amount in ether, about 1/3 of a ether. This is initialized for testing, according to
+                                                        // a pricing function of y = x ^ 2, at a token supply (x) of 1
+  uint32 public exponent;
   uint256 public reserveRatio;
 
   uint32 public maxTokenCount;
@@ -23,36 +24,64 @@ contract LumiToken is ERC20, Ownable, BancorBondingCurve {
 	/**
    * @dev Constructor
    *
-   * @param _reserveRatio              the reserved ratio in ppm
+   * @param _exponent              		the exponent in the curve function
    * @param _maxTokenCount						the amount of token that will exist for this type.
   */
-  constructor(uint256 _reserveRatio, uint32 _maxTokenCount) ERC20("LumiToken", "") public {		
+  constructor(uint32 _exponent, uint32 _maxTokenCount) ERC20("ProductToken", "") public {		
   	require(_maxTokenCount > 0, "Invalid max token count.");
-    reserveRatio = _reserveRatio;		// initialize the reserve ratio for this token.
+  	exponent = _exponent;
+    reserveRatio = 330000; // uint256(1000000).div(uint256(_exponent).add(1));		// initialize the reserve ratio for this token in ppm. This is hardcoded right now because we are testing with 33%
     maxTokenCount = _maxTokenCount;
     _mint(msg.sender, 1);
   }
 
-  // Functions we provide for our token holders.
-  function mint() public payable {
+  /**
+   * @dev When user wants to buy tokens from the pool
+   *
+  */
+  function buy() public payable {
     require(msg.value > 0, "Must send ether to buy tokens.");
     _discreteMint(msg.value);
   }
 
- 	function sale(uint32 _amount) public {
+	/**
+   * @dev When user wants to sell their tokens back to the pool
+   *
+  */
+ 	function sell(uint32 _amount) public {
     uint256 returnAmount = _discreteSale(_amount);
     msg.sender.transfer(returnAmount);
   }
 
-  function burn(uint32 _amount) public {
+	/**
+   * @dev When user wants to trade in their token for retail product
+   * the logistics for transfering product should be handled by the front end
+   *
+  */
+  function tradein(uint32 _amount) public {
   	_discreteBurn(_amount);
   }
 
   // function () public payable { mint(); }
 
   // View Functions for outside.
+
+  // Remember this is a view function. Removed view modifier for testing only
+  function getCurrentPrice() 
+  	public returns	(uint256 price)
+  {
+  	return calculateUnitPrice(totalSupply() + burnedCount, reserveBalance, uint32(reserveRatio));
+  }
+
+  function getPriceForN(uint32 _amount) 
+  	public returns	(uint256 price)
+  {
+  	return calculatePriceForNTokens(totalSupply() + burnedCount, reserveBalance, exponent, _amount);
+  }
+
+  // Remember this is a view function. Removed view modifier for testing only
   function calculateBuyReturn(uint256 _amount)
-    public view returns (uint256 mintAmount)
+    public returns (uint256 mintAmount)
   {
     return calculatePurchaseReturn(totalSupply() + burnedCount, reserveBalance, uint32(reserveRatio), _amount);
   }
@@ -61,12 +90,6 @@ contract LumiToken is ERC20, Ownable, BancorBondingCurve {
     public view returns (uint256 burnAmount)
   {
     return calculateSaleReturn(totalSupply() + burnedCount, reserveBalance, uint32(reserveRatio), _amount);
-  }
-
-  function calculateTokenPrice() 
-  	public view returns	(uint256 price)
-  {
-  	return calculateUnitPrice(totalSupply() + burnedCount, reserveBalance, uint32(reserveRatio));
   }
 
   // specific implementations of transaction logics.
@@ -80,7 +103,7 @@ contract LumiToken is ERC20, Ownable, BancorBondingCurve {
 
     _mint(msg.sender, amount);		// have to specifically mint whole numbers
     reserveBalance = reserveBalance.add(_deposit);
-    emit Minted(msg.sender, amount, _deposit);
+    // emit Minted(msg.sender, amount, _deposit);		// need to change amount to precise token counts.
     return amount;
   }
 
