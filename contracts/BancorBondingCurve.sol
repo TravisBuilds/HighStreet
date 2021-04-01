@@ -38,7 +38,43 @@ contract BancorBondingCurve is Power {
     return numerator.div(denumerator);
   }
 
-   /**
+  /**
+   * @dev Try to compute the price to purchage n token
+   *
+   * Formula:
+   * Return = _reserveBalance * ((_amount / _supply + 1) ^ (_exponent + 1) -1)
+   *
+   * @param _supply              continuous token total supply
+   * @param _reserveBalance    total reserve token balance
+   * @param _exponent         The exponent component in the bancor curve.
+   * @param _amount           number to tokens one wishes to purchase
+   *
+   *  @return price for N tokens 
+  */
+  function calculatePriceForNTokens(
+    uint256 _supply,
+    uint256 _reserveBalance,
+    uint32 _exponent,
+    uint32 _amount) public view returns (uint256)
+  {
+    require(_supply > 0 && _reserveBalance > 0 && _exponent > 0);
+    // special case for 0 tokens
+    if (_amount == 0) {
+      return 0;
+    } 
+    // special case if this is a linear function
+    if (_exponent == 1) {
+      return uint256(_amount).mul(_reserveBalance).div(_supply);
+    }
+    uint256 result;
+    uint8 precision;
+    (result, precision) = power(
+      _amount, _supply.add(1), _exponent + 1, 1
+    );    // need safe math for uint32 here.
+    return _reserveBalance.mul(result) >> precision;
+  }
+
+  /**
    * @dev given a continuous token supply, reserve token balance, reserve ratio, and a deposit amount (in the reserve token),
    * calculates the return for a given conversion (in the continuous token)
    *
