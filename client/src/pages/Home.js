@@ -34,94 +34,68 @@ export const Home = () => {
     return (
         <div class="landing">
             <div id="jumbo">
-                <Jumbotron style={{ background: '#87ceeb' }}>
+                <Jumbotron style={{ background: '#4A90E2', color: 'white' }}>
                         <p><strong>Buy, Trade, and Redeem</strong></p>
                         <p>Limited Edition Products From The Most Exciting Brands</p>
                         <h1>
                         The first Virtual Marketplace <br></br>pegged to Real Products 
                         </h1>
-                        <p>
-                            <Button variant="primary">Metamask</Button>
-                            <Button variant="outline-secondary" className="mx-auto my-2" >For Brands</Button>{'   '}
-                        </p>
+                        <div className="mb-2">
+                            <p>
+                                <Button variant="light" style={{color: 'black'}}>Metamask</Button>
+                                <Button variant="outline-light" style={{color: 'white', padding: "5px"}}  >For Brands</Button>{'   '}
+                            </p>
+                        </div>
                     </Jumbotron>
             </div>
             <div id="Caro">
                 <Carousel>
                     <Carousel.Item interval={5000}>
                     <CardDeck>
-                    <Card style={{ width: '30rem' }}>
-                        <Card.Img variant="top" src={source1} />
-                        <Card.Body>
-                            <Card.Title>Making it Real</Card.Title>
-                            <Card.Text>
-                            A timeless first and a vibrant way to touch up both your digital and IRL identity
-                            </Card.Text>
-                            <Button variant="primary">Discover</Button>
-                        </Card.Body>
+                        <Card style={{ width: '30rem' , color:'white'}}>
+                            <Card.Img src={source1} alt="Card image" />
+                            <Card.ImgOverlay>
+                                <Card.Title>Making it Real</Card.Title>
+                                <Card.Text>
+                                A timeless first and a vibrant way to touch up both your digital and IRL identity
+                                </Card.Text>
+                                <Button variant="primary">Discover</Button>
+                            </Card.ImgOverlay>
                         </Card>
-
-                        <Card style={{ width: '30rem' }}>
-                        <Card.Img variant="top" src={source2} />
-                        <Card.Body>
-                            <Card.Title> Essence of Nature</Card.Title>
-                            <Card.Text>
-                            Nature's first green is gold, infused in a liquor that will make it truly last forever
-                            </Card.Text>
-                            <Button variant="primary">Discover</Button>
-                        </Card.Body>
+                        
+                        <Card style={{ width: '30rem', color:'white' }}>
+                            <Card.Img src={source2} alt="Card image" />
+                            <Card.ImgOverlay>
+                                <Card.Title>Essence of Nature</Card.Title>
+                                <Card.Text>
+                                Nature's first green is gold, infused in a liquor that will make it truly last forever
+                                </Card.Text>
+                                <Button variant="primary">Discover</Button>
+                            </Card.ImgOverlay>
                         </Card>
-                        </CardDeck>
+                    </CardDeck>
                     </Carousel.Item>
                     <Carousel.Item interval={5000}>
-                    <CardDeck>
-                    <Card style={{ width: '30rem' }}>
-                        <Card.Img variant="top" src={source1} />
-                        <Card.Body>
-                            <Card.Title>Making it Real</Card.Title>
-                            <Card.Text>
-                            A timeless first and a vibrant way to touch up both your digital and IRL identity
-                            </Card.Text>
-                            <Button variant="primary">Discover</Button>
-                        </Card.Body>
-                        </Card>
-
-                        <Card style={{ width: '30rem' }}>
-                        <Card.Img variant="top" src={source2} />
-                        <Card.Body>
-                            <Card.Title> Essence of Nature</Card.Title>
-                            <Card.Text>
-                            Nature's first green is gold, infused in a liquor that will make it truly last forever
-                            </Card.Text>
-                            <Button variant="primary">Discover</Button>
-                        </Card.Body>
-                        </Card>
-                        </CardDeck>
+                        <img
+                        className="d-block w-100"
+                        src="holder.js/800x400?text=Second slide&bg=282c34"
+                        alt="Second slide"
+                        />
+                        <Carousel.Caption>
+                        <h3>Second slide label</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                        </Carousel.Caption>
                     </Carousel.Item>
                     <Carousel.Item>
-                    <CardDeck>
-                    <Card style={{ width: '30rem' }}>
-                        <Card.Img variant="top" src={source1} />
-                        <Card.Body>
-                            <Card.Title>Making it Real</Card.Title>
-                            <Card.Text>
-                            A timeless first and a vibrant way to touch up both your digital and IRL identity
-                            </Card.Text>
-                            <Button variant="primary">Discover</Button>
-                        </Card.Body>
-                        </Card>
-
-                        <Card style={{ width: '30rem' }}>
-                        <Card.Img variant="top" src={source2} />
-                        <Card.Body>
-                            <Card.Title> Essence of Nature</Card.Title>
-                            <Card.Text>
-                            Nature's first green is gold, infused in a liquor that will make it truly last forever
-                            </Card.Text>
-                            <Button variant="primary">Discover</Button>
-                        </Card.Body>
-                        </Card>
-                        </CardDeck>
+                        <img
+                        className="d-block w-100"
+                        src="holder.js/800x400?text=Third slide&bg=20232a"
+                        alt="Third slide"
+                        />
+                        <Carousel.Caption>
+                        <h3>Third slide label</h3>
+                        <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
+                        </Carousel.Caption>
                     </Carousel.Item>
                 </Carousel>
             </div>
