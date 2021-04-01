@@ -1,0 +1,63 @@
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+      monospace;
+  }
+  html {
+    margin: 0;
+}
+
+  #feeStruct{
+      text-align: center;
+  }
+
+  .title{
+      text-align:center;
+  }
+  .title2{
+      color:white;
+      text-align:center;
+  }
+  
+  #subtitle{
+      color:grey;
+      margin:auto;
+  }
+  .dlButtons{
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+    display:block;
+
+  }
+.dlButtons img{
+    width:100%
+}
+.dlButtonRow{
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+    display:block;
+}
+
+@media (max-width : 990px){
+    .shrinkGone{
+      display: none;
+
+    }
+  }
+  @media (max-width : 770px){
+    
+  }
+  
+  @media (max-width : 660px){
+   
+  }
