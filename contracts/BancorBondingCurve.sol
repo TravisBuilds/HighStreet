@@ -117,9 +117,9 @@ contract BancorBondingCurve is Power {
     (result, precision) = power(
       baseN, _reserveBalance, _reserveRatio, MAX_RESERVE_RATIO
     );
-    uint256 newTokenSupply = _supply.mul(result >> precision);
+    uint256 tokens = _supply.mul(result >> precision);    // maybe have to do a plus one here?
     emit Returned(_supply, _depositAmount, uint32(precision), newTokenSupply);
-    return newTokenSupply - _supply;
+    return tokens;
   }
 
    /**
