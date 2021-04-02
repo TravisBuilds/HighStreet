@@ -16,10 +16,12 @@ body {
 }
 
   #feeStruct{
-      text-align: center;
+      text-align: left;
+      padding-left: 3%;
   }
 
   .title{
+      color:#999595;
       text-align:center;
   }
   .title2{
@@ -47,6 +49,29 @@ body {
     padding: 10px;
     display:block;
 }
+
+.discoverCol{
+  margin:20px;
+}
+
+.jumbotron{
+  margin:0;
+}
+
+
+#Caro div div a {
+  display:none;
+}
+#Caro div div ol li{
+  
+                       background-color: skyblue;
+                        border-radius: 50%;
+                        height: 5px;
+                        width: 5px;
+                      
+    
+}
+
 
 @media (max-width : 990px){
     .shrinkGone{

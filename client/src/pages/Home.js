@@ -10,6 +10,11 @@ import Col from 'react-bootstrap/Col';
 import CardDeck from 'react-bootstrap/CardDeck';
 import Carousel from 'react-bootstrap/Carousel';
 import { Router, Route, BrowserRouter, Redirect, Switch } from 'react-router-dom';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import { faCube, faMoneyCheck, faPeopleArrows} from '@fortawesome/free-solid-svg-icons';
+import { faEthereum } from '@fortawesome/free-brands-svg-icons';
+
+//temp asset import, will remove when datastructure is built 
 import source1 from '../assets/lvmh.png';
 import source2 from '../assets/kalon.png';
 import metamask from '../assets/metamask2.png';
@@ -18,11 +23,15 @@ import rpm from '../assets/rpm.png';
 import steam from '../assets/steam.png';
 import oculus from '../assets/oculus.png';
 import metaverse from '../assets/backgroundMetaverse.png';
+import placeholder from '../assets/placeholderImage.png'
 
 export const Home = () => {
 
+    const placeholderHeader = "Placeholder"
+    const placeholderTitle = "This is Placeholder"
+    const placeholderText = "Lorem ipsum dolor sit amet, consectetur abore et dolore magna aliqua te"
     const [userAccount, setUserAccount] = useState('');
-
+   
     window.addEventListener('load', async () => {
         if (window.ethereum) {
             window.web3 = new Web3(Web3.givenprovider || "http://localhost:8485");
@@ -43,7 +52,7 @@ export const Home = () => {
     return (
         <div class="landing">
             <div id="jumbo">
-                <Jumbotron style={{ background: '#4A90E2', color: 'white' }}>
+                <Jumbotron style={{ margin: "0", background: '#4A90E2', color: 'white', }} fluid>
                     <Container>
                         <Row >
                             <Col>
@@ -72,56 +81,156 @@ export const Home = () => {
                 </Jumbotron>
             </div>
             <div id="Caro">
-                <Carousel>
-                    <Carousel.Item interval={5000}>
-                        <CardDeck>
-                            <Card style={{ width: '30rem', color: 'white' }}>
-                                <Card.Img src={source1} alt="Card image" />
-                                <Card.ImgOverlay>
-                                    <Card.Title>Making it Real</Card.Title>
-                                    <Card.Text>
-                                        A timeless first and a vibrant way to touch up both your digital and IRL identity
-                                </Card.Text>
-                                    <Button variant="primary">Discover</Button>
-                                </Card.ImgOverlay>
-                            </Card>
+                <Container>
+                    <Carousel>
+                        <Carousel.Item interval={5000}>
 
-                            <Card style={{ width: '30rem', color: 'white' }}>
-                                <Card.Img src={source2} alt="Card image" />
-                                <Card.ImgOverlay>
-                                    <Card.Title>Essence of Nature</Card.Title>
-                                    <Card.Text>
-                                        Nature's first green is gold, infused in a liquor that will make it truly last forever
-                                </Card.Text>
-                                    <Button variant="primary">Discover</Button>
-                                </Card.ImgOverlay>
-                            </Card>
-                        </CardDeck>
-                    </Carousel.Item>
-                    <Carousel.Item interval={5000}>
-                        <img
-                            className="d-block w-100"
-                            src="holder.js/800x400?text=Second slide&bg=282c34"
-                            alt="Second slide"
-                        />
-                        <Carousel.Caption>
-                            <h3>Second slide label</h3>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                        </Carousel.Caption>
-                    </Carousel.Item>
-                    <Carousel.Item>
-                        <img
-                            className="d-block w-100"
-                            src="holder.js/800x400?text=Third slide&bg=20232a"
-                            alt="Third slide"
-                        />
-                        <Carousel.Caption>
-                            <h3>Third slide label</h3>
-                            <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
-                        </Carousel.Caption>
-                    </Carousel.Item>
-                </Carousel>
-                <Jumbotron>
+                            <CardDeck>
+                                <Row>
+                                    <div class="discoverCol">
+                                        <Col>
+                                            <Card style={{ width: '30rem', color: 'white' }}>
+                                                <Card.Img src={source1} alt="Card image" />
+                                                <Card.ImgOverlay>
+                                                    <Card.Header>LVMH</Card.Header>
+                                                    <Card.Title><strong>Making it Real</strong></Card.Title>
+                                                    <Card.Text>
+
+                                                        A timeless first and a vibrant way to touch up both your digital and IRL identity
+                                                     </Card.Text>
+                                                    <br></br>
+                                                    <br></br>
+                                                    <Button variant="light"><strong>Discover</strong></Button>
+                                                </Card.ImgOverlay>
+                                            </Card>
+
+                                        </Col>
+
+                                    </div>
+
+                                    <div class="discoverCol">
+                                        <Col>
+                                            <Card style={{ width: '30rem', color: 'white' }}>
+                                                <Card.Img src={source2} alt="Card image" />
+                                                <Card.ImgOverlay>
+                                                    <Card.Header style={{ align: "left" }}>Kalon</Card.Header>
+
+                                                    <Card.Title>Essence of Nature</Card.Title>
+                                                    <Card.Text>
+                                                        Nature's first green is gold, infused in a liquor that will make it truly last forever
+                                                    </Card.Text>
+                                                    <br></br>
+                                                    <br></br>
+                                                    <Button variant="light"><strong>Discover</strong></Button>
+
+                                                </Card.ImgOverlay>
+                                            </Card>
+                                        </Col>
+
+                                    </div>
+                                </Row>
+                            </CardDeck>
+
+
+                        </Carousel.Item>
+                        <Carousel.Item interval={5000}>
+                            <CardDeck>
+                                <Row>
+                                    <div class="discoverCol">
+                                        <Col>
+                                            <Card style={{ width: '30rem', color: 'white' }}>
+                                                <Card.Img src={placeholder} alt="Card image" />
+                                                <Card.ImgOverlay>
+                                                    <Card.Header>{placeholderHeader}</Card.Header>
+                                                    <Card.Title><strong>{placeholderTitle}</strong></Card.Title>
+                                                    <Card.Text>
+
+                                                        {placeholderText}
+                                                    </Card.Text>
+                                                    <br></br>
+                                                    <br></br>
+                                                    <Button variant="light"><strong>Discover</strong></Button>
+                                                </Card.ImgOverlay>
+                                            </Card>
+
+                                        </Col>
+
+                                    </div>
+
+                                    <div class="discoverCol">
+                                        <Col>
+                                            <Card style={{ width: '30rem', color: 'white' }}>
+                                                <Card.Img src={placeholder} alt="Card image" />
+                                                <Card.ImgOverlay>
+                                                    <Card.Header style={{ align: "left" }}>{placeholderHeader}</Card.Header>
+
+                                                    <Card.Title>{placeholderTitle}</Card.Title>
+                                                    <Card.Text>
+                                                        {placeholderText}
+                                                    </Card.Text>
+                                                    <br></br>
+                                                    <br></br>
+                                                    <Button variant="light"><strong>Discover</strong></Button>
+
+                                                </Card.ImgOverlay>
+                                            </Card>
+                                        </Col>
+
+                                    </div>
+                                </Row>
+                            </CardDeck>
+                        </Carousel.Item>
+                        <Carousel.Item interval={5000}>
+                            <CardDeck>
+                                <Row>
+                                    <div class="discoverCol">
+                                        <Col>
+                                            <Card style={{ width: '30rem', color: 'white' }}>
+                                                <Card.Img src={placeholder} alt="Card image" />
+                                                <Card.ImgOverlay>
+                                                    <Card.Header>{placeholderHeader}</Card.Header>
+                                                    <Card.Title><strong>{placeholderTitle}</strong></Card.Title>
+                                                    <Card.Text>
+
+                                                        {placeholderText}
+                                                    </Card.Text>
+                                                    <br></br>
+                                                    <br></br>
+                                                    <Button variant="light"><strong>Discover</strong></Button>
+                                                </Card.ImgOverlay>
+                                            </Card>
+
+                                        </Col>
+
+                                    </div>
+
+                                    <div class="discoverCol">
+                                        <Col>
+                                            <Card style={{ width: '30rem', color: 'white' }}>
+                                                <Card.Img src={placeholder} alt="Card image" />
+                                                <Card.ImgOverlay>
+                                                    <Card.Header style={{ align: "left" }}>{placeholderHeader}</Card.Header>
+
+                                                    <Card.Title>{placeholderTitle}</Card.Title>
+                                                    <Card.Text>
+                                                        {placeholderText}
+                                                    </Card.Text>
+                                                    <br></br>
+                                                    <br></br>
+                                                    <Button variant="light"><strong>Discover</strong></Button>
+
+                                                </Card.ImgOverlay>
+                                            </Card>
+                                        </Col>
+
+                                    </div>
+                                </Row>
+                            </CardDeck>
+                        </Carousel.Item>
+
+                    </Carousel>
+                </Container>
+                <Jumbotron style={{ margin: "0", background: "#F6F8F9" }} fluid>
                     <Container>
                         <div className="title">
                             <Row>
@@ -132,27 +241,30 @@ export const Home = () => {
                             </Row>
                         </div>
                         <div id="feeStruct">
+                            <br></br>
+                            <br></br>
                             <Row>
-                                <Col>$0 for 3D Asset Conversion</Col>
-                                <Col>Layer 2 Gasless Minting Coming Soon</Col>
+                                <Col><h3><FontAwesomeIcon icon={faCube}/><i>&nbsp;&nbsp; $0 for 3D Asset Conversion</i></h3></Col>
+                                <Col><h3><FontAwesomeIcon icon={faEthereum}/><i> &nbsp;&nbsp;Layer 2 Gasless Minting Coming Soon</i></h3></Col>
                             </Row>
+                            <br></br>
                             <Row>
-                                <Col>4% per Market Sale</Col>
-                                <Col>2% per Secondary Transaction</Col>
+                                <Col><h3><FontAwesomeIcon icon={faMoneyCheck}/><i> &nbsp;&nbsp;4% per Market Sale</i></h3></Col>
+                                <Col><h3><FontAwesomeIcon icon={faPeopleArrows}/><i>  &nbsp;&nbsp; 2% per Secondary Transaction</i></h3></Col>
                             </Row>
                         </div>
                     </Container>
 
                 </Jumbotron>
-                
-                <Jumbotron style={{backgroundImage:`url(${metaverse})`}}>
-                <Container>
+
+                <Jumbotron style={{ margin: "0", backgroundImage: `url(${metaverse})` }} fluid>
+                    <Container>
                         <div className="title2">
                             <Row>
                                 <Col>
                                     <h1>Explore Our Metaverse with Friends </h1>
                                     <div id="subtitle">
-                                    <h3><i>Virtual Stores from Real Brands are populated across Multiple Zones</i></h3>
+                                        <h3><i>Virtual Stores from Real Brands are populated across Multiple Zones</i></h3>
                                     </div>
                                 </Col>
 
@@ -165,38 +277,38 @@ export const Home = () => {
 
                         <div class="dlButtonRow">
                             <Row>
-                            <div class="dlButtons">
-                                <Col><Button variant="dark-light" size="sm"> <img src={steam} /> </Button> {'  '}</Col> 
-                            </div>  
-                            <div class="dlButtons">
-                                <Col><Button variant="dark-light" size="sm" ><img src={oculus} /></Button>{' '}</Col>
-                            </div>
+                                <div class="dlButtons">
+                                    <Col><Button variant="dark-light" size="sm"> <img src={steam} /> </Button> {'  '}</Col>
+                                </div>
+                                <div class="dlButtons">
+                                    <Col><Button variant="dark-light" size="sm" ><img src={oculus} /></Button>{' '}</Col>
+                                </div>
                             </Row>
                         </div>
-                      
-                </Container>
+
+                    </Container>
 
                 </Jumbotron>
-                <Jumbotron style={{ background: '#4A90E2', color: 'white' }}>
+                <Jumbotron style={{ margin: '0', background: '#4A90E2', color: 'white' }} fluid>
                     <Container>
                         <Row>
-                        <Col></Col>
-                        <Col md="auto">Documentation</Col>
-                        <Col xs lg="2">Terms and Conditions</Col>
+                            <Col></Col>
+                            <Col md="auto">Documentation</Col>
+                            <Col xs lg="2">Terms and Conditions</Col>
                         </Row>
 
                         <Row>
-                        <Col>Merging the digital world with the real world.</Col>
-                        <Col md="auto">Token Management</Col>
-                        <Col xs lg="2">Blog</Col>
+                            <Col>Merging the digital world with the real world.</Col>
+                            <Col md="auto">Token Management</Col>
+                            <Col xs lg="2">Blog</Col>
                         </Row>
 
                         <Row>
-                        <Col>Discover, Buy, Trade, and redeem tokens from great brands around the world.</Col>
-                        <Col md="auto">Market</Col>
-                        <Col xs lg="2">Contact Us</Col>
+                            <Col>Discover, Buy, Trade, and redeem tokens from great brands around the world.</Col>
+                            <Col md="auto">Market</Col>
+                            <Col xs lg="2">Contact Us</Col>
                         </Row>
-                       
+
                     </Container>
                 </Jumbotron>
             </div>
