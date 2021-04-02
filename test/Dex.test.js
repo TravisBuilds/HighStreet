@@ -40,6 +40,9 @@ contract('Token', (accounts) => {
 				// console.log(amount.toString())
 				assert.equal(amount, 1, "Price calculated for one token cannot buy one token")
 			})
+
+			// Add sell test later, when buying functions for tokens are implemented.
+
 		})
 
 	})

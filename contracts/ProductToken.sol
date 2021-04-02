@@ -68,20 +68,19 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
 
   // Remember this is a view function. Removed view modifier for testing only
   function getCurrentPrice() 
-  	public returns	(uint256 price)
+  	public view returns	(uint256 price)
   {
   	return calculateUnitPrice(totalSupply() + burnedCount, reserveBalance, uint32(reserveRatio));
   }
 
   function getPriceForN(uint32 _amount) 
-  	public returns	(uint256 price)
+  	public view returns	(uint256 price)
   {
   	return calculatePriceForNTokens(totalSupply() + burnedCount, reserveBalance, exponent, _amount);
   }
 
-  // Remember this is a view function. Removed view modifier for testing only
   function calculateBuyReturn(uint256 _amount)
-    public returns (uint256 mintAmount)
+    public view returns (uint256 mintAmount)
   {
     return calculatePurchaseReturn(totalSupply() + burnedCount, reserveBalance, uint32(reserveRatio), _amount);
   }
