@@ -13,9 +13,7 @@ contract BancorBondingCurve is Power {
   using SafeMath for uint256;
   uint32 private constant MAX_RESERVE_RATIO = 1000000;
 
-  event Returned(uint256 supply, uint256 reserve, uint32 ratio, uint256 amount);
-
- /**
+ /** @depreciated
    * @dev Try to compute the current price for a given token
    *
    * Formula:
@@ -32,13 +30,12 @@ contract BancorBondingCurve is Power {
     uint256 _supply,
     uint256 _reserveBalance,
     uint32 _reserveRatio
-  ) public returns (uint256) 
+  ) public view returns (uint256) 
   {
      // validate input
     require(_supply > 0 && _reserveBalance > 0 && _reserveRatio > 0 && _reserveRatio <= MAX_RESERVE_RATIO);
     uint256 numerator =  _reserveBalance.mul(MAX_RESERVE_RATIO);
     uint256 denumerator = _supply.mul(uint256(_reserveRatio));   // this returns the price based on reserve unit.
-    emit Returned(_supply, _reserveBalance, _reserveRatio, numerator.div(denumerator));
     // return numerator.div(denumerator);
     return 1;
   }
@@ -60,7 +57,7 @@ contract BancorBondingCurve is Power {
     uint256 _supply,
     uint256 _reserveBalance,
     uint32 _exponent,
-    uint32 _amount) public returns (uint256)
+    uint32 _amount) public view returns (uint256)
   {
     require(_supply > 0 && _reserveBalance > 0 && _exponent > 0);
     // special case for 0 tokens
@@ -76,7 +73,6 @@ contract BancorBondingCurve is Power {
     (result, precision) = power(
       _amount + _supply, _supply, _exponent + 1, 1
     );    // need safe math for uint32 here.
-    emit Returned(_supply, _reserveBalance, _exponent, _reserveBalance.mul(result >> precision));
     return _reserveBalance.mul(result >> precision);
   }
 
@@ -99,7 +95,7 @@ contract BancorBondingCurve is Power {
     uint256 _supply,
     uint256 _reserveBalance,
     uint32 _reserveRatio,
-    uint256 _depositAmount) public returns (uint256)
+    uint256 _depositAmount) public view returns (uint256)
   {
     // validate input
     require(_supply > 0 && _reserveBalance > 0 && _reserveRatio > 0 && _reserveRatio <= MAX_RESERVE_RATIO);
@@ -117,9 +113,8 @@ contract BancorBondingCurve is Power {
     (result, precision) = power(
       baseN, _reserveBalance, _reserveRatio, MAX_RESERVE_RATIO
     );
-    uint256 newTokenSupply = _supply.mul(result >> precision);
-    emit Returned(_supply, _depositAmount, uint32(precision), newTokenSupply);
-    return newTokenSupply - _supply;
+    uint256 tokens = _supply.mul(result >> precision);    // maybe have to do a plus one here?
+    return tokens;
   }
 
    /**
@@ -158,12 +153,17 @@ contract BancorBondingCurve is Power {
     }
     uint256 result;
     uint8 precision;
-    uint256 baseD = _supply - _sellAmount;
+    uint256 baseN = _supply - _sellAmount;
     (result, precision) = power(
-      _supply, baseD, MAX_RESERVE_RATIO, _reserveRatio
+      baseN, _supply, MAX_RESERVE_RATIO, _reserveRatio
     );
-    uint256 oldBalance = _reserveBalance.mul(result);
-    uint256 newBalance = _reserveBalance << precision;
-    return oldBalance.sub(newBalance).div(result);
+    return _reserveBalance.sub((result >> precision).mul(_reserveBalance))
+    // uint256 baseD = _supply - _sellAmount;
+    // (result, precision) = power(
+    //   _supply, baseD, MAX_RESERVE_RATIO, _reserveRatio
+    // );
+    // uint256 oldBalance = _reserveBalance.mul(result);
+    // uint256 newBalance = _reserveBalance << precision;
+    // return oldBalance.sub(newBalance).div(result);
   }
 }
