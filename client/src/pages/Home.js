@@ -10,8 +10,8 @@ import Col from 'react-bootstrap/Col';
 import CardDeck from 'react-bootstrap/CardDeck';
 import Carousel from 'react-bootstrap/Carousel';
 import { Router, Route, BrowserRouter, Redirect, Switch } from 'react-router-dom';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import { faCube, faMoneyCheck, faPeopleArrows} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCube, faMoneyCheck, faPeopleArrows } from '@fortawesome/free-solid-svg-icons';
 import { faEthereum } from '@fortawesome/free-brands-svg-icons';
 
 //temp asset import, will remove when datastructure is built 
@@ -31,7 +31,7 @@ export const Home = () => {
     const placeholderTitle = "This is Placeholder"
     const placeholderText = "Lorem ipsum dolor sit amet, consectetur abore et dolore magna aliqua te"
     const [userAccount, setUserAccount] = useState('');
-   
+
     window.addEventListener('load', async () => {
         if (window.ethereum) {
             window.web3 = new Web3(Web3.givenprovider || "http://localhost:8485");
@@ -63,10 +63,13 @@ export const Home = () => {
                         </h1>
                                 <div className="mb-2">
                                     <p>
-                                        <Button variant="light" > <img src={metamask} /> </Button> {'    '}
-                                        <Button variant="outline-light"  ><img src={brands} /></Button>{' '}
+                                        <div className="loginButton">
+                                            <Button variant="light" > <img src={metamask} /> </Button> {'    '}
+                                            <Button variant="outline-light"  ><img src={brands} /></Button>{' '}
 
+                                        </div>
                                     </p>
+
                                 </div>
                             </Col>
 
@@ -244,13 +247,13 @@ export const Home = () => {
                             <br></br>
                             <br></br>
                             <Row>
-                                <Col><h3><FontAwesomeIcon icon={faCube}/><i>&nbsp;&nbsp; $0 for 3D Asset Conversion</i></h3></Col>
-                                <Col><h3><FontAwesomeIcon icon={faEthereum}/><i> &nbsp;&nbsp;Layer 2 Gasless Minting Coming Soon</i></h3></Col>
+                                <Col><h3><FontAwesomeIcon icon={faCube} /><i>&nbsp;&nbsp; $0 for 3D Asset Conversion</i></h3></Col>
+                                <Col><h3><FontAwesomeIcon icon={faEthereum} /><i> &nbsp;&nbsp;Layer 2 Gasless Minting Coming Soon</i></h3></Col>
                             </Row>
                             <br></br>
                             <Row>
-                                <Col><h3><FontAwesomeIcon icon={faMoneyCheck}/><i> &nbsp;&nbsp;4% per Market Sale</i></h3></Col>
-                                <Col><h3><FontAwesomeIcon icon={faPeopleArrows}/><i>  &nbsp;&nbsp; 2% per Secondary Transaction</i></h3></Col>
+                                <Col><h3><FontAwesomeIcon icon={faMoneyCheck} /><i> &nbsp;&nbsp;4% per Market Sale</i></h3></Col>
+                                <Col><h3><FontAwesomeIcon icon={faPeopleArrows} /><i>  &nbsp;&nbsp; 2% per Secondary Transaction</i></h3></Col>
                             </Row>
                         </div>
                     </Container>

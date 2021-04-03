@@ -18,6 +18,7 @@ body {
   #feeStruct{
       text-align: left;
       padding-left: 3%;
+      
   }
 
   .title{
@@ -58,7 +59,14 @@ body {
   margin:0;
 }
 
+.loginButton button{
+  border-radius:50px;
+  margin-right:10px;
+}
 
+.curvyButton button{
+  border-radius:50px;
+}
 #Caro div div a {
   display:none;
 }

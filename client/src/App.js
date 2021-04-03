@@ -12,6 +12,7 @@ import {Trade} from "./pages/Trade";
 import {Download} from "./pages/Download";
 import {Discover} from "./pages/Discover";
 import {NavBar} from "./components/NavBar";
+import {ProductProvider} from './contexts/ProductState'; 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
@@ -35,11 +36,13 @@ function App() {
              <UserProvider>
                 <Route path="/" component= {NavBar} />
                 <Route path='/about' component = {About}/>
-                <Route path='/trade' component = {Trade}/>
+                <ProductProvider>
+                <Route exact path='/trade' component = {Trade}/>
+                </ProductProvider>
                 <Route path='/discover' component = {Discover}/>
                 <Route path='/download' component = {Download}/>
               </UserProvider>
-                <Route path='/' component = {Home}/>
+                <Route exact path='/' component = {Home}/>
              </BrowserRouter>
           {/* </Web3ReactManager> */}
         </Web3Provider>
