@@ -50,7 +50,7 @@ export const Home = () => {
     })
     console.log("your Ether Address is, ", { userAccount });
     return (
-        <div class="landing">
+        <div class="landing" >
             <div id="jumbo">
                 <Jumbotron style={{ margin: "0", background: '#4A90E2', color: 'white', }} fluid>
                     <Container>
@@ -95,7 +95,7 @@ export const Home = () => {
                                             <Card style={{ width: '30rem', color: 'white' }}>
                                                 <Card.Img src={source1} alt="Card image" />
                                                 <Card.ImgOverlay>
-                                                    <Card.Header>LVMH</Card.Header>
+                                                    <Card.Header style={{padding:"0", backgroundColor:'none', border:'0'}}>LVMH</Card.Header>
                                                     <Card.Title><strong>Making it Real</strong></Card.Title>
                                                     <Card.Text>
 
@@ -103,7 +103,7 @@ export const Home = () => {
                                                      </Card.Text>
                                                     <br></br>
                                                     <br></br>
-                                                    <Button variant="light"><strong>Discover</strong></Button>
+                                                    <Button variant="light" style={{borderRadius:"50px", width:"8rem"}}><strong>Discover</strong></Button>
                                                 </Card.ImgOverlay>
                                             </Card>
 
@@ -116,7 +116,7 @@ export const Home = () => {
                                             <Card style={{ width: '30rem', color: 'white' }}>
                                                 <Card.Img src={source2} alt="Card image" />
                                                 <Card.ImgOverlay>
-                                                    <Card.Header style={{ align: "left" }}>Kalon</Card.Header>
+                                                    <Card.Header style={{padding:"0", backgroundColor:'none', border:'0'}}>Kalon</Card.Header>
 
                                                     <Card.Title>Essence of Nature</Card.Title>
                                                     <Card.Text>
@@ -124,7 +124,7 @@ export const Home = () => {
                                                     </Card.Text>
                                                     <br></br>
                                                     <br></br>
-                                                    <Button variant="light"><strong>Discover</strong></Button>
+                                                    <Button style={{borderRadius:"50px", width:"8rem"}} variant="light"><strong>Discover</strong></Button>
 
                                                 </Card.ImgOverlay>
                                             </Card>
@@ -144,7 +144,7 @@ export const Home = () => {
                                             <Card style={{ width: '30rem', color: 'white' }}>
                                                 <Card.Img src={placeholder} alt="Card image" />
                                                 <Card.ImgOverlay>
-                                                    <Card.Header>{placeholderHeader}</Card.Header>
+                                                    <Card.Header style={{padding:"0", backgroundColor:'none', border:'0'}}>{placeholderHeader}</Card.Header>
                                                     <Card.Title><strong>{placeholderTitle}</strong></Card.Title>
                                                     <Card.Text>
 
@@ -152,7 +152,7 @@ export const Home = () => {
                                                     </Card.Text>
                                                     <br></br>
                                                     <br></br>
-                                                    <Button variant="light"><strong>Discover</strong></Button>
+                                                    <Button style={{borderRadius:"50px", width:"8rem"}} variant="light"><strong>Discover</strong></Button>
                                                 </Card.ImgOverlay>
                                             </Card>
 
@@ -165,7 +165,7 @@ export const Home = () => {
                                             <Card style={{ width: '30rem', color: 'white' }}>
                                                 <Card.Img src={placeholder} alt="Card image" />
                                                 <Card.ImgOverlay>
-                                                    <Card.Header style={{ align: "left" }}>{placeholderHeader}</Card.Header>
+                                                    <Card.Header style={{padding:"0", backgroundColor:'none', border:'0'}}>{placeholderHeader}</Card.Header>
 
                                                     <Card.Title>{placeholderTitle}</Card.Title>
                                                     <Card.Text>
@@ -173,7 +173,7 @@ export const Home = () => {
                                                     </Card.Text>
                                                     <br></br>
                                                     <br></br>
-                                                    <Button variant="light"><strong>Discover</strong></Button>
+                                                    <Button style={{borderRadius:"50px", width:"8rem"}} variant="light"><strong>Discover</strong></Button>
 
                                                 </Card.ImgOverlay>
                                             </Card>
@@ -191,7 +191,7 @@ export const Home = () => {
                                             <Card style={{ width: '30rem', color: 'white' }}>
                                                 <Card.Img src={placeholder} alt="Card image" />
                                                 <Card.ImgOverlay>
-                                                    <Card.Header>{placeholderHeader}</Card.Header>
+                                                    <Card.Header style={{padding:"0", backgroundColor:'none', border:'0'}}>{placeholderHeader}</Card.Header>
                                                     <Card.Title><strong>{placeholderTitle}</strong></Card.Title>
                                                     <Card.Text>
 
@@ -199,7 +199,7 @@ export const Home = () => {
                                                     </Card.Text>
                                                     <br></br>
                                                     <br></br>
-                                                    <Button variant="light"><strong>Discover</strong></Button>
+                                                    <Button  style={{borderRadius:"50px", width:"8rem"}} variant="light"><strong>Discover</strong></Button>
                                                 </Card.ImgOverlay>
                                             </Card>
 
@@ -212,7 +212,7 @@ export const Home = () => {
                                             <Card style={{ width: '30rem', color: 'white' }}>
                                                 <Card.Img src={placeholder} alt="Card image" />
                                                 <Card.ImgOverlay>
-                                                    <Card.Header style={{ align: "left" }}>{placeholderHeader}</Card.Header>
+                                                    <Card.Header style={{padding:"0", backgroundColor:'none', border:'0'}}>{placeholderHeader}</Card.Header>
 
                                                     <Card.Title>{placeholderTitle}</Card.Title>
                                                     <Card.Text>
@@ -220,7 +220,7 @@ export const Home = () => {
                                                     </Card.Text>
                                                     <br></br>
                                                     <br></br>
-                                                    <Button variant="light"><strong>Discover</strong></Button>
+                                                    <Button style={{borderRadius:"50px", width:"8rem"}} variant="light"><strong>Discover</strong></Button>
 
                                                 </Card.ImgOverlay>
                                             </Card>

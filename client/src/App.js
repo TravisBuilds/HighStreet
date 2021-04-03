@@ -2,7 +2,6 @@ import React from 'react';
 import Web3 from 'web3';
 import Web3Provider, {Connectors } from 'web3-react'; 
 import { ethers } from 'ethers';
-import GlobalStyle, {ThemeProvider} from './theme'; 
 import{ Route, BrowserRouter, Redirect, Switch} from 'react-router-dom'; 
 import {UserProvider} from './contexts/UserProvider'; 
 import Web3ReactManager from './components/Web3ReactManager';
@@ -27,9 +26,9 @@ function App() {
   const connectors = {Metamask, Infura} 
 
   return (
-    <ThemeProvider>
+   
       <>
-      {/* <GlobalStyle> */}
+    
         <Web3Provider connectors={connectors} libraryName={'ethers.js'}>
           {/* <Web3ReactManager> */}
             <BrowserRouter>
@@ -46,9 +45,9 @@ function App() {
              </BrowserRouter>
           {/* </Web3ReactManager> */}
         </Web3Provider>
-      {/* </GlobalStyle> */}
+      
       </>
-    </ThemeProvider>
+  
   );
 }
 

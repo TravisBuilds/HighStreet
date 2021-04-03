@@ -4,14 +4,10 @@ import Button from 'react-bootstrap/Button';
 import Nav from 'react-bootstrap/Nav';
 import Form from 'react-bootstrap/Form';
 
-import styled from 'styled-components'
-import { useWeb3Context } from 'web3-react'
-import { Link } from 'react-router-dom'
-import logo from '../assets/lumiere.png'
-import TradingCard from '../components/TradingCard'
-import BuyButtons from './Buttons.js'
-import RedeemButton from './RedeemButton'
-// import Checkout from '../components/Checkout'
+import styled from 'styled-components';
+import { useWeb3Context } from 'web3-react';
+import { Link } from 'react-router-dom';
+import logo from '../assets/lumiere.png';
 
 
 export const NavBar =() =>{

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import Web3 from 'web3';
 import Button from 'react-bootstrap/Button';
 import Jumbotron from 'react-bootstrap/Jumbotron';
@@ -9,84 +9,86 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import CardDeck from 'react-bootstrap/CardDeck';
 import Carousel from 'react-bootstrap/Carousel';
+import Tilt from 'react-tilt';
+import {TradeCard} from '../components/TradeCard';
 
-import { ProductContext, ProductProvider } from "../contexts/ProductState";
+import { ProductContext} from "../contexts/ProductState";
 
-//this will be replaced eventually 
-const productList = [
 
-]
+
 export const Trade = () => {
+    
+    const [active, setActive] = useState("none"); 
+    console.log("this is active", active);
+    const cart = active !== "none" ? (
+        <TradeCard style={{background: "black", opacity:"0.6", zIndex:"10", position: "fixed", top:"0px",width: "100vw", height:"100vh"}} /> 
+    ) : (
+        <TradeCard style={{display:"none"}} /> 
+    )
 
     const { products } = useContext(ProductContext)
 
     return (
         <div>
-            {/* here are some products 
-            <ul className="products"> 
-            {products.map(product => (<li><img className = "ticker" 
-                src= {product.img}
-            /></li>))}
-            
-            </ul>  */}
-            <Carousel>
-                {products.map(product => (
-                    <Carousel.Item style={{ width: '18rem' }} >
-                        <Container>
-                            <Row>
-                                <Col>
-                                <Card className="bg-dark text-white"  interval={null}>
-                                    <Card.Img src={product.img}></Card.Img>
-                                    <Card.ImgOverlay>
-                                        <Card.Header>{product.name}</Card.Header>
-                                        <Card.Title>{product.ticker}</Card.Title>
-                                        <Card.Text>{product.price}</Card.Text>
-                                        <Card.Footer>{product.supply}</Card.Footer>
-                                    </Card.ImgOverlay>
-                                </Card>
-                                </Col>
-                            </Row>
-                            
-                            <Row>
-                            <Col>
-                            <div className="curvyButton">
-                            <Button variant="primary" style={{width:"18rem"}}>Buy</Button> {'    '}
-                            </div>
-                            </Col>
-                            </Row>
-                            
-                            <Row>
-                            <Col>
-                            <div className="curvyButton">
-                            <Button variant="secondary" >Sell</Button> {' '}
-                            </div>
-                            </Col>
-                            <Col>
-                            <div className="curvyButton">
-                            <Button variant="secondary">Redeem</Button> {' '}
-                            </div>
-                            </Col>
-                            </Row>
-                        </Container>
+            {cart}
+            <Jumbotron className="cardJumbo" style={{ margin: "0", background: '#CCDAF5', height:"100vh"}} fluid>
+                <Carousel fade interval={null} indicators={false}>
+                    {products.map(product => (
+                        <Carousel.Item style={{ width: '25rem' }} >
+                            <Container style={{ margin: "auto" }}>
+                                <Row>
+                                    <Col>
+                                        <Tilt
+                                            style={{ background: '#000', borderRadius: '8px' }}
+                                            options={{ scale: 1.01, max: 10, glare: true, 'max-glare': 1, speed: 1000 }}
+                                        >
+                                        <Card className="bg-dark text-white" style={{ border: "none" }}>
+                                            <Card.Img src={product.img}></Card.Img>
+                                            <Card.ImgOverlay>
+                                                <Card.Header style={{ padding: "0", backgroundColor: 'none', border: '0' }}><strong>{product.name}</strong></Card.Header>
+                                                <Card.Title>{product.ticker}</Card.Title>
+                                                <br></br>  <br></br>  <br></br>  <br></br><br></br> <br></br> <br></br>  <br></br>  <br></br> <br></br><br></br>   <br></br>
+                                                <Card.Text style={{ margin: "0" }}><h3>{product.price}&nbsp;USD </h3></Card.Text>
+                                                <Card.Footer style={{ padding: "0", backgroundColor: 'none', border: '0' }}>{product.supply}&nbsp;stocks available</Card.Footer>
+                                            </Card.ImgOverlay>
+                                        </Card>
+                                        </Tilt>
+                                    </Col>
+                                </Row>
 
-                    </Carousel.Item>
+                                <Row>
+                                    <Col>
+                                        <div className="curvyButton">
+                                            <Button variant="primary" style={{ background: "#4A90E2", width: "23rem", marginTop: "8px", marginBottom: "8px" }} onClick={
+                                                ()=> setActive(product.name)
+                                            }><strong>Buy</strong></Button> {'    '}
+                                        </div>
+                                    </Col>
+                                </Row>
 
-                )
+                                <Row>
+                                    <Col>
+                                        <div className="curvyButton">
+                                            <Button variant="secondary" style={{ background: "A0A3A6", width: "10.6rem" }}><strong>Sell</strong></Button> {''}
+                                        </div>
+                                    </Col>
+                                    <Col>
+                                        <div className="curvyButton">
+                                            <Button variant="secondary" style={{ background: "A0A3A6", width: "10.6rem" }}><strong>Redeem</strong></Button> {''}
+                                        </div>
+                                    </Col>
+                                </Row>
+                            </Container>
+
+                        </Carousel.Item>
+
+                    )
 
 
-                )}
+                    )}
 
-            </Carousel>
-
-            {/* <Card className="bg-dark text-white" style={{ width: '18rem' }}>
-                <Card.Img src={products[0].img}/>
-                <Card.ImgOverlay>
-                    <Card.Header>{products[0].name}</Card.Header>
-                    <Card.Title>{products[0].ticker}</Card.Title>
-                    <Card.Text>{products[0].price}</Card.Text>
-                    <Card.Footer>{products[0].supply}</Card.Footer>
-                </Card.ImgOverlay>
-            </Card> */}
+                </Carousel>
+            </Jumbotron>
         </div>
     )
 }
