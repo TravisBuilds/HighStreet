@@ -12,12 +12,14 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Tilt from 'react-tilt';
 
-import { ProductContext} from "../contexts/ProductState";
+import { ProductContext } from "../contexts/ProductState";
 import kalonCard from "../assets/product1.png";
 
 export const TradeCard = (props) => {
     const [userAccount, setUserAccount] = useState(null);
     const [buyButtonText, setBuyButtonText] = useState("Connect Wallet")
+
+
 
     window.addEventListener('load', async () => {
         if (window.ethereum) {
@@ -38,7 +40,6 @@ export const TradeCard = (props) => {
     })
     console.log("your Ether Address is, ", { userAccount });
 
-    
     // placeholder
     const myProduct =
     {
@@ -46,19 +47,39 @@ export const TradeCard = (props) => {
         ticker: "KLT",
         price: 12,
         supply: 500,
-        availale:500,
+        available: 500,
         img: kalonCard
     }
+    console.log("this x is,", typeof (myProduct))
+    console.log(myProduct)
+    const { products, tokenBought } = useContext(ProductContext)
 
-    const { products } = useContext(ProductContext)
-    const {tokenBought} = useContext(ProductContext); 
     console.log(products)
 
     console.log("here are props")
     console.log(props)
 
-    const myProductx = products.find(product => product.name == props.active);
-    console.log("loggign", myProductx)
+    const myProductx = products.find(product => {
+        if (product.name === props.active) {
+            console.log(typeof (productx))
+            return product
+        }
+        return false
+
+    })
+
+    console.log(myProductx)
+
+
+
+    const deactivate = () => {
+        props.onChange("none")
+
+    }
+
+
+
+
 
 
     return (
@@ -75,11 +96,11 @@ export const TradeCard = (props) => {
                                         <Card.Header style={{ padding: "0", backgroundColor: 'none', border: '0' }}><strong>{myProduct.name}</strong></Card.Header>
                                         <Card.Title>{myProduct.ticker}</Card.Title>
                                         <br></br>  <br></br>  <br></br>  <br></br><br></br> <br></br> <br></br>  <br></br>  <br></br> <br></br><br></br>   <br></br>
-                                        <Card.Text style={{ margin: "0" }}><h3>{myProduct.price}&nbsp;USD </h3></Card.Text>
-                                        <Card.Footer style={{ padding: "0", backgroundColor: 'none', border: '0' }}>{myProduct.available}&nbsp;out of {myProduct.supply}&nbsp;stocks available</Card.Footer>
+                                        <Card.Text style={{ margin: "0" }}><h3>{myProduct.price.toFixed(4)}&nbsp;USD </h3></Card.Text>
+                                        <Card.Footer style={{ padding: "0", backgroundColor: 'none', border: '0' }}>{myProduct.available} out of {myProduct.supply}&nbsp;stocks available</Card.Footer>
                                     </Card.ImgOverlay>
                                     <div className="dropDown" >
-                                        <DropdownButton variant="secondary" title={`${myProduct.price} DAI`} style={{background:"#f1f2f6", width: "20rem", marginTop: "8px", marginBottom: "8px", marginLeft: "1.5rem" }}>
+                                        <DropdownButton variant="secondary" title={`${myProduct.price} DAI`} style={{ background: "#f1f2f6", width: "20rem", marginTop: "8px", marginBottom: "8px", marginLeft: "1.5rem" }}>
                                             <Dropdown.Item as="button">{myProduct.price} DAI</Dropdown.Item>
                                             <Dropdown.Item as="button">ETH</Dropdown.Item>
                                             <Dropdown.Item as="button">BAT</Dropdown.Item>
@@ -87,13 +108,20 @@ export const TradeCard = (props) => {
                                         </DropdownButton>
                                     </div>
                                     <Col>
-                                    <div className="curvyButton">
-                                        <Button variant="primary" style={{ background: "#4A90E2", width: "20rem", marginTop: "8px", marginBottom: "8px", marginLeft: "0.5rem" }}
-                                            onClick={()=> tokenBought(myProduct.name)}
-                                        ><strong>{buyButtonText}</strong></Button> {''}
-                                    </div>
+                                        <div className="curvyButton">
+                                            <Button variant="primary" style={{ background: "#4A90E2", width: "20rem", marginTop: "8px", marginBottom: "8px", marginLeft: "0.5rem" }}
+                                                onClick={() => tokenBought(myProduct.name)}
+                                            ><strong>{buyButtonText}</strong></Button> {''}
+                                        </div>
                                     </Col>
-                                    
+                                    <Col>
+                                        <div className="curvyButton">
+                                            <Button variant="primary" style={{ background: "#F6BABA", width: "20rem", marginTop: "8px", marginBottom: "8px", marginLeft: "0.5rem" }}
+                                                onClick={() => deactivate()}
+                                            ><strong>cancel</strong></Button> {''}
+                                        </div>
+                                    </Col>
+
                                 </Card.Body>
                             </Card>
                         </Col>

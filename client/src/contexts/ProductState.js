@@ -48,10 +48,11 @@ export const ProductProvider = ({ children }) => {
     const [state, dispatch] = useReducer(ProductReducer, initialState);
 
     //Actions 
-    function tokenBought(product) {
+    function tokenBought(selectedToken) {
+        
         dispatch({
             type: 'TOKEN_BOUGHT',
-            payload: product
+            payload: selectedToken
         });
     }
 
