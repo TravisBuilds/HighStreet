@@ -26,6 +26,14 @@ body {
       padding-left: 3%;
       
   }
+  
+  .dropDown button{
+    width:100%;
+    border-radius:50px;
+    background-color: #f1f2f6;
+    color:black;
+    border-color: #f1f2f6;
+  }
 
   .title{
       color:#999595;
