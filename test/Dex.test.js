@@ -10,9 +10,11 @@ contract('Token', (accounts) => {
 	let exp = 2				// assuming price function exponential factor of 2
 	let max = 500			// assuming max 500 token will be minted
 	let tokenInstance
+	let buyer
 	describe('Token Logic Checks', async () => {
 		beforeEach(async () => {
         tokenInstance = await Token.new(exp, max)
+        buyer = accounts[1]
     })
 
 		it('it has a name', async () => {
@@ -39,7 +41,23 @@ contract('Token', (accounts) => {
 		})
 
 		context('Transaction Related Functions', async() => {
-			
+			it('account 1 buying one token using ether', async() => {
+				const cost = await tokenInstance.getPriceForN.call("1")
+				// console.log(cost.toString())
+				await tokenInstance.buy({value: cost, from: buyer})
+				// .then((results) => {
+   	// 			// now we'll check that the events are correct
+    // 			assert.equal(result.logs[0].event, 'Buy', 'Buy event should have been fired.');
+    // 			// assert.equal(events[0].args.beneficiary.valueOf(), 1);
+    // 			// assert.equal(events[0].args.value.valueOf(), 10000);
+  		// 	})			// buy one token from account one
+				// tokenInstance.balanceOf(accounts[1]).should.be.a.bignumber.that.equals('1')
+				const balance = await tokenInstance.balanceOf.call(buyer)
+				// console.log(balance.toString())
+				balance.should.be.a.bignumber.that.equals('1')
+			})
+
+
 		})
 	})
 })

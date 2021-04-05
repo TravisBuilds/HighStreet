@@ -7,9 +7,9 @@ import "./BancorBondingCurve.sol";
 contract ProductToken is ERC20, Ownable, BancorBondingCurve {
 	using SafeMath for uint256;
 
-	event Buy(address sender, uint32 amount, uint deposit);		// event to fire when a new token is minted
-  event Sell(address sender, uint32 amount, uint refund);			// event to fire when a token has been sold back
-  event Tradein(address sender, uint32 amount);									// event to fire when a token is redeemed in the real world
+	event Buy(address indexed sender, uint32 amount, uint deposit);		// event to fire when a new token is minted
+  event Sell(address indexed sender, uint32 amount, uint refund);			// event to fire when a token has been sold back
+  event Tradein(address indexed sender, uint32 amount);									// event to fire when a token is redeemed in the real world
 
   uint256 public reserveBalance = 330000000000000000;		// amount in ether, about 1/3 of a ether. This is initialized for testing, according to
                                                         // a pricing function of y = x ^ 2, at a token supply (x) of 1
@@ -65,7 +65,7 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
   	_tradeinForAmount(_amount);
   }
 
-  // function () public payable { mint(); }
+  fallback () external payable { buy(); }
 
   // View Functions for outside.
   function getCurrentPrice() 
