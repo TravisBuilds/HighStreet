@@ -7,20 +7,43 @@ import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import CardDeck from 'react-bootstrap/CardDeck';
-import Carousel from 'react-bootstrap/Carousel';
+
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
 import Tilt from 'react-tilt';
 import kalonCard from '../assets/product1.png';
 
 
 
 export const TradeCard = ({ style }) => {
+    const [userAccount, setUserAccount] = useState(null);
+    const [buyButtonText, setBuyButtonText] = useState("Connect Wallet")
 
+    window.addEventListener('load', async () => {
+        if (window.ethereum) {
+            window.web3 = new Web3(Web3.givenprovider || "http://localhost:8485");
+            try {
+                const network = await window.web3.eth.net.getNetworkType()
+                console.log("network, ", network);
+                const account = await window.web3.eth.net.getAccount();
+                console.log("account", account[0]);
+                setUserAccount(account[0]);
+                setBuyButtonText("Buy")
+            } catch (error) {
+                console.log(error);
+            }
+        } else {
+            console.log("need metamask")
+        }
+    })
+    console.log("your Ether Address is, ", { userAccount });
+
+    
     //placeholder
-    const product = 
+    const product =
     {
         name: "Kalon Tea",
-        ticker: "KLT", 
+        ticker: "KLT",
         price: 12,
         supply: 500,
         img: kalonCard
@@ -28,19 +51,34 @@ export const TradeCard = ({ style }) => {
     return (
 
         <div style={style}>
-            <Jumbotron className="cardJumbo" style={{ margin: "0", background: '#CCDAF5' }} fluid>
+            <Jumbotron className="cardJumbo" style={{ margin: "0", background: '#0E0E0E', zIndex: "-1" }} fluid>
                 <Container style={{ width: "25rem", margin: "auto" }}>
                     <Row>
                         <Col>
-                            <Card className="bg-dark text-white" style={{ border: "none", zIndex:"15"}}>
-                                <Card.Img src={product.img}></Card.Img>
-                                <Card.ImgOverlay>
-                                    <Card.Header style={{ padding: "0", backgroundColor: 'none', border: '0' }}><strong>{product.name}</strong></Card.Header>
-                                    <Card.Title>{product.ticker}</Card.Title>
-                                    <br></br>  <br></br>  <br></br>  <br></br><br></br> <br></br> <br></br>  <br></br>  <br></br> <br></br><br></br>   <br></br>
-                                    <Card.Text style={{ margin: "0" }}><h3>{product.price}&nbsp;USD </h3></Card.Text>
-                                    <Card.Footer style={{ padding: "0", backgroundColor: 'none', border: '0' }}>{product.supply}&nbsp;stocks available</Card.Footer>
-                                </Card.ImgOverlay>
+                            <Card className="bg-dark text-white" style={{ border: "none" }}>
+                                <Card.Body style={{ backgroundColor: 'white', padding: "0" }}>
+                                    <Card.Img style={{ margin: "none", padding: "none" }} src={product.img}></Card.Img>
+                                    <Card.ImgOverlay>
+                                        <Card.Header style={{ padding: "0", backgroundColor: 'none', border: '0' }}><strong>{product.name}</strong></Card.Header>
+                                        <Card.Title>{product.ticker}</Card.Title>
+                                        <br></br>  <br></br>  <br></br>  <br></br><br></br> <br></br> <br></br>  <br></br>  <br></br> <br></br><br></br>   <br></br>
+                                        <Card.Text style={{ margin: "0" }}><h3>{product.price}&nbsp;USD </h3></Card.Text>
+                                        <Card.Footer style={{ padding: "0", backgroundColor: 'none', border: '0' }}>{product.supply}&nbsp;stocks available</Card.Footer>
+                                    </Card.ImgOverlay>
+                                    <div className="dropDown" >
+                                        <DropdownButton variant="secondary" title={`${product.price} DAI`} style={{background:"#f1f2f6", width: "20rem", marginTop: "8px", marginBottom: "8px", marginLeft: "1.5rem" }}>
+                                            <Dropdown.Item as="button">{product.price} DAI</Dropdown.Item>
+                                            <Dropdown.Item as="button">ETH</Dropdown.Item>
+                                            <Dropdown.Item as="button">BAT</Dropdown.Item>
+                                            <Dropdown.Item as="button">XXX</Dropdown.Item>
+                                        </DropdownButton>
+                                    </div>
+
+                                    <div className="curvyButton">
+                                        <Button variant="primary" style={{ background: "#4A90E2", width: "20rem", marginTop: "8px", marginBottom: "8px", marginLeft: "1.5rem" }}
+                                        ><strong>{buyButtonText}</strong></Button> {'    '}
+                                    </div>
+                                </Card.Body>
                             </Card>
                         </Col>
                     </Row>

@@ -21,7 +21,7 @@ export const Trade = () => {
     const [active, setActive] = useState("none"); 
     console.log("this is active", active);
     const cart = active !== "none" ? (
-        <TradeCard style={{background: "black", opacity:"0.6", zIndex:"10", position: "fixed", top:"0px",width: "100vw", height:"100vh"}} /> 
+        <TradeCard style={{background: "black", opacity:"1", zIndex:"10", position: "fixed", top:"0px",width: "100vw", height:"100vh"}} /> 
     ) : (
         <TradeCard style={{display:"none"}} /> 
     )
