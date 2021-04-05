@@ -71,7 +71,7 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
   function getCurrentPrice() 
   	public view returns	(uint256 price)
   {
-  	return calculateUnitPrice(totalSupply() + tradeinCount, reserveBalance, uint32(reserveRatio));
+  	return calculatePriceForNTokens(totalSupply() + tradeinCount, reserveBalance, exponent, 1);
   }
 
   function getPriceForN(uint32 _amount) 
@@ -81,7 +81,7 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
   }
 
   function calculateBuyReturn(uint256 _amount)
-    public view returns (uint256 mintAmount)
+    public view returns (uint32 mintAmount)
   {
     return calculatePurchaseReturn(totalSupply() + tradeinCount, reserveBalance, uint32(reserveRatio), _amount);
   }
@@ -101,20 +101,20 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
    *
    * @param _deposit              reserve total deposited
    *
-   * @return token amount bought
+   * @return token                amount bought in product token
   */
   function _buyForAmount(uint256 _deposit)
-    internal returns (uint256, uint256)
+    internal returns (uint32, uint256)
   {
   	require(totalSupply() + tradeinCount < maxTokenCount, "Sorry, this token is sold out.");
     require(_deposit > 0, "Deposit must be non-zero.");
 
-    uint256 amount = calculateBuyReturn(_deposit);	    // have to make it discrete here. Replace amount with uint32
+    uint32 amount = calculateBuyReturn(_deposit);	    // have to make it discrete here. Replace amount with uint32
     // If the amount in _deposit is more than enough to buy out the rest of the token in the pool
-    if (amount > maxTokenCount.sub(totalSupply()).sub(tradeinCount)) {   // this logic can be refactored.
-      amount = maxTokenCount.sub(totalSupply()).sub(tradeinCount);
+    if (amount > maxTokenCount - uint32(totalSupply().sub(tradeinCount))) {   // this logic can be refactored.
+      amount = maxTokenCount - uint32(totalSupply().sub(tradeinCount));
     }
-    uint256 actualDeposit = calculatePriceForNTokens(amount);
+    uint256 actualDeposit = getPriceForN(amount);
     _mint(msg.sender, amount);
     reserveBalance = reserveBalance.add(actualDeposit);
     emit Buy(msg.sender, amount, actualDeposit);		// probably needs to be redesigned for ease of read and understanding.
@@ -129,7 +129,7 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
    *
    * @param _amount              product token wishes to be sold
    *
-   * @return token amount bought
+   * @return token               amount sold in reserved token
   */
   function _sellForAmount(uint32 _amount)
     internal returns (uint256)
@@ -150,8 +150,6 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
    * This function only handles logics corresponding to 
    *
    * @param _amount              product token wishes to be traded-in
-   *
-   * @return token amount bought
   */
   function _tradeinForAmount(uint32 _amount)
     internal 
@@ -161,6 +159,6 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
 
     _burn(msg.sender, _amount);
     tradeinCount = tradeinCount + _amount;			// Future: use safe math here.
-    emit Burned(msg.sender, _amount);
+    emit Tradein(msg.sender, _amount);
   }
 }

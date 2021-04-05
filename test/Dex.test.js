@@ -1,12 +1,14 @@
 const Token = artifacts.require("ProductToken");
+const BN = require('bn.js')
 
 require('chai')
 	.use(require('chai-as-promised'))
+	.use(require('chai-bn')(BN))
 	.should()
 
 contract('Token', (accounts) => {
-	let exp = 2
-	let max = 500
+	let exp = 2				// assuming price function exponential factor of 2
+	let max = 500			// assuming max 500 token will be minted
 	let tokenInstance
 	describe('Token Logic Checks', async () => {
 		beforeEach(async () => {
@@ -19,31 +21,25 @@ contract('Token', (accounts) => {
 		})
 
 		context('Pricing Functions', async() => {
-			it('Current Price should be greater than 0', async() => {				// The implementation of getCurrentPrice is very misleading
-																																			// as this only return base on the price function, not how much it takes to buy one token
-																																			// As such, this test will be removed later.
-				const price = await tokenInstance.getCurrentPrice.call()
-				assert.isAbove(price, web3.utils.toWei('0', 'ether') , "currnet price is not above 0")
-			})
-
-			it('Actual Price to buy one token', async() => {				// This test is just a placeholder to test out the power function. It will be removed later.
-				const cost = await tokenInstance.getPriceForN("1")
-				assert.notEqual(cost, 0, "currnet price is above 0")
+			it('Actual Price to buy one token', async() => {			
+				const cost = await tokenInstance.getPriceForN.call("1")
+				const costBN = new BN(cost)
+				// assert.isAbove(costBN, new BN('0'), "currnet price is not above 0")
+				costBN.should.be.a.bignumber.that.is.greaterThan('0')
 			})
 
 			it('price to purchase 1 token should purchase one token when fed into Buy function', async() => {
 				const cost = await tokenInstance.getPriceForN.call("1")
-				console.log(cost.toString())
+				// console.log(cost.toString())
 				// const newCost = cost.toNumber().add(1)		// need to do big number addition here.
 				// console.log(newCost.toString())
 				const amount = await tokenInstance.calculateBuyReturn.call(cost)
-				// console.log(amount.toString())
-				assert.equal(amount, 1, "Price calculated for one token cannot buy one token")
+				amount.should.be.a.bignumber.that.equals('1')
 			})
-
-			// Add sell test later, when buying functions for tokens are implemented.
-
 		})
 
+		context('Transaction Related Functions', async() => {
+			
+		})
 	})
 })
