@@ -262,7 +262,8 @@ export const Home = () => {
 
                 <Jumbotron style={{ margin: "0", backgroundImage: `url(${metaverse})` }} fluid>
                     <Container>
-                        <div className="title2">
+                        
+                        <div className="title2" id="downloads">
                             <Row>
                                 <Col>
                                     <h1>Explore Our Metaverse with Friends </h1>

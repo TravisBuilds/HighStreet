@@ -12,10 +12,9 @@ export const About =  () => {
   }, []);
 
   return (
-    <div>
-        <div style={{width:"80%"}}>
+ 
+        <div className="aboutPage">
         <ReactMarkdown source={markdown} />
         </div>
-    </div>
   );
 }

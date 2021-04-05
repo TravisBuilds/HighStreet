@@ -21,13 +21,14 @@ export const Trade = () => {
     const [active, setActive] = useState("none"); 
     console.log("this is active", active);
     const cart = active !== "none" ? (
-        <TradeCard style={{background: "black", opacity:"1", zIndex:"10", position: "fixed", top:"0px",width: "100vw", height:"100vh"}} /> 
+        <TradeCard  active={active} style={{background: "black", opacity:"1", zIndex:"10", position: "fixed", top:"0px",width: "100vw", height:"100vh"}}></TradeCard> 
+
     ) : (
         <TradeCard style={{display:"none"}} /> 
     )
 
     const { products } = useContext(ProductContext)
-
+    console.log("here are the current states", products)
     return (
         <div>
             {cart}
@@ -49,7 +50,7 @@ export const Trade = () => {
                                                 <Card.Title>{product.ticker}</Card.Title>
                                                 <br></br>  <br></br>  <br></br>  <br></br><br></br> <br></br> <br></br>  <br></br>  <br></br> <br></br><br></br>   <br></br>
                                                 <Card.Text style={{ margin: "0" }}><h3>{product.price}&nbsp;USD </h3></Card.Text>
-                                                <Card.Footer style={{ padding: "0", backgroundColor: 'none', border: '0' }}>{product.supply}&nbsp;stocks available</Card.Footer>
+                                                <Card.Footer style={{ padding: "0", backgroundColor: 'none', border: '0' }}>{product.available}&nbsp;out of {product.supply}&nbsp;stocks available</Card.Footer>
                                             </Card.ImgOverlay>
                                         </Card>
                                         </Tilt>

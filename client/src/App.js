@@ -12,6 +12,7 @@ import {Download} from "./pages/Download";
 import {Discover} from "./pages/Discover";
 import {NavBar} from "./components/NavBar";
 import {ProductProvider} from './contexts/ProductState'; 
+import {TradeCard} from './components/TradeCard';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
                 <Route path='/about' component = {About}/>
                 <ProductProvider>
                 <Route exact path='/trade' component = {Trade}/>
+                <Route path='buy' component = {TradeCard}/>
                 </ProductProvider>
                 <Route path='/discover' component = {Discover}/>
                 <Route path='/download' component = {Download}/>

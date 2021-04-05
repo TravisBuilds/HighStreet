@@ -17,7 +17,7 @@ export const NavBar =() =>{
   
     <>
     <Navbar bg="light" variant="light">
-    <Navbar.Brand href="#home">
+    <Navbar.Brand href="/">
       <img
         src={logo}
         width="30"
@@ -30,7 +30,7 @@ export const NavBar =() =>{
         <Nav.Link href="/">Home</Nav.Link>
         <Nav.Link href="/about">About</Nav.Link>
         <Nav.Link href="/market">Market</Nav.Link>
-        <Nav.Link href="#download">Download</Nav.Link>
+        <Nav.Link href="#downloads">Download</Nav.Link>
       </Nav>
       <Form inline>
         <Button variant="outline-primary">Connect Wallet</Button>

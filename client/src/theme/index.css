@@ -102,6 +102,13 @@ body {
     
 }
 
+.aboutPage{
+  padding:5%;
+}
+.aboutPage p a img {
+  width:50%;
+}
+
 
 @media (max-width : 990px){
     .shrinkGone{
