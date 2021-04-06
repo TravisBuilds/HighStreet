@@ -1,4 +1,4 @@
-const Token = artifacts.require("ProductToken");
+const Token = artifacts.require('ProductToken');
 const BN = require('bn.js')
 
 require('chai')
@@ -19,15 +19,15 @@ contract('Token', (accounts) => {
 
 		it('it has a name', async () => {
 			const name = await tokenInstance.name()
-			assert.equal(name, "ProductToken")
+			assert.equal(name, 'ProductToken')
 		})
 
 		context('Pricing Functions', async() => {
 			it('Actual Price to buy one token', async() => {			
-				const cost = await tokenInstance.getPriceForN.call("1")
-				const costBN = new BN(cost)
+				const cost = await tokenInstance.getPriceForN.call('1')
+				console.log(cost.toString())
 				// assert.isAbove(costBN, new BN('0'), "currnet price is not above 0")
-				costBN.should.be.a.bignumber.that.is.greaterThan('0')
+				cost.should.be.a.bignumber.that.is.greaterThan('0')
 			})
 
 			it('price to purchase 1 token should purchase one token when fed into Buy function', async() => {
@@ -42,7 +42,7 @@ contract('Token', (accounts) => {
 
 		context('Transaction Related Functions', async() => {
 			it('account 1 buying one token using ether', async() => {
-				const cost = await tokenInstance.getPriceForN.call("1")
+				const cost = await tokenInstance.getPriceForN.call('1')
 				// console.log(cost.toString())
 				await tokenInstance.buy({value: cost, from: buyer})
 				// .then((results) => {
@@ -55,8 +55,32 @@ contract('Token', (accounts) => {
 				const balance = await tokenInstance.balanceOf.call(buyer)
 				// console.log(balance.toString())
 				balance.should.be.a.bignumber.that.equals('1')
+				const supply = await tokenInstance.totalSupply.call()
+				console.log(supply.toString())
+				supply.should.be.a.bignumber.that.equals('2')
 			})
 
+			// add test case to test change returned by function
+			it('selling the same amount after buying should cost the same', async() => {			// This of course, is assuming if we don't take transaction fees
+				const cost = await tokenInstance.getPriceForN.call('1')
+				await tokenInstance.buy({value: cost, from: buyer})
+				const sell = await tokenInstance.calculateSellReturn('1')
+				console.log(sell.toString())
+				sell.should.be.a.bignumber.that.equals(cost)
+			})
+
+
+			it('account 1 selling their holding should get them back to original balance (10 ether)', async() => {			// This of course, is assuming if we don't take transaction fees
+				let beforeBalance = await web3.eth.getBalance(buyer);
+				const cost = await tokenInstance.getPriceForN.call('1')
+				await tokenInstance.buy({value: cost, from: buyer})
+				const balance = await tokenInstance.balanceOf.call(buyer)
+				// const tradein = await tokenInstance.getTradeinCount.call()
+				// console.log(tradein.toString())
+				await tokenInstance.sell(balance, {from: buyer})
+				let afterBalance = await web3.eth.getBalance(buyer);
+				afterBalance.should.be.a.bignumber.that.equals(beforeBalance)
+			})
 
 		})
 	})

@@ -40,13 +40,16 @@ contract BancorBondingCurve is Power {
     // special case if this is a linear function
     if (_exponent == 1) {
       return uint256(_amount).mul(_reserveBalance).div(_supply);
-    }
+    } 
+
     uint256 result;
+    // result = ((_amount + uint32(_supply)) / _supply) ** (_exponent + 1) - 1;
+    // return _reserveBalance.mul(result);
     uint8 precision;
     (result, precision) = power(
       _amount + _supply, _supply, _exponent + 1, 1
     );    // need safe math for uint32 here.
-    return _reserveBalance.mul(result >> precision);
+    return _reserveBalance.mul(result) >> precision;
   }
 
   /**
@@ -80,15 +83,19 @@ contract BancorBondingCurve is Power {
     if (_reserveRatio == MAX_RESERVE_RATIO) {
       return uint32(_supply.mul(_depositAmount).div(_reserveBalance));
     }
+
     uint256 result;
+    // result = _depositAmount.add(_reserveBalance).div(_reserveBalance) ** (_reserveRatio / MAX_RESERVE_RATIO) - 1;
+    // return uint32(_supply.mul(result));
     uint8 precision;
     uint256 baseN = _depositAmount.add(_reserveBalance);
     (result, precision) = power(
       baseN, _reserveBalance, _reserveRatio, MAX_RESERVE_RATIO
     );
-    uint256 tokens = _supply.mul(result >> precision);  
-    // This can cause future issues due to unit conversion. Needs to check for safety later
-    return uint32(tokens);
+    // // uint256 tokens = _supply.mul(result) >> precision;  // This can cause future issues due to unit conversion. Needs to check for safety later
+    // // return uint32(tokens);
+    uint256 temp = _supply.mul(result) >> precision;
+    return uint32(temp - _supply);
   }
 
    /**
@@ -128,16 +135,21 @@ contract BancorBondingCurve is Power {
     uint256 result;
     uint8 precision;
     uint256 baseN = _supply - _sellAmount;
-    (result, precision) = power(
-      baseN, _supply, MAX_RESERVE_RATIO, _reserveRatio
-    );
-    return _reserveBalance.sub((result >> precision).mul(_reserveBalance));
-    // uint256 baseD = _supply - _sellAmount;
+    // result = (1 - (_supply.sub(_sellAmount).div(_supply)) ** (MAX_RESERVE_RATIO / _reserveRatio));
+    // return _reserveBalance.mul(result);
+    // result = baseN.div(_supply) ** (MAX_RESERVE_RATIO / _reserveRatio);
+    // return _reserveBalance.sub(result.mul(_reserveBalance));
     // (result, precision) = power(
-    //   _supply, baseD, MAX_RESERVE_RATIO, _reserveRatio
+    //   baseN, _supply, MAX_RESERVE_RATIO, _reserveRatio
     // );
-    // uint256 oldBalance = _reserveBalance.mul(result);
-    // uint256 newBalance = _reserveBalance << precision;
-    // return oldBalance.sub(newBalance).div(result);
+    // return _reserveBalance.sub((result >> precision).mul(_reserveBalance));
+
+    uint256 baseD = _supply - _sellAmount;
+    (result, precision) = power(
+      _supply, baseD, MAX_RESERVE_RATIO, _reserveRatio
+    );
+    uint256 oldBalance = _reserveBalance.mul(result);
+    uint256 newBalance = _reserveBalance << precision;
+    return oldBalance.sub(newBalance).div(result);
   }
 }

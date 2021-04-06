@@ -74,22 +74,28 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
   	return calculatePriceForNTokens(totalSupply() + tradeinCount, reserveBalance, exponent, 1);
   }
 
-  function getPriceForN(uint32 _amount) 
+  function getPriceForN(uint32 _amountProduct) 
   	public view returns	(uint256 price)
   {
-  	return calculatePriceForNTokens(totalSupply() + tradeinCount, reserveBalance, exponent, _amount);
+  	return calculatePriceForNTokens(totalSupply() + tradeinCount, reserveBalance, exponent, _amountProduct);
   }
 
-  function calculateBuyReturn(uint256 _amount)
+  function calculateBuyReturn(uint256 _amountReserve)
     public view returns (uint32 mintAmount)
   {
-    return calculatePurchaseReturn(totalSupply() + tradeinCount, reserveBalance, uint32(reserveRatio), _amount);
+    return calculatePurchaseReturn(totalSupply() + tradeinCount, reserveBalance, uint32(reserveRatio), _amountReserve);
   }
 
-  function calculateSellReturn(uint256 _amount)
-    public view returns (uint256 burnAmount)
+  function calculateSellReturn(uint32 _amountProduct)
+    public view returns (uint256 soldAmount)
   {
-    return calculateSaleReturn(totalSupply() + tradeinCount, reserveBalance, uint32(reserveRatio), _amount);
+    return calculateSaleReturn(totalSupply() + tradeinCount, reserveBalance, uint32(reserveRatio), _amountProduct);
+  }
+
+  function getTradeinCount()
+    public view returns (uint32 _amountTraded)
+  {
+    return tradeinCount;
   }
 
   // specific implementations of transaction logics.
