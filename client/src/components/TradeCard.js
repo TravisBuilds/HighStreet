@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import Web3 from 'web3';
 import Button from 'react-bootstrap/Button';
 import Jumbotron from 'react-bootstrap/Jumbotron';
@@ -41,36 +41,36 @@ export const TradeCard = (props) => {
     console.log("your Ether Address is, ", { userAccount });
 
     // placeholder
-    const myProduct =
-    {
-        name: "Kalon Tea",
-        ticker: "KLT",
-        price: 12,
-        supply: 500,
-        available: 500,
-        img: kalonCard
-    }
-    console.log("this x is,", typeof (myProduct))
-    console.log(myProduct)
+    const [myProduct, setMyProduct] = useState
+        ({
+            name: "Kalon Tea",
+            ticker: "KLT",
+            price: 12,
+            supply: 500,
+            available: 500,
+            img: kalonCard
+        })
+
     const { products, tokenBought } = useContext(ProductContext)
 
-    console.log(products)
+    console.log(myProduct)
 
     console.log("here are props")
     console.log(props)
 
-    const myProductx = products.find(product => {
-        if (product.name === props.active) {
-            console.log(typeof (productx))
-            return product
-        }
-        return false
-
-    })
-
-    console.log(myProductx)
+    useEffect(() => {
+        if (props.active !== undefined) {
+            const myProductX = (products.find(product => { if (product.name === props.active) { return product } }))
+            console.log("i m alive", myProductX)
+            setMyProduct(myProductX)
+        }}, [props])
 
 
+    //setMyProduct(myProductX)
+    console.log("here is my product", myProduct)
+
+    console.log((typeof myProduct === "undefined"))
+    console.log("hello world", myProduct.name)
 
     const deactivate = () => {
         props.onChange("none")
