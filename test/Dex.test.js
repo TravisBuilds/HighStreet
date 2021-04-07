@@ -47,13 +47,6 @@ contract('Token', (accounts) => {
 				const newCost = cost.add(new BN('1'))			// round up for rounding...?
 				// console.log(cost.toString())
 				await tokenInstance.buy({value: newCost, from: buyer})
-				// .then((results) => {
-   	// 			// now we'll check that the events are correct
-    // 			assert.equal(result.logs[0].event, 'Buy', 'Buy event should have been fired.');
-    // 			// assert.equal(events[0].args.beneficiary.valueOf(), 1);
-    // 			// assert.equal(events[0].args.value.valueOf(), 10000);
-  		// 	})			// buy one token from account one
-				// tokenInstance.balanceOf(accounts[1]).should.be.a.bignumber.that.equals('1')
 				const balance = await tokenInstance.balanceOf.call(buyer)
 				// console.log(balance.toString())
 				balance.should.be.a.bignumber.that.equals('1')
@@ -65,23 +58,12 @@ contract('Token', (accounts) => {
 			// add test case to test change returned by function
 			it('selling the same amount after buying should cost the same', async() => {			// This of course, is assuming if we don't take transaction fees
 				const cost = await tokenInstance.getPriceForN.call('1')
+				const newCost = cost.add(new BN('1'))			// round up for rounding...?
+				console.log(newCost.toString())
 				await tokenInstance.buy({value: newCost, from: buyer})
 				const sell = await tokenInstance.calculateSellReturn.call('1')
 				console.log(sell.toString())
 				sell.should.be.a.bignumber.that.equals(cost)
-			})
-
-
-			xit('account 1 selling their holding should get them back to original balance (10 ether)', async() => {			// This of course, is assuming if we don't take transaction fees
-				let beforeBalance = await web3.eth.getBalance(buyer);
-				const cost = await tokenInstance.getPriceForN.call('1')
-				await tokenInstance.buy({value: cost, from: buyer})
-				const balance = await tokenInstance.balanceOf.call(buyer)
-				// const tradein = await tokenInstance.getTradeinCount.call()
-				// console.log(tradein.toString())
-				await tokenInstance.sell(balance, {from: buyer})
-				let afterBalance = await web3.eth.getBalance(buyer);
-				afterBalance.should.be.a.bignumber.that.equals(beforeBalance)
 			})
 
 		})
