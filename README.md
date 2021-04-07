@@ -44,8 +44,8 @@ Staking incentives are our way of creating monetary and governance incentives fo
 
 [![allocation](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/whiteal.png?raw=true "allocation")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/whiteal.png?raw=true "allocation")
 
-## Token Distribution
-coming soon 
+## Tokenomics 
+[![tokenomics](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/tokenomics.png?raw=true "allocation")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/tokenomics.png?raw=true "tokenomics")
 
 # Tech Breakdown 
 ## Backend: Ethereum/Solidity 
@@ -69,9 +69,3 @@ We believe the future home of digital assets will most certainly be in Virtual R
 ### As leading innovators in the digital space since 2015, we've established strong investor relations as well as brand partnerships with Tier One companies
 
 [![partnerships](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/backing.png?raw=true "partnerships")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/backing.png?raw=true "partnerships")
-
-## Launch Product Lineups 
-[![launch](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/launch.png?raw=true "launch")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/launch.png?raw=true "launch")
-
-
-

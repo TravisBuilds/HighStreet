@@ -66,7 +66,7 @@ export const Home = () => {
                                 <p><strong>Buy, Trade, and Redeem</strong><br></br>Limited Edition Products From The Most Exciting Brands</p>
 
                                 <h1>
-                                    The First Decentralized Exchange <br></br>for Redeemable Products
+                                    Virtual Market Place <br></br>for Redeemable Products
                         </h1>
                                 <div className="mb-2">
                                     <p>
