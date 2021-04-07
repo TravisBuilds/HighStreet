@@ -9,6 +9,7 @@ export default (state, action) => {
                         
                         const updatedProduct = {
                             ...product,
+                            
                             price: product.price * 1.13,
                             available: product.available - 1
                         }
