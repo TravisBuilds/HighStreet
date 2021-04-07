@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import Web3 from 'web3';
 import Button from 'react-bootstrap/Button';
 import Jumbotron from 'react-bootstrap/Jumbotron';
@@ -25,6 +25,9 @@ import oculus from '../assets/oculus.png';
 import metaverse from '../assets/backgroundMetaverse.png';
 import placeholder from '../assets/placeholderImage.png'
 
+import { ProductContext } from "../contexts/ProductState";
+
+
 export const Home = () => {
 
     const history = useHistory();
@@ -32,7 +35,7 @@ export const Home = () => {
         history.push(path);
     }
 
-
+    const { products } = useContext(ProductContext)
 
     const placeholderHeader = "Placeholder"
     const placeholderTitle = "This is Placeholder"
@@ -62,6 +65,7 @@ export const Home = () => {
                 <Jumbotron style={{ margin: "0", background: '#4A90E2', color: 'white', }} fluid>
                     <Container>
                         <Row >
+
                             <Col>
                                 <p><strong>Buy, Trade, and Redeem</strong><br></br>Limited Edition Products From The Most Exciting Brands</p>
 
@@ -93,152 +97,63 @@ export const Home = () => {
             <div id="Caro">
                 <Container>
                     <Carousel>
-                        <Carousel.Item interval={5000}>
 
-                            <CardDeck>
-                                <Row>
-                                    <div class="discoverCol">
-                                        <Col>
-                                            <Card style={{ width: '30rem', color: 'white' }}>
-                                                <Card.Img src={source1} alt="Card image" />
-                                                <Card.ImgOverlay>
-                                                    <Card.Header style={{ padding: "0", backgroundColor: 'none', border: '0' }}>LVMH</Card.Header>
-                                                    <Card.Title><strong>Making it Real</strong></Card.Title>
-                                                    <Card.Text>
+                        {products.reduce(
+                            function (accumulator, currentValue, currentIndex, array) {
+                                if (currentIndex % 2 === 0)
+                                    accumulator.push(array.slice(currentIndex, currentIndex + 2));
+                                return accumulator;
+                            }, []).map(p => (
+                                <Carousel.Item interval={5000}>
 
-                                                        A timeless first and a vibrant way to touch up both your digital and IRL identity
-                                                     </Card.Text>
-                                                    <br></br>
-                                                    <br></br>
-
-                                                    <Button onClick={() => handleClick("trade")} variant="light" style={{ borderRadius: "50px", width: "8rem" }}><strong>Discover</strong></Button>
-
-                                                </Card.ImgOverlay>
-                                            </Card>
-
-                                        </Col>
-
-                                    </div>
-
-                                    <div class="discoverCol">
-                                        <Col>
-                                            <Card style={{ width: '30rem', color: 'white' }}>
-                                                <Card.Img src={source2} alt="Card image" />
-                                                <Card.ImgOverlay>
-                                                    <Card.Header style={{ padding: "0", backgroundColor: 'none', border: '0' }}>Kalon</Card.Header>
-
-                                                    <Card.Title>Essence of Nature</Card.Title>
-                                                    <Card.Text>
-                                                        Nature's first green is gold, infused in a liquor that will make it truly last forever
-                                                    </Card.Text>
-                                                    <br></br>
-                                                    <br></br>
-                                                    <Button onClick={() => handleClick("trade")} style={{ borderRadius: "50px", width: "8rem" }} variant="light"><strong>Discover</strong></Button>
-
-                                                </Card.ImgOverlay>
-                                            </Card>
-                                        </Col>
-
-                                    </div>
-                                </Row>
-                            </CardDeck>
+                                    <CardDeck>
+                                        <Row>
 
 
-                        </Carousel.Item>
-                        <Carousel.Item interval={5000}>
-                            <CardDeck>
-                                <Row>
-                                    <div class="discoverCol">
-                                        <Col>
-                                            <Card style={{ width: '30rem', color: 'white' }}>
-                                                <Card.Img src={placeholder} alt="Card image" />
-                                                <Card.ImgOverlay>
-                                                    <Card.Header style={{ padding: "0", backgroundColor: 'none', border: '0' }}>{placeholderHeader}</Card.Header>
-                                                    <Card.Title><strong>{placeholderTitle}</strong></Card.Title>
-                                                    <Card.Text>
+                                            <div class="discoverCol">
+                                                <Col>
+                                                    <Card style={{ width: '30rem', color: 'white' }}>
+                                                        <Card.Img src={p[0].feature} alt="Card image" />
+                                                        <Card.ImgOverlay>
+                                                            <Card.Header style={{ padding: "0", backgroundColor: 'none', border: '0' }}>{p[0].name}</Card.Header>
+                                                            <Card.Title><strong>{p[0].tagline}</strong></Card.Title>
+                                                            <Card.Text>
+                                                                {p[0].blurb}
+                                                            </Card.Text>
+                                                            <br></br>
+                                                            <br></br>
+                                                            <Button onClick={() => handleClick("trade")} variant="light" style={{ borderRadius: "50px", width: "8rem" }}><strong>Discover</strong></Button>
 
-                                                        {placeholderText}
-                                                    </Card.Text>
-                                                    <br></br>
-                                                    <br></br>
-                                                    <Button style={{ borderRadius: "50px", width: "8rem" }} variant="light"><strong>Discover</strong></Button>
-                                                </Card.ImgOverlay>
-                                            </Card>
+                                                        </Card.ImgOverlay>
+                                                    </Card>
+                                                </Col>
+                                            </div>
+                                            <div class="discoverCol">
+                                                <Col>
+                                                    <Card style={{ width: '30rem', color: 'white' }}>
+                                                        <Card.Img src={p[1].feature} alt="Card image" />
+                                                        <Card.ImgOverlay>
+                                                            <Card.Header style={{ padding: "0", backgroundColor: 'none', border: '0' }}>{p[1].name}</Card.Header>
 
-                                        </Col>
+                                                            <Card.Title>{p[1].tagline}</Card.Title>
+                                                            <Card.Text>
+                                                                {p[1].blurb}
+                                                            </Card.Text>
+                                                            <br></br>
+                                                            <br></br>
+                                                            <Button onClick={() => handleClick("trade")} style={{ borderRadius: "50px", width: "8rem" }} variant="light"><strong>Discover</strong></Button>
 
-                                    </div>
+                                                        </Card.ImgOverlay>
+                                                    </Card>
+                                                </Col>
 
-                                    <div class="discoverCol">
-                                        <Col>
-                                            <Card style={{ width: '30rem', color: 'white' }}>
-                                                <Card.Img src={placeholder} alt="Card image" />
-                                                <Card.ImgOverlay>
-                                                    <Card.Header style={{ padding: "0", backgroundColor: 'none', border: '0' }}>{placeholderHeader}</Card.Header>
+                                            </div>
+                                        </Row>
+                                    </CardDeck>
+                                </Carousel.Item>
+                            ))}
 
-                                                    <Card.Title>{placeholderTitle}</Card.Title>
-                                                    <Card.Text>
-                                                        {placeholderText}
-                                                    </Card.Text>
-                                                    <br></br>
-                                                    <br></br>
-                                                    <Button style={{ borderRadius: "50px", width: "8rem" }} variant="light"><strong>Discover</strong></Button>
 
-                                                </Card.ImgOverlay>
-                                            </Card>
-                                        </Col>
-
-                                    </div>
-                                </Row>
-                            </CardDeck>
-                        </Carousel.Item>
-                        <Carousel.Item interval={5000}>
-                            <CardDeck>
-                                <Row>
-                                    <div class="discoverCol">
-                                        <Col>
-                                            <Card style={{ width: '30rem', color: 'white' }}>
-                                                <Card.Img src={placeholder} alt="Card image" />
-                                                <Card.ImgOverlay>
-                                                    <Card.Header style={{ padding: "0", backgroundColor: 'none', border: '0' }}>{placeholderHeader}</Card.Header>
-                                                    <Card.Title><strong>{placeholderTitle}</strong></Card.Title>
-                                                    <Card.Text>
-
-                                                        {placeholderText}
-                                                    </Card.Text>
-                                                    <br></br>
-                                                    <br></br>
-                                                    <Button style={{ borderRadius: "50px", width: "8rem" }} variant="light"><strong>Discover</strong></Button>
-                                                </Card.ImgOverlay>
-                                            </Card>
-
-                                        </Col>
-
-                                    </div>
-
-                                    <div class="discoverCol">
-                                        <Col>
-                                            <Card style={{ width: '30rem', color: 'white' }}>
-                                                <Card.Img src={placeholder} alt="Card image" />
-                                                <Card.ImgOverlay>
-                                                    <Card.Header style={{ padding: "0", backgroundColor: 'none', border: '0' }}>{placeholderHeader}</Card.Header>
-
-                                                    <Card.Title>{placeholderTitle}</Card.Title>
-                                                    <Card.Text>
-                                                        {placeholderText}
-                                                    </Card.Text>
-                                                    <br></br>
-                                                    <br></br>
-                                                    <Button style={{ borderRadius: "50px", width: "8rem" }} variant="light"><strong>Discover</strong></Button>
-
-                                                </Card.ImgOverlay>
-                                            </Card>
-                                        </Col>
-
-                                    </div>
-                                </Row>
-                            </CardDeck>
-                        </Carousel.Item>
 
                     </Carousel>
                 </Container>
