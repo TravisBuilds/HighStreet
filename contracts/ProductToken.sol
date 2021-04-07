@@ -75,11 +75,16 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
   }
 
   function getTradeinCount()
-    public returns (uint32 _amountTraded)
+    public view returns (uint32 _amountTraded)
   {
     return tradeinCount;
   }
 
+  function getSupply()
+    public view returns (uint32 maxToken)
+  {
+    return maxTokenCount;    // add safemath for uint32 later
+  }
 
   function getCurrentPrice() 
   	public returns	(uint256 price)
