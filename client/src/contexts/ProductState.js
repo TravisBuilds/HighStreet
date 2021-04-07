@@ -1,6 +1,8 @@
 import React, { createContext, useReducer } from 'react';
 import ProductReducer from './ProductReducer';
 import kalonCard from '../assets/product1.png';
+import loreal from '../assets/product2.png';
+import mystery from '../assets/product3.png';
 import placeholderCard from '../assets/productplaceholder.png';
 //Initial Placeholder 
 const initialState = {
@@ -14,20 +16,20 @@ const initialState = {
             img: kalonCard
         },
         {
-            name: "ProductB",
-            ticker: "PB",
+            name: "L'Oréal ",
+            ticker: "OREAL",
             price: 20,
             supply: 2500,
             available: 2500,
-            img: placeholderCard
+            img: loreal
         },
         {
-            name: "ProductC",
-            ticker: "PC",
-            price: 130,
+            name: "Mystery Box",
+            ticker: "RAND",
+            price: 15,
             supply: 1000,
             available: 1000,
-            img: placeholderCard
+            img: mystery
         },
         {
             name: "ProductD",

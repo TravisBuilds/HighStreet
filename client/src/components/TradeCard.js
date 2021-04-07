@@ -17,6 +17,7 @@ import kalonCard from "../assets/product1.png";
 
 export const TradeCard = (props) => {
     const [userAccount, setUserAccount] = useState(null);
+    //change here
     const [buyButtonText, setBuyButtonText] = useState("Connect Wallet")
 
 
@@ -36,6 +37,7 @@ export const TradeCard = (props) => {
             }
         } else {
             console.log("need metamask")
+            
         }
     })
     console.log("your Ether Address is, ", { userAccount });

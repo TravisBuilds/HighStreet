@@ -9,7 +9,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import CardDeck from 'react-bootstrap/CardDeck';
 import Carousel from 'react-bootstrap/Carousel';
-import { Router, Route, BrowserRouter, Redirect, Switch } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCube, faMoneyCheck, faPeopleArrows } from '@fortawesome/free-solid-svg-icons';
 import { faEthereum } from '@fortawesome/free-brands-svg-icons';
@@ -26,6 +26,13 @@ import metaverse from '../assets/backgroundMetaverse.png';
 import placeholder from '../assets/placeholderImage.png'
 
 export const Home = () => {
+
+    const history = useHistory();
+    const handleClick = (path) => {
+        history.push(path);
+    }
+
+
 
     const placeholderHeader = "Placeholder"
     const placeholderTitle = "This is Placeholder"
@@ -59,7 +66,7 @@ export const Home = () => {
                                 <p><strong>Buy, Trade, and Redeem</strong><br></br>Limited Edition Products From The Most Exciting Brands</p>
 
                                 <h1>
-                                    The first Virtual Marketplace <br></br>pegged to Real Products
+                                    The First Decentralized Exchange <br></br>for Redeemable Products
                         </h1>
                                 <div className="mb-2">
                                     <p>
@@ -95,7 +102,7 @@ export const Home = () => {
                                             <Card style={{ width: '30rem', color: 'white' }}>
                                                 <Card.Img src={source1} alt="Card image" />
                                                 <Card.ImgOverlay>
-                                                    <Card.Header style={{padding:"0", backgroundColor:'none', border:'0'}}>LVMH</Card.Header>
+                                                    <Card.Header style={{ padding: "0", backgroundColor: 'none', border: '0' }}>LVMH</Card.Header>
                                                     <Card.Title><strong>Making it Real</strong></Card.Title>
                                                     <Card.Text>
 
@@ -103,7 +110,9 @@ export const Home = () => {
                                                      </Card.Text>
                                                     <br></br>
                                                     <br></br>
-                                                    <Button variant="light" style={{borderRadius:"50px", width:"8rem"}}><strong>Discover</strong></Button>
+
+                                                    <Button onClick={() => handleClick("trade")} variant="light" style={{ borderRadius: "50px", width: "8rem" }}><strong>Discover</strong></Button>
+
                                                 </Card.ImgOverlay>
                                             </Card>
 
@@ -116,7 +125,7 @@ export const Home = () => {
                                             <Card style={{ width: '30rem', color: 'white' }}>
                                                 <Card.Img src={source2} alt="Card image" />
                                                 <Card.ImgOverlay>
-                                                    <Card.Header style={{padding:"0", backgroundColor:'none', border:'0'}}>Kalon</Card.Header>
+                                                    <Card.Header style={{ padding: "0", backgroundColor: 'none', border: '0' }}>Kalon</Card.Header>
 
                                                     <Card.Title>Essence of Nature</Card.Title>
                                                     <Card.Text>
@@ -124,7 +133,7 @@ export const Home = () => {
                                                     </Card.Text>
                                                     <br></br>
                                                     <br></br>
-                                                    <Button style={{borderRadius:"50px", width:"8rem"}} variant="light"><strong>Discover</strong></Button>
+                                                    <Button onClick={() => handleClick("trade")} style={{ borderRadius: "50px", width: "8rem" }} variant="light"><strong>Discover</strong></Button>
 
                                                 </Card.ImgOverlay>
                                             </Card>
@@ -144,7 +153,7 @@ export const Home = () => {
                                             <Card style={{ width: '30rem', color: 'white' }}>
                                                 <Card.Img src={placeholder} alt="Card image" />
                                                 <Card.ImgOverlay>
-                                                    <Card.Header style={{padding:"0", backgroundColor:'none', border:'0'}}>{placeholderHeader}</Card.Header>
+                                                    <Card.Header style={{ padding: "0", backgroundColor: 'none', border: '0' }}>{placeholderHeader}</Card.Header>
                                                     <Card.Title><strong>{placeholderTitle}</strong></Card.Title>
                                                     <Card.Text>
 
@@ -152,7 +161,7 @@ export const Home = () => {
                                                     </Card.Text>
                                                     <br></br>
                                                     <br></br>
-                                                    <Button style={{borderRadius:"50px", width:"8rem"}} variant="light"><strong>Discover</strong></Button>
+                                                    <Button style={{ borderRadius: "50px", width: "8rem" }} variant="light"><strong>Discover</strong></Button>
                                                 </Card.ImgOverlay>
                                             </Card>
 
@@ -165,7 +174,7 @@ export const Home = () => {
                                             <Card style={{ width: '30rem', color: 'white' }}>
                                                 <Card.Img src={placeholder} alt="Card image" />
                                                 <Card.ImgOverlay>
-                                                    <Card.Header style={{padding:"0", backgroundColor:'none', border:'0'}}>{placeholderHeader}</Card.Header>
+                                                    <Card.Header style={{ padding: "0", backgroundColor: 'none', border: '0' }}>{placeholderHeader}</Card.Header>
 
                                                     <Card.Title>{placeholderTitle}</Card.Title>
                                                     <Card.Text>
@@ -173,7 +182,7 @@ export const Home = () => {
                                                     </Card.Text>
                                                     <br></br>
                                                     <br></br>
-                                                    <Button style={{borderRadius:"50px", width:"8rem"}} variant="light"><strong>Discover</strong></Button>
+                                                    <Button style={{ borderRadius: "50px", width: "8rem" }} variant="light"><strong>Discover</strong></Button>
 
                                                 </Card.ImgOverlay>
                                             </Card>
@@ -191,7 +200,7 @@ export const Home = () => {
                                             <Card style={{ width: '30rem', color: 'white' }}>
                                                 <Card.Img src={placeholder} alt="Card image" />
                                                 <Card.ImgOverlay>
-                                                    <Card.Header style={{padding:"0", backgroundColor:'none', border:'0'}}>{placeholderHeader}</Card.Header>
+                                                    <Card.Header style={{ padding: "0", backgroundColor: 'none', border: '0' }}>{placeholderHeader}</Card.Header>
                                                     <Card.Title><strong>{placeholderTitle}</strong></Card.Title>
                                                     <Card.Text>
 
@@ -199,7 +208,7 @@ export const Home = () => {
                                                     </Card.Text>
                                                     <br></br>
                                                     <br></br>
-                                                    <Button  style={{borderRadius:"50px", width:"8rem"}} variant="light"><strong>Discover</strong></Button>
+                                                    <Button style={{ borderRadius: "50px", width: "8rem" }} variant="light"><strong>Discover</strong></Button>
                                                 </Card.ImgOverlay>
                                             </Card>
 
@@ -212,7 +221,7 @@ export const Home = () => {
                                             <Card style={{ width: '30rem', color: 'white' }}>
                                                 <Card.Img src={placeholder} alt="Card image" />
                                                 <Card.ImgOverlay>
-                                                    <Card.Header style={{padding:"0", backgroundColor:'none', border:'0'}}>{placeholderHeader}</Card.Header>
+                                                    <Card.Header style={{ padding: "0", backgroundColor: 'none', border: '0' }}>{placeholderHeader}</Card.Header>
 
                                                     <Card.Title>{placeholderTitle}</Card.Title>
                                                     <Card.Text>
@@ -220,7 +229,7 @@ export const Home = () => {
                                                     </Card.Text>
                                                     <br></br>
                                                     <br></br>
-                                                    <Button style={{borderRadius:"50px", width:"8rem"}} variant="light"><strong>Discover</strong></Button>
+                                                    <Button style={{ borderRadius: "50px", width: "8rem" }} variant="light"><strong>Discover</strong></Button>
 
                                                 </Card.ImgOverlay>
                                             </Card>
@@ -262,7 +271,7 @@ export const Home = () => {
 
                 <Jumbotron style={{ margin: "0", backgroundImage: `url(${metaverse})` }} fluid>
                     <Container>
-                        
+
                         <div className="title2" id="downloads">
                             <Row>
                                 <Col>
