@@ -68,6 +68,19 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
   fallback () external payable { buy(); }
 
   // View Functions for outside.
+  function getAvailability()
+    public view returns (uint32 available)
+  {
+    return maxTokenCount - totalSupply() - tradeinCount;    // add safemath for uint32 later
+  }
+
+  function getTradeinCount()
+    public returns (uint32 _amountTraded)
+  {
+    return tradeinCount;
+  }
+
+
   function getCurrentPrice() 
   	public returns	(uint256 price)
   {
@@ -90,12 +103,6 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
     public returns (uint256 soldAmount)
   {
     return calculateSaleReturn(totalSupply() + tradeinCount, reserveBalance, uint32(reserveRatio), _amountProduct);
-  }
-
-  function getTradeinCount()
-    public returns (uint32 _amountTraded)
-  {
-    return tradeinCount;
   }
 
   // specific implementations of transaction logics.
