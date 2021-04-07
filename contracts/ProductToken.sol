@@ -13,7 +13,7 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
 
   uint256 public reserveBalance = 330000000000000000;		// amount in ether, about 1/3 of a ether. This is initialized for testing, according to
                                                         // a pricing function of y = x ^ 2, at a token supply (x) of 1
-  uint32 public exponent;
+  // uint32 public exponent;
   uint256 public reserveRatio;
 
   uint32 public maxTokenCount;
@@ -22,13 +22,13 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
 	/**
    * @dev Constructor
    *
-   * @param _exponent              		the exponent in the curve function
+   * @param _reserveRatio             the reserve ratio in the curve function
    * @param _maxTokenCount						the amount of token that will exist for this type.
   */
-  constructor(uint32 _exponent, uint32 _maxTokenCount) ERC20("ProductToken", "") public {		
+  constructor(uint32 _reserveRatio, uint32 _maxTokenCount) ERC20("ProductToken", "") public {		
   	require(_maxTokenCount > 0, "Invalid max token count.");
-  	exponent = _exponent;
-    reserveRatio = uint256(1000000).div(uint256(_exponent).add(1));		// initialize the reserve ratio for this token in ppm. 
+  	// exponent = _exponent;
+    reserveRatio = _reserveRatio;		// initialize the reserve ratio for this token in ppm. 
                                                                       // This is hardcoded right now because we are testing with 33%
     maxTokenCount = _maxTokenCount;
     _mint(msg.sender, 1);  
@@ -68,28 +68,46 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
   fallback () external payable { buy(); }
 
   // View Functions for outside.
+  function getAvailability()
+    public view returns (uint32 available)
+  {
+    return maxTokenCount - totalSupply() - tradeinCount;    // add safemath for uint32 later
+  }
+
+  function getTradeinCount()
+    public view returns (uint32 _amountTraded)
+  {
+    return tradeinCount;
+  }
+
+  function getSupply()
+    public view returns (uint32 maxToken)
+  {
+    return maxTokenCount;    // add safemath for uint32 later
+  }
+
   function getCurrentPrice() 
-  	public view returns	(uint256 price)
+  	public returns	(uint256 price)
   {
-  	return calculatePriceForNTokens(totalSupply() + tradeinCount, reserveBalance, exponent, 1);
+  	return calculatePriceForNTokens(totalSupply() + tradeinCount, reserveBalance, uint32(reserveRatio), 1);
   }
 
-  function getPriceForN(uint32 _amount) 
-  	public view returns	(uint256 price)
+  function getPriceForN(uint32 _amountProduct) 
+  	public returns	(uint256 price)
   {
-  	return calculatePriceForNTokens(totalSupply() + tradeinCount, reserveBalance, exponent, _amount);
+  	return calculatePriceForNTokens(totalSupply() + tradeinCount, reserveBalance, uint32(reserveRatio), _amountProduct);
   }
 
-  function calculateBuyReturn(uint256 _amount)
-    public view returns (uint32 mintAmount)
+  function calculateBuyReturn(uint256 _amountReserve)
+    public returns (uint32 mintAmount)
   {
-    return calculatePurchaseReturn(totalSupply() + tradeinCount, reserveBalance, uint32(reserveRatio), _amount);
+    return calculatePurchaseReturn(totalSupply() + tradeinCount, reserveBalance, uint32(reserveRatio), _amountReserve);
   }
 
-  function calculateSellReturn(uint256 _amount)
-    public view returns (uint256 burnAmount)
+  function calculateSellReturn(uint32 _amountProduct)
+    public returns (uint256 soldAmount)
   {
-    return calculateSaleReturn(totalSupply() + tradeinCount, reserveBalance, uint32(reserveRatio), _amount);
+    return calculateSaleReturn(totalSupply() + tradeinCount, reserveBalance, uint32(reserveRatio), _amountProduct);
   }
 
   // specific implementations of transaction logics.

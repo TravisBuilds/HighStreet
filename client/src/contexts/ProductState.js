@@ -4,22 +4,23 @@ import kalonCard from '../assets/product1.png';
 import loreal from '../assets/product2.png';
 import mystery from '../assets/product3.png';
 import placeholderCard from '../assets/productplaceholder.png';
+// import ProductToken.sol
 //Initial Placeholder 
 const initialState = {
     products: [
         {
             name: "Kalon Tea",
             ticker: "KLT",
-            price: 12,
-            supply: 500,
-            available: 500,
+            price: 12,              
+            supply: 500,            // tokenInstance.getSupply()
+            available: 500,         // tokenInstance.getAvailability()
             img: kalonCard
         },
         {
             name: "L'Oréal ",
             ticker: "OREAL",
             price: 20,
-            supply: 2500,
+            supply: 2500,           // etc.
             available: 2500,
             img: loreal
         },

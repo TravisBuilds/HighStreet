@@ -1,4 +1,4 @@
-const Token = artifacts.require("ProductToken");
+const Token = artifacts.require('ProductToken');
 const BN = require('bn.js')
 
 require('chai')
@@ -7,8 +7,8 @@ require('chai')
 	.should()
 
 contract('Token', (accounts) => {
-	let exp = 2				// assuming price function exponential factor of 2
-	let max = 500			// assuming max 500 token will be minted
+	let exp = 330000				// assuming price function exponential factor of 2, input reserve ratio in ppm
+	let max = 500						// assuming max 500 token will be minted
 	let tokenInstance
 	let buyer
 	describe('Token Logic Checks', async () => {
@@ -19,44 +19,52 @@ contract('Token', (accounts) => {
 
 		it('it has a name', async () => {
 			const name = await tokenInstance.name()
-			assert.equal(name, "ProductToken")
+			assert.equal(name, 'ProductToken')
 		})
 
 		context('Pricing Functions', async() => {
 			it('Actual Price to buy one token', async() => {			
-				const cost = await tokenInstance.getPriceForN.call("1")
-				const costBN = new BN(cost)
+				const cost = await tokenInstance.getPriceForN.call('1')
 				// assert.isAbove(costBN, new BN('0'), "currnet price is not above 0")
-				costBN.should.be.a.bignumber.that.is.greaterThan('0')
+				cost.should.be.a.bignumber.that.is.greaterThan('0')
 			})
 
 			it('price to purchase 1 token should purchase one token when fed into Buy function', async() => {
 				const cost = await tokenInstance.getPriceForN.call("1")
-				// console.log(cost.toString())
+				console.log(cost.toString())
 				// const newCost = cost.toNumber().add(1)		// need to do big number addition here.
 				// console.log(newCost.toString())
-				const amount = await tokenInstance.calculateBuyReturn.call(cost)
+				const newCost = cost.add(new BN('1'))			// round up for rounding...?
+				// console.log(newCost.toString())
+				const amount = await tokenInstance.calculateBuyReturn.call(newCost)
 				amount.should.be.a.bignumber.that.equals('1')
 			})
 		})
 
 		context('Transaction Related Functions', async() => {
 			it('account 1 buying one token using ether', async() => {
-				const cost = await tokenInstance.getPriceForN.call("1")
+				const cost = await tokenInstance.getPriceForN.call('1')
+				const newCost = cost.add(new BN('1'))			// round up for rounding...?
 				// console.log(cost.toString())
-				await tokenInstance.buy({value: cost, from: buyer})
-				// .then((results) => {
-   	// 			// now we'll check that the events are correct
-    // 			assert.equal(result.logs[0].event, 'Buy', 'Buy event should have been fired.');
-    // 			// assert.equal(events[0].args.beneficiary.valueOf(), 1);
-    // 			// assert.equal(events[0].args.value.valueOf(), 10000);
-  		// 	})			// buy one token from account one
-				// tokenInstance.balanceOf(accounts[1]).should.be.a.bignumber.that.equals('1')
+				await tokenInstance.buy({value: newCost, from: buyer})
 				const balance = await tokenInstance.balanceOf.call(buyer)
 				// console.log(balance.toString())
 				balance.should.be.a.bignumber.that.equals('1')
+				const supply = await tokenInstance.totalSupply.call()
+				// console.log(supply.toString())
+				supply.should.be.a.bignumber.that.equals('2')
 			})
 
+			// add test case to test change returned by function
+			it('selling the same amount after buying should cost the same', async() => {			// This of course, is assuming if we don't take transaction fees
+				const cost = await tokenInstance.getPriceForN.call('1')
+				const newCost = cost.add(new BN('1'))			// round up for rounding...?
+				console.log(newCost.toString())
+				await tokenInstance.buy({value: newCost, from: buyer})
+				const sell = await tokenInstance.calculateSellReturn.call('1')
+				console.log(sell.toString())
+				sell.should.be.a.bignumber.that.equals(cost)
+			})
 
 		})
 	})
