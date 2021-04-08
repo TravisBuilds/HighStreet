@@ -43,6 +43,7 @@ export const Home = () => {
     const [userAccount, setUserAccount] = useState('');
 
     window.addEventListener('load', async () => {
+        await ethereum.enable();   // suggested fix for one of the metamask issues.
         if (window.ethereum) {
             window.web3 = new Web3(Web3.givenprovider || "http://localhost:8485");
             try {
