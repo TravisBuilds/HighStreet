@@ -8,8 +8,6 @@ import Web3ReactManager from './components/Web3ReactManager';
 import { Home } from "./pages/Home";
 import { About } from "./pages/About";
 import { Trade } from "./pages/Trade";
-import { Download } from "./pages/Download";
-import { Discover } from "./pages/Discover";
 import { Market } from "./pages/Market";
 import { NavBar } from "./components/NavBar";
 import { ProductProvider } from './contexts/ProductState';
