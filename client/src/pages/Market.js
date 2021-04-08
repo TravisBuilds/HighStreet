@@ -26,7 +26,7 @@ export const Market = () => {
                         <Card.Text>
                             This is a longer card with supporting text below as a natural lead-in to
                             additional content. This content is a little bit longer.
-                </Card.Text>
+            </Card.Text>
                     </Card.Body>
                 </Card>
                 <Card className="p-3">
