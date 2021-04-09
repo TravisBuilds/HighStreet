@@ -27,6 +27,10 @@ Although there are many bonding curve formulas out there, we are adopting the Ba
 
 Every buy and sell moves the Reserve Token Balance and Continuous Token Market cap, so in order to maintain our Reserve Ratio, the price of the Continuous(Product) Token will be continuously recalculated.
 
+## Our Pricing Formula
+Although the Bancor Formula created tremendous breakthroughs in the world of automated market making, it does not work out of the box for our purpose. Since our curve cannot begin with a price of 0 dollars at 0 supply, we must derrive a new curve to address this. The formula can be seen here. We'll likely release a medium post explaining some of the modifications made to provide more clarity and transparency to users. 
+[![pricing](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/pricing.png?raw=true "pricing")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/bancor.png?raw=true "pricing")
+
 ## Whale Alert 
 In order to defend against pumps and dumps, we've incorporated two main forms of defense. The first is by means of the reserve ratio. The higher the reserve ratio between Reserve Token Balance and Product Token will lower the price sensitivity, this means depending on the product we can tweak the reserve ratio to ensure drastic price swings don't occur. The second is by means of KYC, we understand this may be a hotly debated issue, however as of now we have no other means of limiting the amount of the same product each individual can buy. This being said, we are open for community suggestions and open the floor to any members who may have a better and more anonymous way of ensuring a few individuals don't ruin the fun for everyone! 
 
