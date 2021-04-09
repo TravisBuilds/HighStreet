@@ -1,8 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react'
-import Web3 from 'web3';
+
 import Button from 'react-bootstrap/Button';
 import Jumbotron from 'react-bootstrap/Jumbotron';
-import Image from 'react-bootstrap/Image';
 import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -21,26 +20,6 @@ export const TradeCard = (props) => {
     const [buyButtonText, setBuyButtonText] = useState("Connect Wallet")
 
 
-
-    window.addEventListener('load', async () => {
-        if (window.ethereum) {
-            window.web3 = new Web3(Web3.givenprovider || "http://localhost:8485");
-            try {
-                const network = await window.web3.eth.net.getNetworkType()
-                console.log("network, ", network);
-                const account = await window.web3.eth.net.getAccount();
-                console.log("account", account[0]);
-                setUserAccount(account[0]);
-                setBuyButtonText("Buy")
-            } catch (error) {
-                console.log(error);
-            }
-        } else {
-            console.log("need metamask")
-            
-        }
-    })
-    console.log("your Ether Address is, ", { userAccount });
 
     // placeholder
     const [myProduct, setMyProduct] = useState
