@@ -6,7 +6,7 @@ module.exports = async function (deployer, network) {
 	if (network === "mainnet") {
 		tokenAddress = "";
 	} else {
-		await deployer.deploy(Token, 330000, 500);			// initialize reserve ratio for the token in ppm, stand in for testing.
+		await deployer.deploy(Token, 330000, 500, web3.utils.toWei('0.33', 'ether'));			// initialize reserve ratio for the token in ppm, stand in for testing.
 		const token = await Token.deployed();
 		tokenAddress = token.address;
 	}

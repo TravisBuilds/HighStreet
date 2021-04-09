@@ -11,10 +11,12 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
   event Sell(address indexed sender, uint32 amount, uint refund);			// event to fire when a token has been sold back
   event Tradein(address indexed sender, uint32 amount);									// event to fire when a token is redeemed in the real world
 
-  uint256 public reserveBalance = 330000000000000000;		// amount in ether, about 1/3 of a ether. This is initialized for testing, according to
+  // uint256 public basePrice;
+  uint256 public reserveBalance;		// amount in ether, about 1/3 of a ether. This is initialized for testing, according to
                                                         // a pricing function of y = x ^ 2, at a token supply (x) of 1
   // uint32 public exponent;
-  uint256 public reserveRatio;
+  uint32 public reserveRatio;
+
 
   uint32 public maxTokenCount;
   uint32 public tradeinCount = 0;
@@ -25,8 +27,10 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
    * @param _reserveRatio             the reserve ratio in the curve function
    * @param _maxTokenCount						the amount of token that will exist for this type.
   */
-  constructor(uint32 _reserveRatio, uint32 _maxTokenCount) ERC20("ProductToken", "") public {		
+  constructor(uint32 _reserveRatio, uint32 _maxTokenCount, uint256 _baseReserve) ERC20("ProductToken", "") public {		
   	require(_maxTokenCount > 0, "Invalid max token count.");
+    require(_reserveRatio > 0, "Invalid reserve ratio");
+    reserveBalance = _baseReserve;
   	// exponent = _exponent;
     reserveRatio = _reserveRatio;		// initialize the reserve ratio for this token in ppm. 
                                                                       // This is hardcoded right now because we are testing with 33%
@@ -71,43 +75,43 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
   function getAvailability()
     public view returns (uint32 available)
   {
-    return maxTokenCount - totalSupply() - tradeinCount;    // add safemath for uint32 later
+    return maxTokenCount - uint32(totalSupply()) - tradeinCount;    // add safemath for uint32 later
   }
 
-  function getTradeinCount()
-    public view returns (uint32 _amountTraded)
-  {
-    return tradeinCount;
-  }
+  // function getTradeinCount()                                         Don't need these, because public variable have getters by default
+  //   public view returns (uint32 _amountTraded)
+  // {
+  //   return tradeinCount;
+  // }
 
-  function getSupply()
-    public view returns (uint32 maxToken)
-  {
-    return maxTokenCount;    // add safemath for uint32 later
-  }
+  // function getSupply()
+  //   public view returns (uint32 maxToken)
+  // {
+  //   return maxTokenCount;
+  // }
 
   function getCurrentPrice() 
   	public returns	(uint256 price)
   {
-  	return calculatePriceForNTokens(totalSupply() + tradeinCount, reserveBalance, uint32(reserveRatio), 1);
+  	return calculatePriceForNTokens(totalSupply() + tradeinCount, reserveBalance, reserveRatio, 1);
   }
 
   function getPriceForN(uint32 _amountProduct) 
   	public returns	(uint256 price)
   {
-  	return calculatePriceForNTokens(totalSupply() + tradeinCount, reserveBalance, uint32(reserveRatio), _amountProduct);
+  	return calculatePriceForNTokens(totalSupply() + tradeinCount, reserveBalance, reserveRatio, _amountProduct);
   }
 
   function calculateBuyReturn(uint256 _amountReserve)
     public returns (uint32 mintAmount)
   {
-    return calculatePurchaseReturn(totalSupply() + tradeinCount, reserveBalance, uint32(reserveRatio), _amountReserve);
+    return calculatePurchaseReturn(totalSupply() + tradeinCount, reserveBalance, reserveRatio, _amountReserve);
   }
 
   function calculateSellReturn(uint32 _amountProduct)
     public returns (uint256 soldAmount)
   {
-    return calculateSaleReturn(totalSupply() + tradeinCount, reserveBalance, uint32(reserveRatio), _amountProduct);
+    return calculateSaleReturn(totalSupply() + tradeinCount, reserveBalance, reserveRatio, _amountProduct);
   }
 
   // specific implementations of transaction logics.
