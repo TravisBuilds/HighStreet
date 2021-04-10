@@ -42,24 +42,24 @@ export const Home = () => {
     const placeholderText = "Lorem ipsum dolor sit amet, consectetur abore et dolore magna aliqua te"
     const [userAccount, setUserAccount] = useState('');
 
-    window.addEventListener('load', async () => {
-        await window.ethereum.enable();   // suggested fix for one of the metamask issues.
-        if (window.ethereum) {
-            window.web3 = new Web3(Web3.givenprovider || "http://localhost:8485");
-            try {
-                const network = await window.web3.eth.net.getNetworkType()
-                console.log("network, ", network);
-                const account = await window.web3.eth.net.getAccount();
-                console.log("account", account[0]);
-                setUserAccount(account[0]);
-            } catch (error) {
-                console.log(error);
-            }
-        } else {
-            console.log("need metamask")
-        }
-    })
-    console.log("your Ether Address is, ", { userAccount });
+    // window.addEventListener('load', async () => {
+    //     window.ethereum.enable();   
+    //     if (window.ethereum) {
+    //         window.web3 = new Web3(Web3.givenprovider || "http://localhost:8485");
+    //         try {
+    //             const network = await window.web3.eth.net.getNetworkType()
+    //             console.log("network, ", network);
+    //             const account = await window.web3.eth.net.getAccount();
+    //             console.log("account", account[0]);
+    //             setUserAccount(account[0]);
+    //         } catch (error) {
+    //             console.log(error);
+    //         }
+    //     } else {
+    //         console.log("need metamask")
+    //     }
+    // })
+    // console.log("your Ether Address is, ", { userAccount });
     return (
         <div class="landing" >
             <div id="jumbo">
