@@ -18,7 +18,7 @@ const initialState = {
 export const StoreContext = createContext(initialState);
 
 //Provider Component 
-export const ProductProvider = ({ children }) => {
+export const StoreProvider = ({ children }) => {
     const [state, dispatch] = useReducer(StoreReducer, initialState);
 
     //Actions 
@@ -45,34 +45,34 @@ export const ProductProvider = ({ children }) => {
     }
     function setInjectedProvider(provider){
         dispatch({
-            type:'SET_ETH_BALANCE',
+            type:'SET_INJECTED_PROVIDER',
             payload: provider
         })
     }
     function setEthersProvider(provider){
         dispatch({
-            type:'SET_ETH_BALANCE',
+            type:'SET_ETHERS_PROVIDER',
             payload: provider
         })
     }
     function setLoomObj(loomObj){
         dispatch({
-            type:'SET_ETH_BALANCE',
+            type:'SET_LOOM_OBJ',
             payload: loomObj
         })
     }
     function setLoomConnectionInfo(connection){
         dispatch({
-            type:'SET_ETH_BALANCE',
+            type:'SET_LOOM_CONNECTION_INFO',
             payload: connection
         })
     }
 
     return (
-        <ProductContext.Provider value={{
+        <StoreContext.Provider value={{
             store: state, setSelectedEthAddr, setEthWeb3, setEthBalance, setInjectedProvider, setEthersProvider, setLoomObj, setLoomConnectionInfo
         }}>
             {children}
-        </ProductContext.Provider>
+        </StoreContext.Provider>
     )
 }

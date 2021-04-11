@@ -11,6 +11,7 @@ import { Trade } from "./pages/Trade";
 import { Market } from "./pages/Market";
 import { NavBar } from "./components/NavBar";
 import { ProductProvider } from './contexts/ProductState';
+import {StoreProvider} from './contexts/StoreState'; 
 import { TradeCard } from './components/TradeCard';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -33,12 +34,15 @@ function App() {
         {/* <Web3ReactManager> */}
         <BrowserRouter>
           <UserProvider>
+  
             <Route path="/" component={NavBar} />
             <Route path='/about' component={About} />
             <ProductProvider>
+            <StoreProvider>
               <Route exact path='/trade' component={Trade} />
               <Route exact path='/market' component={Market}/>
               <Route exact path='/' component={Home} />
+              </StoreProvider>
             </ProductProvider>
           </UserProvider>
         </BrowserRouter>

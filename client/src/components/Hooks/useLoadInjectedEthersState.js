@@ -5,49 +5,54 @@ import { ethers } from 'ethers';
 
 
 export default function useLoadInjectedEthersState() {
-  const { store, setSelectedEthAddr, setEthWeb3, setEthBalance, setInjectedProvider, setEthersProvider, setLoomObj, setLoomConnectionInfo } = useContext(StoreContext);
+  const { store, setSelectedEthAddr,setEthBalance,  setEthersProvider } = useContext(StoreContext);
 
   
   useEffect(() => {
-    if (state.injectedProvider){
+    if (store.injectedProvider){
       console.log("using ethers");
 
-      if (state.injectedProvider.selectedAddress){
+      if (store.injectedProvider.selectedAddress){
 
-        dispatch({
-          type: ActionType.SET_SELECTED_ETH_ADDR,
-          payload: state.injectedProvider.selectedAddress
-        });
+        // dispatch({
+        //   type: ActionType.SET_SELECTED_ETH_ADDR,
+        //   payload: state.injectedProvider.selectedAddress
+        // });
+      
+        setSelectedEthAddr(store.injectedProvider)
 
       }else{
         console.warn('dont have selected address, yet');
       }
     }
-  }, [state.injectedProvider]);
+  }, [store.injectedProvider]);
 
 
 
   useEffect(() => {
     const fetchBalance = async() => {
-      if (state.injectedProvider){
-        let provider = new ethers.providers.Web3Provider(state.injectedProvider);
-        let balance = await provider.getBalance(state.selectedEthAddr);
+      if (store.injectedProvider){
+        let provider = new ethers.providers.Web3Provider(store.injectedProvider);
+        let balance = await provider.getBalance(store.selectedEthAddr);
         let converted = await ethers.utils.formatEther(balance);
 
-        dispatch({
-          type: ActionType.SET_ETHERS_PROVIDER,
-          payload: provider
-        })
+        // dispatch({
+        //   type: ActionType.SET_ETHERS_PROVIDER,
+        //   payload: provider
+        // })
 
-        dispatch({
-          type: ActionType.SET_ETH_BALANCE,
-          payload: converted
-        })
+        setEthersProvider(provider) 
+
+        // dispatch({
+        //   type: ActionType.SET_ETH_BALANCE,
+        //   payload: converted
+        // })
+        setEthBalance(converted)
       }
     }
 
-    if (state.selectedEthAddr){
+    if (store.selectedEthAddr){
       fetchBalance();
     }
-  }, [state.selectedEthAddr])
+  }, [store.selectedEthAddr])
 }

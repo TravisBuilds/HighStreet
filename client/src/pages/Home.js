@@ -13,6 +13,8 @@ import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCube, faMoneyCheck, faPeopleArrows } from '@fortawesome/free-solid-svg-icons';
 import { faEthereum } from '@fortawesome/free-brands-svg-icons';
+import useInjectedWeb3 from '../components/Hooks/useInjectedWeb3';
+import useLoadinjectedEthersState from '../components/Hooks/useLoadInjectedEthersState';
 
 //temp asset import, will remove when datastructure is built 
 import source1 from '../assets/lvmh.png';
@@ -26,6 +28,7 @@ import metaverse from '../assets/backgroundMetaverse.png';
 import placeholder from '../assets/placeholderImage.png'
 
 import { ProductContext } from "../contexts/ProductState";
+import {StoreContext} from '../contexts/StoreState';
 
 
 export const Home = () => {
@@ -41,6 +44,13 @@ export const Home = () => {
     const placeholderTitle = "This is Placeholder"
     const placeholderText = "Lorem ipsum dolor sit amet, consectetur abore et dolore magna aliqua te"
     const [userAccount, setUserAccount] = useState('');
+
+    const {store} = useContext(StoreContext); 
+
+    useInjectedWeb3();
+    useLoadinjectedEthersState();
+
+    console.log(store.selectedEthAddr);
 
     // window.addEventListener('load', async () => {
     //     window.ethereum.enable();   
