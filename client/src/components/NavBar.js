@@ -29,8 +29,8 @@ export const NavBar =() =>{
       <Nav className="ml-auto">
         <Nav.Link href="/">Home</Nav.Link>
         <Nav.Link href="/about">About</Nav.Link>
-        <Nav.Link href="/market">Market</Nav.Link>
-        <Nav.Link href="#downloads">Download</Nav.Link>
+        <Nav.Link href="/Discover">Discover</Nav.Link>
+        <Nav.Link href="/#downloads">Download</Nav.Link>
       </Nav>
       <Form inline>
         <Button variant="outline-primary">Connect Wallet</Button>

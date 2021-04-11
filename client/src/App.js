@@ -8,7 +8,7 @@ import Web3ReactManager from './components/Web3ReactManager';
 import { Home } from "./pages/Home";
 import { About } from "./pages/About";
 import { Trade } from "./pages/Trade";
-import { Market } from "./pages/Market";
+import { Discover } from "./pages/Discover";
 import { NavBar } from "./components/NavBar";
 import { ProductProvider } from './contexts/ProductState';
 import {StoreProvider} from './contexts/StoreState'; 
@@ -40,7 +40,7 @@ function App() {
             <ProductProvider>
             <StoreProvider>
               <Route exact path='/trade' component={Trade} />
-              <Route exact path='/market' component={Market}/>
+              <Route exact path='/discover' component={Discover}/>
               <Route exact path='/' component={Home} />
               </StoreProvider>
             </ProductProvider>

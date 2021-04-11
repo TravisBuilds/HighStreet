@@ -36,17 +36,10 @@ export default function useLoadInjectedEthersState() {
         let balance = await provider.getBalance(store.selectedEthAddr);
         let converted = await ethers.utils.formatEther(balance);
 
-        // dispatch({
-        //   type: ActionType.SET_ETHERS_PROVIDER,
-        //   payload: provider
-        // })
 
         setEthersProvider(provider) 
 
-        // dispatch({
-        //   type: ActionType.SET_ETH_BALANCE,
-        //   payload: converted
-        // })
+      
         setEthBalance(converted)
       }
     }

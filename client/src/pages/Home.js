@@ -52,24 +52,7 @@ export const Home = () => {
 
     console.log(store.selectedEthAddr);
 
-    // window.addEventListener('load', async () => {
-    //     window.ethereum.enable();   
-    //     if (window.ethereum) {
-    //         window.web3 = new Web3(Web3.givenprovider || "http://localhost:8485");
-    //         try {
-    //             const network = await window.web3.eth.net.getNetworkType()
-    //             console.log("network, ", network);
-    //             const account = await window.web3.eth.net.getAccount();
-    //             console.log("account", account[0]);
-    //             setUserAccount(account[0]);
-    //         } catch (error) {
-    //             console.log(error);
-    //         }
-    //     } else {
-    //         console.log("need metamask")
-    //     }
-    // })
-    // console.log("your Ether Address is, ", { userAccount });
+    
     return (
         <div class="landing" >
             <div id="jumbo">
@@ -133,7 +116,7 @@ export const Home = () => {
                                                             </Card.Text>
                                                             <br></br>
                                                             <br></br>
-                                                            <Button onClick={() => handleClick("trade")} variant="light" style={{ borderRadius: "50px", width: "8rem" }}><strong>Discover</strong></Button>
+                                                            <Button onClick={() => handleClick("trade")} variant="light" style={{ borderRadius: "50px", width: "8rem" }}><strong>Trade</strong></Button>
 
                                                         </Card.ImgOverlay>
                                                     </Card>
@@ -152,7 +135,7 @@ export const Home = () => {
                                                             </Card.Text>
                                                             <br></br>
                                                             <br></br>
-                                                            <Button onClick={() => handleClick("trade")} style={{ borderRadius: "50px", width: "8rem" }} variant="light"><strong>Discover</strong></Button>
+                                                            <Button onClick={() => handleClick("trade")} style={{ borderRadius: "50px", width: "8rem" }} variant="light"><strong>Trade</strong></Button>
 
                                                         </Card.ImgOverlay>
                                                     </Card>

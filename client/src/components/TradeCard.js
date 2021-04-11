@@ -81,8 +81,8 @@ export const TradeCard = (props) => {
                                         <Card.Footer style={{ padding: "0", backgroundColor: 'none', border: '0' }}>{myProduct.available} out of {myProduct.supply}&nbsp;stocks available</Card.Footer>
                                     </Card.ImgOverlay>
                                     <div className="dropDown" >
-                                        <DropdownButton variant="secondary" title={`${myProduct.price} DAI`} style={{ background: "#f1f2f6", width: "20rem", marginTop: "8px", marginBottom: "8px", marginLeft: "1.5rem" }}>
-                                            <Dropdown.Item as="button">{myProduct.price} DAI</Dropdown.Item>
+                                        <DropdownButton variant="secondary" title={`${myProduct.price.toFixed(4)} DAI`} style={{ background: "#f1f2f6", width: "20rem", marginTop: "8px", marginBottom: "8px", marginLeft: "1.5rem" }}>
+                                            <Dropdown.Item as="button">{myProduct.price.toFixed(4)} DAI</Dropdown.Item>
                                             <Dropdown.Item as="button">ETH</Dropdown.Item>
                                             <Dropdown.Item as="button">BAT</Dropdown.Item>
                                             <Dropdown.Item as="button">XXX</Dropdown.Item>

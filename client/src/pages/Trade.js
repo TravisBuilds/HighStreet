@@ -45,8 +45,9 @@ export const Trade = () => {
         <div>
             {cart}
             <Jumbotron className="cardJumbo" style={{ margin: "0", background: '#CCDAF5', height:"100vh"}} fluid>
+              
                 <Carousel fade interval={null} indicators={false}>
-                    {products.map(product => (
+                     {products.map(product => (
                         <Carousel.Item style={{ width: '25rem' }} >
                             <Container style={{ margin: "auto" }}>
                                 <Row>
@@ -100,12 +101,14 @@ export const Trade = () => {
 
                         </Carousel.Item>
 
-                    )
+                   
+
+               
+                 )
 
 
                     )}
-
-                </Carousel>
+                     </Carousel>
             </Jumbotron>
         </div>
     )

@@ -27,7 +27,7 @@ Although there are many bonding curve formulas out there, we are adopting the Ba
 
 Every buy and sell moves the Reserve Token Balance and Continuous Token Market cap, so in order to maintain our Reserve Ratio, the price of the Continuous(Product) Token will be continuously recalculated.
 
-## Our Pricing Formula
+## Our Pricing Formula (Optimization in progress, open to suggestions)
 Although the Bancor Formula created tremendous breakthroughs in the world of automated market making, it does not work out of the box for our purpose. Since our curve cannot begin with a price of 0 dollars at 0 supply, we must derrive a new curve to address this. The formula can be seen here. We'll likely release a medium post explaining some of the modifications made to provide more clarity and transparency to users. 
 [![pricing](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/pricing.png?raw=true "pricing")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/bancor.png?raw=true "pricing")
 

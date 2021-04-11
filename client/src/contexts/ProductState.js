@@ -9,6 +9,7 @@ import kalonfeature from '../assets/kalon.png';
 import lvmhfeature from '../assets/lvmh.png'
 import lorealfeature from '../assets/lvmh.png'
 import randomfeature from '../assets/randomfeature.png'
+
 // import ProductToken.sol
 //Initial Placeholder 
 const initialState = {
