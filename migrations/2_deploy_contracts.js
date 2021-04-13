@@ -1,5 +1,5 @@
-const Dex = artifacts.require("DEX.sol");
-const Token = artifacts.require("ProductToken.sol");
+const Dex = artifacts.require("DEX");
+const Token = artifacts.require("ProductToken");
 
 module.exports = async function (deployer, network) {
 	let tokenAddress;
