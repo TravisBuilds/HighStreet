@@ -78,6 +78,8 @@ module.exports = {
   mocha: {
     // timeout: 100000
   },
+  contracts_directory: './client/src/contracts/',
+  contracts_build_directory: './client/src/build/contracts',
 
   // Configure your compilers
   compilers: {

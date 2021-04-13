@@ -6,9 +6,23 @@ import mystery from '../assets/product3.png';
 import lvmh from "../assets/product4.png";
 import placeholderCard from '../assets/productplaceholder.png';
 import kalonfeature from '../assets/kalon.png';
-import lvmhfeature from '../assets/lvmh.png'
-import lorealfeature from '../assets/lvmh.png'
-import randomfeature from '../assets/randomfeature.png'
+import lvmhfeature from '../assets/lvmh.png';
+import lorealfeature from '../assets/lvmh.png';
+import randomfeature from '../assets/randomfeature.png';
+
+import { ethers } from 'ethers'; 
+import Token from '../build/contracts/ProductToken.json'
+
+const url = 'http://127.0.0.1:8545';
+const provider = new ethers.providers.JsonRpcProvider(url);
+const networkId = provider.getNetwork.chainId;
+console.log('Network ID: ' + networkId);
+const networkData = Token.networks[networkId];
+if(networkData) {
+    const contract = new ethers.Contract(networkData.address, Token.abi, provider);
+} else {
+    console.log("Contract wasn't deployed properly.");
+}
 
 // import ProductToken.sol
 //Initial Placeholder 
@@ -72,24 +86,32 @@ export const ProductProvider = ({ children }) => {
 
     //Actions 
     function tokenBought(selectedToken) {
-        
+        console.log("Buy function called")
+
         dispatch({
             type: 'TOKEN_BOUGHT',
             payload: selectedToken
+
         });
     }
 
-    function tokenSold(product) {
+    function tokenSold(product) { 
+        console.log("Sell function called")
+
         dispatch({
             type:'TOKEN_SOLD',
             payload: product
+
         });
     }
 
     function tokenRedeemed(product){
+        console.log("Redeem function called")
+
         dispatch({
             type:'TOKEN_REDEEMED',
             payload: product
+
         })
     }
 
