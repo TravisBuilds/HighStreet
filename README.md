@@ -1,3 +1,6 @@
+# Highstreet.Market
+## A Market Place for Redeemable Limited Edition Products
+
 # Abstract 
 ## Bringing DEFI concepts to Real Products  
 ### Inspiration 
