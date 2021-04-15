@@ -13481,6 +13481,18 @@
     "version": "0.6.6+commit.6c089d02.Emscripten.clang"
   },
   "networks": {
+    "1337": {
+      "events": {},
+      "links": {},
+      "address": "0x9299c1a94eea0d37B9Ae43173411aaebA7d237Ad",
+      "transactionHash": "0xbb4cb49063c6b0561d0f3ce7060dba06c03893b13441c99bbea64291f1af31dd"
+    },
+    "5777": {
+      "events": {},
+      "links": {},
+      "address": "0x4f0BC095d8696042dE85F46370c61AA6c7e9852f",
+      "transactionHash": "0x81874154d8c4e1b0951da97cdc5bada9a9afbda9dd4afba73568eca22eb1f8d4"
+    },
     "1618264484966": {
       "events": {},
       "links": {},
@@ -13488,14 +13500,172 @@
       "transactionHash": "0x7018bf8d0bb4a0421c558893f3b0614dbd929fe4cbebcbf640788b71db4e5551"
     },
     "1618277470011": {
-      "events": {},
+      "events": {
+        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "spender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "Approval",
+          "type": "event"
+        },
+        "0x5b55159a377d86da80a65140d62d994ddbb2cbd4bb2d1b59cb0827fecbe47cab": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint32",
+              "name": "amount",
+              "type": "uint32"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "deposit",
+              "type": "uint256"
+            }
+          ],
+          "name": "Buy",
+          "type": "event"
+        },
+        "0xdd970dd9b5bfe707922155b058a407655cb18288b807e2216442bca8ad83d6b5": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "string",
+              "name": "msg",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "Log",
+          "type": "event"
+        },
+        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "previousOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "OwnershipTransferred",
+          "type": "event"
+        },
+        "0x84c8d08e5480cf09cbf77bc575dc4e63845522693c34094f04129a4dedb7abd7": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint32",
+              "name": "amount",
+              "type": "uint32"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "refund",
+              "type": "uint256"
+            }
+          ],
+          "name": "Sell",
+          "type": "event"
+        },
+        "0xe600c25f82e9bac8f9f1663725540d6cd442845726820fd5bee41b66c4bf59be": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint32",
+              "name": "amount",
+              "type": "uint32"
+            }
+          ],
+          "name": "Tradein",
+          "type": "event"
+        },
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "Transfer",
+          "type": "event"
+        }
+      },
       "links": {},
-      "address": "0xa7B8c0C3b9a0d59AF2d41b1aF920f3Be6d2d30bC",
-      "transactionHash": "0xc1b175370efbd5e2f594ff770b38404ca452dc9a78294c9dfbbd16a88cedefb9"
+      "address": "0x22a06BC9Fdf0c9a107eA4629AB74236431B09153",
+      "transactionHash": "0x2e0ddae12bf0fb28f3ef9ca926a5a40b1ec78693c8f46d4c31d0fa1a88589bf1"
     }
   },
   "schemaVersion": "3.3.4",
-  "updatedAt": "2021-04-13T02:20:26.675Z",
+  "updatedAt": "2021-04-14T21:07:42.316Z",
   "networkType": "ethereum",
   "devdoc": {
     "methods": {

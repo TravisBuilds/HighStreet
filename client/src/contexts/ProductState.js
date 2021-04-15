@@ -14,15 +14,27 @@ import { ethers } from 'ethers';
 import Token from '../build/contracts/ProductToken.json'
 
 const url = 'http://127.0.0.1:8545';
-const provider = new ethers.providers.JsonRpcProvider(url);
-const networkId = provider.getNetwork.chainId;
-console.log('Network ID: ' + networkId);
-const networkData = Token.networks[networkId];
-if(networkData) {
-    const contract = new ethers.Contract(networkData.address, Token.abi, provider);
-} else {
-    console.log("Contract wasn't deployed properly.");
-}
+const provider = new ethers.providers.Web3Provider(window.ethereum)
+const signer = provider.getSigner();
+let networkId;
+let contract;
+let contractWSigner;
+provider.getNetwork().then(result => {
+    console.log("Network Retrieved: " + result);
+    networkId = result.chainId;
+    console.log('Network ID: ' + networkId);
+    const networkData = Token.networks[networkId];
+    if(networkData) {
+        console.log("Ready to connect to contract.");
+        contract = new ethers.Contract(networkData.address, Token.abi, provider);
+        contractWSigner = contract.connect(signer);
+    } else {
+        console.log("Contract wasn't deployed properly.");
+    }
+}).catch(e => {
+  console.log(e)
+});
+
 
 // import ProductToken.sol
 //Initial Placeholder 
@@ -85,9 +97,10 @@ export const ProductProvider = ({ children }) => {
     const [state, dispatch] = useReducer(ProductReducer, initialState);
 
     //Actions 
-    function tokenBought(selectedToken) {
-        console.log("Buy function called")
-
+    async function tokenBought(selectedToken) {
+        console.log("Buy function called");
+        const cost = await contractWSigner.getCurrentPrice();
+        console.log("Cost to get one token " + JSON.stringify(cost));
         dispatch({
             type: 'TOKEN_BOUGHT',
             payload: selectedToken
@@ -95,8 +108,8 @@ export const ProductProvider = ({ children }) => {
         });
     }
 
-    function tokenSold(product) { 
-        console.log("Sell function called")
+    async function tokenSold(product) { 
+        console.log("Sell function called");
 
         dispatch({
             type:'TOKEN_SOLD',
@@ -105,14 +118,14 @@ export const ProductProvider = ({ children }) => {
         });
     }
 
-    function tokenRedeemed(product){
-        console.log("Redeem function called")
+    async function tokenRedeemed(product){
+        console.log("Redeem function called");
 
         dispatch({
             type:'TOKEN_REDEEMED',
             payload: product
 
-        })
+        });
     }
 
     return (
