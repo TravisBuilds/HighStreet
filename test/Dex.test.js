@@ -9,12 +9,13 @@ require('chai')
 contract('Token', (accounts) => {
 	let exp = 330000				// assuming price function exponential factor of 2, input reserve ratio in ppm
 	let max = 500						// assuming max 500 token will be minted
+	let offset = 10
 	let baseReserve = web3.utils.toWei('0.33', 'ether')
 	let tokenInstance
 	let buyer
 	describe('Token Logic Checks', async () => {
 		beforeEach(async () => {
-        tokenInstance = await Token.new(exp, max, baseReserve)
+        tokenInstance = await Token.new(exp, max, offset, baseReserve)
         buyer = accounts[1]
     })
 
