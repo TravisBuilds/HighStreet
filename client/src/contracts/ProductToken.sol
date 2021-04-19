@@ -37,7 +37,7 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
     reserveRatio = _reserveRatio;		// initialize the reserve ratio for this token in ppm. 
                                                                       // This is hardcoded right now because we are testing with 33%
     maxTokenCount = _maxTokenCount;
-    _mint(msg.sender, 1);  
+    // _mint(msg.sender, 1);  
   }
 
   /**
