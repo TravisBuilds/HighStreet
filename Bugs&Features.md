@@ -24,3 +24,5 @@
 ## Contract 
 - Pricing Function implementation, decide whether to pre-mine to set price or to use new function derived 
 - simplify K implementation 
+- Smart Contract Managing platform token 
+- Token Vesting Automation 
