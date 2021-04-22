@@ -37,7 +37,7 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
     reserveRatio = _reserveRatio;		// initialize the reserve ratio for this token in ppm. 
                                                                       // This is hardcoded right now because we are testing with 33%
     maxTokenCount = _maxTokenCount;
-    _mint(msg.sender, 1);  
+    // _mint(msg.sender, 1);  
   }
 
   /**
@@ -47,10 +47,15 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
   function buy() public payable {
     require(msg.value > 0, "Must send ether to buy tokens.");
     uint256 amount;
-    uint256 change;
-    (amount, change) = _buyForAmount(msg.value);
+    uint256 change;    
+    (amount, change) = _buyForAmount(msg.value.mul(960000).div(1000000)); // ppm of 96%. 4% is the platform transaction fee
     // return change back to the sender.
-    msg.sender.transfer(change);
+    if (amount > 0) {                                               // If token transaction went through successfully
+      msg.sender.transfer(change);
+    }
+    else {                                                          // If token transaction failed
+      msg.sender.transfer(_amount);                                 
+    }
   }
 
 	/**
@@ -59,7 +64,7 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
   */
  	function sell(uint32 _amount) public {
     uint256 returnAmount = _sellForAmount(_amount);
-    msg.sender.transfer(returnAmount);
+    msg.sender.transfer(returnAmount.mul(980000).div(1000000));     // ppm of 98%. 2% is the platform transaction fee
   }
 
 	/**
