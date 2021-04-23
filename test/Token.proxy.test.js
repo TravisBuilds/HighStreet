@@ -1,5 +1,6 @@
 const { deployProxy } = require('@openzeppelin/truffle-upgrades');
 const Token = artifacts.require('ProductToken');
+const BN = require('bn.js')
 
 require('chai')
 	.use(require('chai-as-promised'))
