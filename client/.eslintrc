@@ -1,0 +1,39 @@
+{
+  "extends": [
+    "airbnb",
+    "plugin:testing-library/react",
+    "plugin:jest-dom/recommended"
+  ],
+  "rules": {
+    "class-methods-use-this": "off",
+    "comma-dangle": "off",
+    "max-classes-per-file": "off",
+    "max-len": ["warn", {
+      "code": 120,
+      "ignoreComments": true,
+      "ignoreTrailingComments": true,
+      "ignoreUrls": true,
+      "ignoreStrings": true,
+      "ignoreTemplateLiterals": true,
+      "ignoreRegExpLiterals": true
+    }],
+    "no-console": "warn",
+    "no-underscore-dangle": "off",
+    "no-use-before-define": "warn",
+    "object-curly-newline": "off",
+
+    "react/destructuring-assignment": "off",
+    "react/jsx-props-no-spreading": "off",
+    "react/prop-types": "off",
+
+    "testing-library/prefer-screen-queries": "error"
+  },
+  "globals": {
+    "document": true,
+    "window": true,
+    "jest": true,
+    "describe": true,
+    "test": true,
+    "expect": true
+  }
+}
