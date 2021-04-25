@@ -1,11 +1,13 @@
 ## Frontend
 ### Features to Add
+- Twitter sharing embeded for when User Buys, and Sells. Every Buy shares on twitter link to product, every sell shares how much money user made. 
 - Metamask to set State on buy buttons and linked with "connect Wallet" button both in Nav and in Trade Card 
 - Disable Sell and Redeem button when user does not have token in wallet 
 - Pineterest like design for cards on Discovery Page, or better design 
 - Discovery page cards to link to Trade page landing on the same item clicked on, also do the same for Trade Button on Home page 
 - Above point clarification (prop.name === p.name inside the map) 
 - Merchant page for sign up and set up shop 
+
 
 ### Bugs
 - For Brands Button turns opaque white upon hover, need better design 
@@ -14,10 +16,7 @@
 
 ## Backend
 ### Features to Add
-- Tie traditional backend to merchant side of things, check routes to verify login 
-- Data base to store and update state 
-- mongoDB + Node + Express 
-
+- Done
 
 ### Bugs
 

@@ -2,3 +2,4 @@ node_modules/*
 /client/node_modules/*
 /client/src/build/*
 /server/config/config.env
+/.git/MERGE_MSG
