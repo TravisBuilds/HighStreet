@@ -7,12 +7,14 @@
   "dependencies": {
     "@openzeppelin/contracts": "^3.1.0",
     "@openzeppelin/contracts-upgradeable": "^4.0.0",
+    "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "express-jwt": "^6.0.0",
+    "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.6.6",
     "passport": "^0.4.1",
-    "passport-facebook": "^3.0.0",
-    "react-markdown": "^5.0.3"
+    "passport-instagram-basic-api": "^1.0.0"
   },
   "devDependencies": {
     "chai": "^4.3.4",
