@@ -6,7 +6,7 @@ import mystery from '../assets/product3.png';
 import lvmh from '../assets/product4.png';
 import kalonfeature from '../assets/kalon.png';
 import lvmhfeature from '../assets/lvmh.png';
-import lorealfeature from '../assets/lvmh.png';
+import lorealfeature from '../assets/loreal.png';
 import randomfeature from '../assets/randomfeature.png';
 
 // import ProductToken.sol

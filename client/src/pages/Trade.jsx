@@ -12,9 +12,12 @@ import { ProductContext } from '../contexts/ProductState';
 
 const Trade = () => {
   const [active, setActive] = useState('none');
-  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [
+    buttonDisabled
+    // , setButtonDisabled
+  ] = useState(false);
 
-  const deactivate = (stateChange) => {
+  const deactivate = () => {
     setActive('none');
   };
 

@@ -13,7 +13,10 @@ import kalonCard from '../assets/product1.png';
 
 const TradeCard = (props) => {
   // change here
-  const [buyButtonText, setBuyButtonText] = useState('Connect Wallet');
+  const [
+    buyButtonText
+    // , setBuyButtonText
+  ] = useState('Connect Wallet');
 
   // placeholder
   const [myProduct, setMyProduct] = useState({
