@@ -1,6 +1,6 @@
-pragma solidity ^0.6.6;
+pragma solidity ^0.8.2;
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "./Power.sol"; // Efficient power function.
 
 /**
