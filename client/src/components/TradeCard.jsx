@@ -44,8 +44,6 @@ const TradeCard = (props) => {
 
   // setMyProduct(myProductX)
   console.log('here is my product', myProduct);
-  console.log((typeof myProduct === 'undefined'));
-  console.log('hello world', myProduct.name);
 
   const deactivate = () => {
     props.onChange('none');

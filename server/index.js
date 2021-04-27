@@ -10,6 +10,7 @@ const cookieParser = require('cookie-parser');
 const db = require('./lib/db');
 const passport = require('./lib/passport');
 const Auth = require('./routes/auth');
+const User = require('./routes/user');
 
 const app = express();
 
@@ -21,16 +22,20 @@ app.use(passport.initialize());
 app.get('/auth/instagram', passport.authenticate('instagram'));
 app.get('/auth/instagram/callback', passport.authenticate('instagram', { failureRedirect: '/login' }), Auth.oauthCallback);
 
+app.post('/api/user/connectMetamask', User.connectMetamask);
+
 app.use('/', express.static(path.join(__dirname, '../client/build')));
 app.use('/:page', express.static(path.join(__dirname, '../client/build')));
 
-const server = https.createServer({
-  key: fs.readFileSync('./server/server.key'),
-  cert: fs.readFileSync('./server/server.cert')
-}, app).listen(process.env.PORT || 3030);
-server.on('listening', () => console.log(`Server listening on port ${process.env.PORT || 3030}`));
+db.openConnection().then(() => {
+  const server = https.createServer({
+    key: fs.readFileSync('./server/server.key'),
+    cert: fs.readFileSync('./server/server.cert')
+  }, app).listen(process.env.PORT || 3030);
+  server.on('listening', () => console.log(`Server listening on port ${process.env.PORT || 3030}`));
+});
 
 process.on('unhandledRejection', (r) => {
-  logger.error('unhandledRejection', r);
+  console.error('unhandledRejection', r);
   process.exit(1);
 });

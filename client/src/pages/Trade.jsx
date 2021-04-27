@@ -24,7 +24,6 @@ const Trade = () => {
   console.log('this is active', active);
   const cart = active !== 'none' ? (
     <TradeCard onChange={deactivate} active={active} style={{ background: 'black', opacity: '1', zIndex: '10', position: 'fixed', top: '0px', width: '100vw', height: '100vh' }} />
-
   ) : (
     <TradeCard style={{ display: 'none' }} />
   );

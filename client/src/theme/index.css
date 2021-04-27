@@ -1,84 +1,83 @@
 body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-      sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-  }
-  
-  code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-      monospace;
-  }
-
-  #root{
-    height:100%
 }
 
-  html {
+code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+#root {
+    height: 100%
+}
+
+html {
     margin: 0;
-    height:100%;
+    height: 100%;
 }
 
-  #feeStruct{
-      text-align: left;
-      padding-left: 3%;
-      
-  }
-  
-  .dropDown button{
-    width:100%;
-    border-radius:50px;
+#feeStruct {
+    text-align: left;
+    padding-left: 3%;
+}
+
+.dropDown button {
+    width: 100%;
+    border-radius: 50px;
     background-color: #f1f2f6;
-    color:black;
+    color: black;
     border-color: #f1f2f6;
-  }
+}
 
-  .title{
-      color:#999595;
-      text-align:center;
-  }
-  .title2{
-      color:white;
-      text-align:center;
-  }
-  
-  #subtitle{
-      color:grey;
-      margin:auto;
-  }
-  .dlButtons{
+.title {
+    color: #999595;
+    text-align: center;
+}
+
+.title2 {
+    color: white;
+    text-align: center;
+}
+
+#subtitle {
+    color: grey;
+    margin: auto;
+}
+
+.dlButtons {
     margin: auto;
     width: 50%;
     padding: 10px;
-    display:block;
-
-  }
-.dlButtons img{
-    width:100%
+    display: block;
 }
-.dlButtonRow{
+
+.dlButtons img {
+    width: 100%
+}
+
+.dlButtonRow {
     margin: auto;
     width: 50%;
     padding: 10px;
-    display:block;
+    display: block;
 }
 
-.discoverCol{
-  margin:20px;
+.discoverCol {
+    margin: 20px;
 }
 
-.jumbotron{
-  margin:0;
+.jumbotron {
+    margin: 0;
 }
 
-.loginButton button{
-  border-radius:50px;
-  margin-right:10px;
+.loginButton button {
+    border-radius: 50px;
+    margin-right: 10px;
 }
 
-.cardJumbo{
+.cardJumbo {
     display: flex;
     width: 100%;
     height: 100%;
@@ -86,40 +85,35 @@ body {
     justify-content: center;
 }
 
-.curvyButton button{
-  border-radius:50px;
+.curvyButton button {
+    border-radius: 50px;
 }
+
 #Caro div div a {
-  display:none;
-}
-#Caro div div ol li{
-  
-                       background-color: skyblue;
-                        border-radius: 50%;
-                        height: 5px;
-                        width: 5px;
-                      
-    
+    display: none;
 }
 
-.aboutPage{
-  padding:5%;
+#Caro div div ol li {
+    background-color: skyblue;
+    border-radius: 50%;
+    height: 5px;
+    width: 5px;
 }
+
+.aboutPage {
+    padding: 5%;
+}
+
 .aboutPage p a img {
-  width:50%;
+    width: 50%;
 }
 
-
-@media (max-width : 990px){
-    .shrinkGone{
-      display: none;
-
+@media (max-width: 990px) {
+    .shrinkGone {
+        display: none;
     }
-  }
-  @media (max-width : 770px){
-    
-  }
-  
-  @media (max-width : 660px){
-   
-  }
+}
+
+@media (max-width: 770px) {}
+
+@media (max-width: 660px) {}

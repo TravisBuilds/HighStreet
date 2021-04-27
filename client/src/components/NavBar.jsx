@@ -26,6 +26,7 @@ const NavBar = () => (
       </Nav>
       <Form inline>
         <Button variant="outline-primary">Connect Wallet</Button>
+        <Button variant="outline-primary" onClick={() => { window.location.href = '/auth/instagram'; }}>Instagram Login</Button>
       </Form>
     </Navbar>
   </>

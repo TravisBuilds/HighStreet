@@ -1,5 +1,6 @@
 import React, { createContext, useState } from 'react';
 import Web3 from 'web3';
+import User from '../libs/user';
 
 const context = createContext(null);
 const UserProvider = ({ children }) => {
@@ -14,6 +15,9 @@ const UserProvider = ({ children }) => {
         console.log('network:', network);
         const account = await window.web3.eth.getAccounts();
         console.log('account', account[0]);
+
+        User.connectMetamask(account[0], '');
+        // TODO: save to server
         setUserAccount(account[0]);
       } catch (error) {
         console.log(error);
@@ -22,6 +26,7 @@ const UserProvider = ({ children }) => {
       console.log('need metamask');
     }
   });
+
   return (
     <context.Provider value={userAccount}>
       {children}
