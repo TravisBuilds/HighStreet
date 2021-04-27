@@ -31,9 +31,10 @@
   "globals": {
     "document": true,
     "window": true,
+    "fetch": true,
     "jest": true,
     "describe": true,
-    "test": true,
-    "expect": true
+    "expect": true,
+    "test": true
   }
 }

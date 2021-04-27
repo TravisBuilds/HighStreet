@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useWeb3Context } from 'web3-react';
 import { ethers } from 'ethers';
-import styled from 'styled-components';
 
 export default function Web3ReactManager({ children }) {
   const { setConnector, error, active } = useWeb3Context();
@@ -38,13 +37,16 @@ export default function Web3ReactManager({ children }) {
     };
   }, []);
 
+  const Message = (props) => <h1 style={{ textAlign: 'center', color: 'blue' }}>{props.children}</h1>;
+
   if (error) {
     console.error(error);
     return <Message>Connection Error.</Message>;
-  } if (!active) {
+  }
+
+  if (!active) {
     return showLoader ? <Message>Initializing...</Message> : null;
   }
+
   return children;
 }
-
-const Message = styled.h1`text-align: center; color: ${(props) => props.theme.lumiereBlue};`;

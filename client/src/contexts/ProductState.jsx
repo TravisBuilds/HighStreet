@@ -23,7 +23,6 @@ const initialState = {
       tagline: 'Essence of Nature',
       blurb: "Nature's first green is gold, infused in a liquor that will make it truly last forever",
       feature: kalonfeature
-
     },
     {
       name: "L'Oréal ",
@@ -57,7 +56,6 @@ const initialState = {
       tagline: 'Making it Real',
       blurb: 'A timeless first and a vibrant way to touch up both your digital and IRL identity',
       feature: lvmhfeature
-
     }
   ]
 };

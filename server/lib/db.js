@@ -28,6 +28,7 @@ async function openConnection(uConfig = {}) {
       db = client.db(config.mongoDbName);
 
       collections.users = db.collection('users');
+      collections.merchants = db.collection('merchants');
 
       resolve();
     });
