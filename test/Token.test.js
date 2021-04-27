@@ -9,8 +9,8 @@ require('chai')
 contract('Token', (accounts) => {
 	let exp = 330000				// assuming price function exponential factor of 2, input reserve ratio in ppm
 	let max = 500						// assuming max 500 token will be minted
-	let offset = 10
-	let baseReserve = web3.utils.toWei('0.33', 'ether')
+	let offset = 3
+	let baseReserve = web3.utils.toWei('9', 'ether')
 	let tokenInstance
 	let buyer
 	describe('Token Logic Checks', async () => {
@@ -59,7 +59,7 @@ contract('Token', (accounts) => {
 
 			it('account 1 buying one token with extra should return change', async() => {
 				const cost = await tokenInstance.getPriceForN.call('1')
-				const newCost = cost.add(new BN('100000'))			// round up for rounding...?
+				const newCost = cost.add(new BN('100000'))			
 				// console.log(cost.toString())
 				await tokenInstance.buy({value: newCost, from: buyer})
 				// check for transaction events

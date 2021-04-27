@@ -196,9 +196,11 @@ contract ProductToken is ERC20, BancorBondingCurve {
 
     _burn(msg.sender, _amount);
     tradeinCount = tradeinCount + _amount;			// Future: use safe math here.
+    // To-do: provide revenue to vendor
+
     emit Tradein(msg.sender, _amount);
   }
 
   // Need to design function to withdraw liquidity and return it to the owner.
-  
+
 }
