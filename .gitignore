@@ -5,3 +5,6 @@ node_modules/*
 .env
 server/config/config.env
 server/server.*
+.endpoint
+.secret
+.DS_Store
