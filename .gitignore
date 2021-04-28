@@ -4,3 +4,6 @@ node_modules
 client/src/build/*
 server/config/config.env
 server/server.*
+.endpoint
+.secret
+.DS_Store

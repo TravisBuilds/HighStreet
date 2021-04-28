@@ -17,9 +17,11 @@
     "passport-instagram-basic-api": "^1.0.0"
   },
   "devDependencies": {
+    "@truffle/hdwallet-provider": "^1.2.2",
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
-    "chai-bn": "^0.2.1"
+    "chai-bn": "^0.2.1",
+    "solc": "^0.8.4"
   },
   "scripts": {
     "start": "node server"
