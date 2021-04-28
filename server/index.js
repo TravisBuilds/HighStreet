@@ -1,56 +1,41 @@
-const express = require('express')
-const dotenv = require ('dotenv')
-const connectDB = require('./config/db')
-const passport = require('passport');
-const cors = require('cors');
-const session = require('express-session');
-const mongoose = require('mongoose')
-const MongoStore = require('connect-mongo')(session);
-const morgan = require('morgan');
-
-//load config
-dotenv.config({path: './config/config.env'})
-
-//passport config 
-require('./config/passport')(passport)
-
-
-
-connectDB()
-const app = express()
-app.use(cors({
-    origin: "http://localhost:3000",
-    methods: "GET, HEAD, PUT, PATCH, POST, DELETE",
-    credentials: true
-}));
-
-//express-session middleware
-app.use(session({
-    secret: 'lalala meow',
-    resave: false,
-    saveUninitialized:false,
-    store: new MongoStore({mongooseConnection: mongoose.connection})
-}));
-
-//body parser
-app.use(express.json()) 
-app.use(express.urlencoded({extended: true}))
-
-//passport middleware 
-app.use(passport.initialize());
-app.use(passport.session());
-
-//Routes 
-app.use('/auth',require('./routes/auth'));
-// app.use('/user', require('./routes/users'));
-
-
-
-app.use('/', express.static('client/build'))
-app.use('/:path', express.static('client/build'))
-
-if(process.env.NODE_ENV === 'development'){
-    app.use(morgan('dev'))
+const path = require('path');
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config(path.resolve(process.cwd(), '../.env'));
 }
-const PORT = process.env.PORT || 8000
-app.listen(PORT, console.log(`Server running in${process.env.NODE_ENV} mode on port ${PORT}`))
+
+const fs = require('fs');
+const express = require('express');
+const https = require('https')
+const cookieParser = require('cookie-parser');
+const db = require('./lib/db');
+const passport = require('./lib/passport');
+const Auth = require('./routes/auth');
+const User = require('./routes/user');
+
+const app = express();
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(passport.initialize());
+
+app.get('/auth/instagram', passport.authenticate('instagram'));
+app.get('/auth/instagram/callback', passport.authenticate('instagram', { failureRedirect: '/login' }), Auth.oauthCallback);
+
+app.post('/api/user/connectMetamask', User.connectMetamask);
+
+app.use('/', express.static(path.join(__dirname, '../client/build')));
+app.use('/:page', express.static(path.join(__dirname, '../client/build')));
+
+db.openConnection().then(() => {
+  const server = https.createServer({
+    key: fs.readFileSync('./server/server.key'),
+    cert: fs.readFileSync('./server/server.cert')
+  }, app).listen(process.env.PORT || 3030);
+  server.on('listening', () => console.log(`Server listening on port ${process.env.PORT || 3030}`));
+});
+
+process.on('unhandledRejection', (r) => {
+  console.error('unhandledRejection', r);
+  process.exit(1);
+});
