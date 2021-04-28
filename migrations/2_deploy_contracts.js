@@ -6,4 +6,6 @@ module.exports = async function (deployer, network) {
 	// const token = await Token.deployed();
 	await deployer.deploy(Factory);
 	const factory = await Factory.deployed();
+	let token = await factory.createToken("Kalon Tea", 330000, 500, 3, web3.utils.toWei('9', 'ether'));
+	// let address = await factory.retrieveToken("Kalon Tea");		// this is how you retrieve token.	
 };
