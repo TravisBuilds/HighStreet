@@ -15,6 +15,13 @@ async function connectMetamask(req, res) {
   res.send({ user: newUser });
 }
 
+async function getByWalletAddress(req, res) {
+  const { walletAddress } = req.query;
+  const user = await users.findOne({ walletAddress });
+  res.send({ user });
+}
+
 module.exports = {
-  connectMetamask
+  connectMetamask,
+  getByWalletAddress
 };
