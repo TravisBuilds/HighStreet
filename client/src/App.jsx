@@ -4,6 +4,7 @@ import { Route, BrowserRouter } from 'react-router-dom';
 import UserProvider from './contexts/UserProvider';
 import Home from './pages/Home';
 import About from './pages/About';
+import Profile from './pages/Profile';
 import Trade from './pages/Trade';
 import Discover from './pages/Discover';
 import NavBar from './components/NavBar';
@@ -28,6 +29,7 @@ function App() {
           <UserProvider>
             <Route path="/" component={NavBar} />
             <Route path="/about" component={About} />
+            <Route path="/profile" component={Profile} />
             <ProductProvider>
               <StoreProvider>
                 <Route exact path="/trade" component={Trade} />

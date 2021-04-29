@@ -22,6 +22,7 @@ app.use(passport.initialize());
 app.get('/auth/instagram', passport.authenticate('instagram'));
 app.get('/auth/instagram/callback', passport.authenticate('instagram', { failureRedirect: '/login' }), Auth.oauthCallback);
 
+app.get('/api/user/:walletAddress', User.getByWalletAddress);
 app.post('/api/user/connectMetamask', User.connectMetamask);
 
 app.use('/', express.static(path.join(__dirname, '../client/build')));
