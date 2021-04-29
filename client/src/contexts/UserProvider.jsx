@@ -17,7 +17,6 @@ const UserProvider = ({ children }) => {
         console.log('account', account[0]);
 
         User.connectMetamask(account[0], '');
-        // TODO: save to server
         setUserAccount(account[0]);
       } catch (error) {
         console.log(error);

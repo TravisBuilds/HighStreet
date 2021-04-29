@@ -22,6 +22,7 @@ const NavBar = () => (
         <Nav.Link href="/">Home</Nav.Link>
         <Nav.Link href="/about">About</Nav.Link>
         <Nav.Link href="/Discover">Discover</Nav.Link>
+        <Nav.Link href="/Profile">Profile</Nav.Link>
         <Nav.Link href="/#downloads">Download</Nav.Link>
       </Nav>
       <Form inline>

@@ -108,6 +108,11 @@ html {
     width: 50%;
 }
 
+.RPMClass {
+    width: 80%;
+    height: 600px;
+}
+
 @media (max-width: 990px) {
     .shrinkGone {
         display: none;
