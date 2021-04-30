@@ -45,16 +45,20 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
    *
   */
   function buy() public payable {
-    require(msg.value > 0, "Must send ether to buy tokens.");
+    uint256 balance =_dai_balanceOf(msg.sender);
+    require(mbalance> 0, "Must send Dai to buy tokens.");
+//    require(msg.value > 0, "Must send ether to buy tokens.");
     uint256 amount;
     uint256 change;    
-    (amount, change) = _buyForAmount(msg.value.mul(960000).div(1000000)); // ppm of 96%. 4% is the platform transaction fee
+    (amount, change) = _buyForAmount(balance.mul(960000).div(1000000)); // ppm of 96%. 4% is the platform transaction fee
     // return change back to the sender.
     if (amount > 0) {                                               // If token transaction went through successfully
-      msg.sender.transfer(change);
+     // msg.sender.transfer(change);
+       _dai_transfers(msg.sender,change);
     }
     else {                                                          // If token transaction failed
-      msg.sender.transfer(_amount);                                 
+      msg.sender.transfer(_amount);
+       _dai_transfers(msg.sender,balance);                                  
     }
   }
 
@@ -64,7 +68,8 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
   */
  	function sell(uint32 _amount) public {
     uint256 returnAmount = _sellForAmount(_amount);
-    msg.sender.transfer(returnAmount.mul(980000).div(1000000));     // ppm of 98%. 2% is the platform transaction fee
+    _dai_transfers(msg.sender,returnAmount); 
+//    msg.sender.transfer(returnAmount.mul(980000).div(1000000));     // ppm of 98%. 2% is the platform transaction fee
   }
 
 	/**
