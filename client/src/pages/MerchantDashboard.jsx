@@ -1,6 +1,6 @@
 import React from 'react';
 
-const BusinessPortal = () => (
+const MerchantDashboard = () => (
   <div>
     We will have a few choices
     Price of Product,
@@ -9,4 +9,4 @@ const BusinessPortal = () => (
   </div>
 );
 
-export default BusinessPortal;
+export default MerchantDashboard;
