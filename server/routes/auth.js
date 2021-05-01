@@ -1,32 +1,32 @@
-const express = require('express')
-const router = express.Router()
-const passport = require('passport')
+const expressJWT = require('express-jwt');
 
+const cookieAge = 60 * 60 * 1000; // 1 hour
 
+function requireLogin() {
+  const secret = process.env.JWT_SECRET;
+  return expressJWT({
+    secret,
+    algorithms: ['RS256'],
+    getToken: (req) => {
+      if (req.headers.authorization && ['bearer', 'jwt'].includes(req.headers.authorization.split(' ')[0].toLowerCase())) {
+        return req.headers.authorization.split(' ')[1];
+      } if (req.query && req.query.token) {
+        return req.query.token;
+      } if (req.cookies && req.cookies.jwt) {
+        return req.cookies.jwt;
+      }
+      return null;
+    }
+  });
+}
 
+function oauthCallback(req, res) {
+  const { jwtToken } = req.user;
+  res.cookie('jwt', jwtToken, { httpOnly: true, maxAge: cookieAge });
+  res.redirect('/');
+}
 
-
-//@desc Auth with Inmstagra
-//@route GET /auth/instagram
-// router.get('/instagram', passport.authenticate('instagram', {scope:['profile']}));
-router.get('/instagram', passport.authenticate('instagram', {scope: ['profile']}));
-
-
-
-//@desc instagram auth callback
-//@route GET /auth/instagram/callback
-router.get('/instagram/callback', passport.authenticate('google', {failureRedirect:'/'}), (req,res)=> {
-    res.redirect('/profile')
-});
-
-
-//@desc instagram auth logout
-//@route GET /auth/logout
-router.get('/logout', (req,res)=> {
-    user = {};
-    console.log("logging out ");
-    res.redirect('/')
-
-});
-
-module.exports = router
+module.exports = {
+  requireLogin,
+  oauthCallback
+};

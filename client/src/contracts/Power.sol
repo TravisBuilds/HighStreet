@@ -1,4 +1,4 @@
-pragma solidity ^0.6.6;
+pragma solidity ^0.8.2;
 /**
  * bancor formula by bancor
  * https://github.com/bancorprotocol/contracts
@@ -15,7 +15,7 @@ contract Power {
   uint8 private constant MIN_PRECISION = 32;
   uint8 private constant MAX_PRECISION = 127;
 
-  /**
+  /***
     The values below depend on MAX_PRECISION. If you choose to change it:
     Apply the same change in file 'PrintIntScalingFactors.py', run it and paste the results below.
   */
@@ -23,14 +23,14 @@ contract Power {
   uint256 private constant FIXED_2 = 0x100000000000000000000000000000000;
   uint256 private constant MAX_NUM = 0x1ffffffffffffffffffffffffffffffff;
 
-  /**
+  /***
     The values below depend on MAX_PRECISION. If you choose to change it:
     Apply the same change in file 'PrintLn2ScalingFactors.py', run it and paste the results below.
   */
   uint256 private constant LN2_MANTISSA = 0x2c5c85fdf473de6af278ece600fcbda;
   uint8   private constant LN2_EXPONENT = 122;
 
-  /**
+  /***
     The values below depend on MIN_PRECISION and MAX_PRECISION. If you choose to change either one of them:
     Apply the same change in file 'PrintFunctionBancorFormula.py', run it and paste the results below.
   */
