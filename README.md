@@ -45,6 +45,7 @@ Membership is a right earned by staking our platform token. Platform token utili
 ## Governance 
 Owning platform tokens enable users to participate in the governance process through a decentralized organization, with proposals and voting structures. They are also able to vote on issues related to operations and how to streamline and onboard future products. 
 
+
 ## Staking Yield 
 Staking incentives are our way of creating monetary and governance incentives for our most committed members. Based on our staking and reward projections. Liquidity providers for our platform token will have product tokens allocated to them everytime a new product is dropped. A portion of platform tokens are also reserved for early stakers, this incentivizes stakers to hold their tokens while the market is maturing and new brands and shops are being added. Staking rewards will decrease as platform becomes self sustaining. 
 
