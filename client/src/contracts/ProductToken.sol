@@ -1,10 +1,10 @@
-pragma solidity ^0.6.6;
+pragma solidity ^0.8.2;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+// import "@openzeppelin/contracts/access/Ownable.sol";
 import "./BancorBondingCurve.sol";
 
-contract ProductToken is ERC20, Ownable, BancorBondingCurve {
+contract ProductToken is ERC20, BancorBondingCurve {
 	using SafeMath for uint256;
 
 	event Buy(address indexed sender, uint32 amount, uint deposit);		// event to fire when a new token is minted
@@ -51,10 +51,10 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
     (amount, change) = _buyForAmount(msg.value.mul(960000).div(1000000)); // ppm of 96%. 4% is the platform transaction fee
     // return change back to the sender.
     if (amount > 0) {                                               // If token transaction went through successfully
-      msg.sender.transfer(change);
+      payable(msg.sender).transfer(change);
     }
     else {                                                          // If token transaction failed
-      msg.sender.transfer(_amount);                                 
+      payable(msg.sender).transfer(msg.value);                                 
     }
   }
 
@@ -64,7 +64,7 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
   */
  	function sell(uint32 _amount) public {
     uint256 returnAmount = _sellForAmount(_amount);
-    msg.sender.transfer(returnAmount.mul(980000).div(1000000));     // ppm of 98%. 2% is the platform transaction fee
+    payable(msg.sender).transfer(returnAmount.mul(980000).div(1000000));     // ppm of 98%. 2% is the platform transaction fee
   }
 
 	/**
@@ -196,6 +196,11 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
 
     _burn(msg.sender, _amount);
     tradeinCount = tradeinCount + _amount;			// Future: use safe math here.
+    // To-do: provide revenue to vendor
+
     emit Tradein(msg.sender, _amount);
   }
+
+  // Need to design function to withdraw liquidity and return it to the owner.
+
 }

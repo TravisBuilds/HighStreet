@@ -9,8 +9,8 @@ require('chai')
 contract('Token', (accounts) => {
 	let exp = 330000				// assuming price function exponential factor of 2, input reserve ratio in ppm
 	let max = 500						// assuming max 500 token will be minted
-	let offset = 10
-	let baseReserve = web3.utils.toWei('0.33', 'ether')
+	let offset = 3
+	let baseReserve = web3.utils.toWei('9', 'ether')
 	let tokenInstance
 	let buyer
 	describe('Token Logic Checks', async () => {
@@ -25,7 +25,7 @@ contract('Token', (accounts) => {
 		})
 
 		xcontext('Pricing Functions', async() => {
-			it('Actual Price to buy one token', async() => {			
+			it('Actual Price to buy one token', async() => {
 				const cost = await tokenInstance.getPriceForN.call('1')
 				// assert.isAbove(costBN, new BN('0'), "currnet price is not above 0")
 				cost.should.be.a.bignumber.that.is.greaterThan('0')
@@ -35,9 +35,7 @@ contract('Token', (accounts) => {
 				const cost = await tokenInstance.getPriceForN.call("1")
 				console.log(cost.toString())
 				// const newCost = cost.toNumber().add(1)		// need to do big number addition here.
-				// console.log(newCost.toString())
 				const newCost = cost.add(new BN('1'))			// round up for rounding...?
-				// console.log(newCost.toString())
 				const amount = await tokenInstance.calculateBuyReturn.call(newCost)
 				amount.should.be.a.bignumber.that.equals('1')
 			})
@@ -47,20 +45,16 @@ contract('Token', (accounts) => {
 			xit('account 1 buying one token using ether', async() => {
 				const cost = await tokenInstance.getPriceForN.call('1')
 				const newCost = cost.add(new BN('1'))			// round up for rounding...?
-				// console.log(cost.toString())
 				await tokenInstance.buy({value: newCost, from: buyer})
 				const balance = await tokenInstance.balanceOf.call(buyer)
-				// console.log(balance.toString())
 				balance.should.be.a.bignumber.that.equals('1')
 				const supply = await tokenInstance.totalSupply.call()
-				// console.log(supply.toString())
 				supply.should.be.a.bignumber.that.equals('2')
 			})
 
 			it('account 1 buying one token with extra should return change', async() => {
 				const cost = await tokenInstance.getPriceForN.call('1')
 				const newCost = cost.add(new BN('100000'))			// round up for rounding...?
-				// console.log(cost.toString())
 				await tokenInstance.buy({value: newCost, from: buyer})
 				// check for transaction events
 			})
