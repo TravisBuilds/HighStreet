@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import Button from 'react-bootstrap/Button';
-import UserProvider from '../contexts/UserProvider';
+import UserProvider from '../contexts/UserState';
 import User from '../libs/user';
 
 const AvatarGenerator = () => {

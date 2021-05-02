@@ -21,7 +21,6 @@ import oculus from '../assets/oculus.png';
 import metaverse from '../assets/backgroundMetaverse.png';
 
 import { ProductContext } from '../contexts/ProductState';
-import { StoreContext } from '../contexts/StoreState';
 
 const Home = () => {
   const history = useHistory();
@@ -30,12 +29,9 @@ const Home = () => {
   };
 
   const { products } = useContext(ProductContext);
-  const { store } = useContext(StoreContext);
 
   useInjectedWeb3();
   useLoadinjectedEthersState();
-
-  console.log(store.selectedEthAddr);
 
   return (
     <div className="landing">
@@ -96,8 +92,6 @@ const Home = () => {
                             <Card.Header style={{ padding: '0', backgroundColor: 'none', border: '0' }}>{p[0].name}</Card.Header>
                             <Card.Title><strong>{p[0].tagline}</strong></Card.Title>
                             <Card.Text>{p[0].blurb}</Card.Text>
-                            <br />
-                            <br />
                             <Button onClick={() => handleClick('trade')} variant="light" style={{ borderRadius: '50px', width: '8rem' }}><strong>Trade</strong></Button>
 
                           </Card.ImgOverlay>
@@ -113,8 +107,6 @@ const Home = () => {
 
                             <Card.Title>{p[1].tagline}</Card.Title>
                             <Card.Text>{p[1].blurb}</Card.Text>
-                            <br />
-                            <br />
                             <Button onClick={() => handleClick('trade')} style={{ borderRadius: '50px', width: '8rem' }} variant="light"><strong>Trade</strong></Button>
 
                           </Card.ImgOverlay>
@@ -140,8 +132,6 @@ const Home = () => {
               </Row>
             </div>
             <div id="feeStruct">
-              <br />
-              <br />
               <Row>
                 <Col>
                   <h3>

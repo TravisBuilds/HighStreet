@@ -19,11 +19,13 @@
     }],
     "no-console": "warn",
     "no-underscore-dangle": "off",
+    "no-unused-vars": "warn",
     "no-use-before-define": "warn",
     "object-curly-newline": "off",
 
     "react/destructuring-assignment": "off",
     "react/jsx-props-no-spreading": "off",
+    "react/jsx-one-expression-per-line": "off",
     "react/prop-types": "off",
 
     "testing-library/prefer-screen-queries": "error"

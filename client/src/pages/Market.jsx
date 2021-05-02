@@ -10,7 +10,7 @@ import Tilt from 'react-tilt';
 import TradeCard from '../components/TradeCard';
 import { ProductContext } from '../contexts/ProductState';
 
-const Trade = () => {
+const Market = () => {
   const [active, setActive] = useState('none');
   const [
     buttonDisabled
@@ -126,4 +126,4 @@ const Trade = () => {
   );
 };
 
-export default Trade;
+export default Market;
