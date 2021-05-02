@@ -1,5 +1,5 @@
 import React, { createContext, useReducer } from 'react';
-import { ethers } from 'ethers';
+// import { ethers } from 'ethers';
 import ProductReducer from './ProductReducer';
 import kalonCard from '../assets/product1.png';
 import loreal from '../assets/product2.png';
@@ -9,30 +9,30 @@ import kalonfeature from '../assets/kalon.png';
 import lvmhfeature from '../assets/lvmh.png';
 import lorealfeature from '../assets/loreal.png';
 import randomfeature from '../assets/randomfeature.png';
-import Token from '../build/contracts/ProductToken.json';
+// import Token from '../build/contracts/ProductToken.json';
 
 // const url = 'https://mainnet.infura.io/v3/8b2af5854ccb42c5a77e0240af22f281';
-const provider = new ethers.providers.Web3Provider(window.ethereum);
-const signer = provider.getSigner();
-let networkId;
-let contract;
-let contractWSigner;
-provider.getNetwork().then((result) => {
-  console.log(`Network Retrieved: ${result}`);
-  networkId = result.chainId;
-  console.log(`Network ID: ${networkId}`);
-  const networkData = Token.networks[networkId];
-  if (networkData) {
-    console.log('Ready to connect to contract.');
-    contract = new ethers.Contract(networkData.address, Token.abi, provider);
-    contractWSigner = contract.connect(signer);
-    console.log(contractWSigner);
-  } else {
-    console.log("Contract wasn't deployed properly.");
-  }
-}).catch((e) => {
-  console.log(e);
-});
+// const provider = new ethers.providers.Web3Provider(window.ethereum);
+// const signer = provider.getSigner();
+// let networkId;
+// let contract;
+// let contractWSigner;
+// provider.getNetwork().then((result) => {
+//   console.log(`Network Retrieved: ${result}`);
+//   networkId = result.chainId;
+//   console.log(`Network ID: ${networkId}`);
+//   const networkData = Token.networks[networkId];
+//   if (networkData) {
+//     console.log('Ready to connect to contract.');
+//     contract = new ethers.Contract(networkData.address, Token.abi, provider);
+//     contractWSigner = contract.connect(signer);
+//     console.log(contractWSigner);
+//   } else {
+//     console.log("Contract wasn't deployed properly.");
+//   }
+// }).catch((e) => {
+//   console.log(e);
+// });
 
 // import ProductToken.sol
 // Initial Placeholder
@@ -86,7 +86,7 @@ const initialState = {
 };
 
 // Create Context
-export const ProductContext = createContext(initialState);
+const ProductContext = createContext(initialState);
 
 // Provider Component
 const ProductProvider = ({ children }) => {
@@ -123,5 +123,7 @@ const ProductProvider = ({ children }) => {
     </ProductContext.Provider>
   );
 };
+
+ProductProvider.context = ProductContext;
 
 export default ProductProvider;

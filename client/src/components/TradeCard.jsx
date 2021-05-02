@@ -8,7 +8,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
-import { ProductContext } from '../contexts/ProductState';
+import ProductProvider from '../contexts/ProductProvider';
 import kalonCard from '../assets/product1.png';
 
 const TradeCard = (props) => {
@@ -28,7 +28,7 @@ const TradeCard = (props) => {
     img: kalonCard
   });
 
-  const { products, tokenBought } = useContext(ProductContext);
+  const { products, tokenBought } = useContext(ProductProvider.context);
 
   console.log(myProduct);
   console.log('here are props');

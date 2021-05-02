@@ -1,12 +1,12 @@
 import React, { useContext, useState } from 'react';
 import Button from 'react-bootstrap/Button';
-import UserProvider from '../contexts/UserState';
+import WalletProvider from '../contexts/WalletProvider';
 import User from '../libs/user';
 
 const AvatarGenerator = () => {
   const [avatarLink, setAvatarLink] = useState('');
 
-  const walletAddress = useContext(UserProvider.context);
+  const wallet = useContext(WalletProvider.context);
 
   const receiveMessage = (event) => {
     if (!avatarLink) {
@@ -14,7 +14,7 @@ const AvatarGenerator = () => {
         const avatarUrl = event.data;
         setAvatarLink(avatarUrl);
         User.connectMetamask({
-          walletAddress,
+          walletAddress: wallet.address,
           avatarUrl
         });
       }
