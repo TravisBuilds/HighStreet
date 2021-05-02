@@ -20,7 +20,7 @@ import steam from '../assets/steam.png';
 import oculus from '../assets/oculus.png';
 import metaverse from '../assets/backgroundMetaverse.png';
 
-import { ProductContext } from '../contexts/ProductState';
+import ProductProvider from '../contexts/ProductProvider';
 
 const Home = () => {
   const history = useHistory();
@@ -28,7 +28,7 @@ const Home = () => {
     history.push(path);
   };
 
-  const { products } = useContext(ProductContext);
+  const { products } = useContext(ProductProvider.context);
 
   useInjectedWeb3();
   useLoadinjectedEthersState();
@@ -93,7 +93,6 @@ const Home = () => {
                             <Card.Title><strong>{p[0].tagline}</strong></Card.Title>
                             <Card.Text>{p[0].blurb}</Card.Text>
                             <Button onClick={() => handleClick('trade')} variant="light" style={{ borderRadius: '50px', width: '8rem' }}><strong>Trade</strong></Button>
-
                           </Card.ImgOverlay>
                         </Card>
                       </Col>
@@ -104,15 +103,12 @@ const Home = () => {
                           <Card.Img src={p[1].feature} alt="Card image" />
                           <Card.ImgOverlay>
                             <Card.Header style={{ padding: '0', backgroundColor: 'none', border: '0' }}>{p[1].name}</Card.Header>
-
                             <Card.Title>{p[1].tagline}</Card.Title>
                             <Card.Text>{p[1].blurb}</Card.Text>
                             <Button onClick={() => handleClick('trade')} style={{ borderRadius: '50px', width: '8rem' }} variant="light"><strong>Trade</strong></Button>
-
                           </Card.ImgOverlay>
                         </Card>
                       </Col>
-
                     </div>
                   </Row>
                 </CardDeck>
@@ -128,7 +124,6 @@ const Home = () => {
                 <Col>
                   <h1>Fee Structure </h1>
                 </Col>
-
               </Row>
             </div>
             <div id="feeStruct">

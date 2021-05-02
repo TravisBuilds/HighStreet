@@ -1,9 +1,9 @@
 import { useContext, useEffect } from 'react';
 import { ethers } from 'ethers';
-import { StoreContext } from '../../contexts/StoreState';
+import StoreProvider from '../../contexts/StoreProvider';
 
 export default function useLoadInjectedEthersState() {
-  const { store, setSelectedEthAddr, setEthBalance, setEthersProvider } = useContext(StoreContext);
+  const { store, setSelectedEthAddr, setEthBalance, setEthersProvider } = useContext(StoreProvider.context);
 
   useEffect(() => {
     if (store.injectedProvider) {
