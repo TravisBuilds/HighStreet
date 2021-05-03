@@ -28,7 +28,7 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
    * @param _reserveRatio             the reserve ratio in the curve function
    * @param _maxTokenCount						the amount of token that will exist for this type.
   */
-  constructor(uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve) ERC20("ProductToken", "") public {		
+  constructor(uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve,address _daiToken) ERC20("ProductToken", "") DaiToken(_daiToken)  public {		
   	require(_maxTokenCount > 0, "Invalid max token count.");
     require(_reserveRatio > 0, "Invalid reserve ratio");
 
@@ -44,21 +44,20 @@ contract ProductToken is ERC20, Ownable, BancorBondingCurve {
    * @dev When user wants to buy tokens from the pool
    *
   */
-  function buy() public payable {
-    uint256 balance =_dai_balanceOf(msg.sender);
-    require(mbalance> 0, "Must send Dai to buy tokens.");
-//    require(msg.value > 0, "Must send ether to buy tokens.");
+  function buy(uint256 buyAmount) public payable {
+    require(buyAmount> 0, "Must send Dai to buy tokens.");
+    // require(msg.value > 0, "Must send ether to buy tokens.");
     uint256 amount;
     uint256 change;    
-    (amount, change) = _buyForAmount(balance.mul(960000).div(1000000)); // ppm of 96%. 4% is the platform transaction fee
+    (amount, change) = _buyForAmount(buyAmount.mul(960000).div(1000000)); // ppm of 96%. 4% is the platform transaction fee
     // return change back to the sender.
     if (amount > 0) {                                               // If token transaction went through successfully
-     // msg.sender.transfer(change);
-       _dai_transfers(msg.sender,change);
+      // payable(msg.sender).transfer(change);
+      _dai_transfers(msg.sender,change);
     }
     else {                                                          // If token transaction failed
-      msg.sender.transfer(_amount);
-       _dai_transfers(msg.sender,balance);                                  
+      // payable(msg.sender).transfer(msg.value);  
+      _dai_transfers(msg.sender,buyAmount);                               
     }
   }
 

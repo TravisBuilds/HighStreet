@@ -7,7 +7,7 @@ contract DaiToken {
     constructor(address _daiToken)
     public 
     {
-        daitoken = IERC20(addr);
+        daitoken = IERC20(_daiToken);
     }
 
     function _dai_approves(uint256 _value) public {
