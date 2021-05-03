@@ -29,11 +29,16 @@ app.use('/', express.static(path.join(__dirname, '../client/build')));
 app.use('/:page', express.static(path.join(__dirname, '../client/build')));
 
 db.openConnection().then(() => {
-  const server = https.createServer({
-    key: fs.readFileSync('./server/server.key'),
-    cert: fs.readFileSync('./server/server.cert')
-  }, app).listen(process.env.PORT || 3030);
-  server.on('listening', () => console.log(`Server listening on port ${process.env.PORT || 3030}`));
+  if (process.env.NODE_ENV === 'production') {
+    const server = app.listen(process.env.PORT || 3030);
+    server.on('listening', () => console.log(`Server listening on port ${process.env.PORT || 3030}`));
+  } else {
+    const server = https.createServer({
+      key: fs.readFileSync('./server/server.key'),
+      cert: fs.readFileSync('./server/server.cert')
+    }, app).listen(process.env.PORT || 3030);
+    server.on('listening', () => console.log(`Server listening on port ${process.env.PORT || 3030}`));
+  }
 });
 
 process.on('unhandledRejection', (r) => {
