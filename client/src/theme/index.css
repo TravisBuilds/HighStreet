@@ -84,7 +84,6 @@ code {
     border-radius: 50px;
     margin-right: 10px;
 }
-
 .cardJumbo {
     display: flex;
     width: 100%;
@@ -126,3 +125,4 @@ code {
         display: none;
     }
 }
+

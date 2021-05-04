@@ -1,5 +1,6 @@
 import { useContext, useEffect } from 'react';
 import { ethers } from 'ethers';
+
 import StoreProvider from '../../contexts/StoreProvider';
 
 export default function useLoadInjectedEthersState() {
@@ -30,7 +31,6 @@ export default function useLoadInjectedEthersState() {
         const converted = await ethers.utils.formatEther(balance);
 
         setEthersProvider(provider);
-
         setEthBalance(converted);
       }
     };
