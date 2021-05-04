@@ -36,7 +36,7 @@ const Home = () => {
   return (
     <div className="landing">
       <div id="jumbo">
-        <Jumbotron style={{ margin: '0', background: '#4A90E2', color: 'white', }} fluid>
+        <Jumbotron fluid>
           <Container>
             <Row>
               <Col>
@@ -57,7 +57,9 @@ const Home = () => {
                       <img src={metamask} alt="metamask" />
                     </Button>
 
-                    <Button variant="outline-light"><img src={brands} alt="brands" /></Button>
+                    <Button variant="outline-light" onClick={() => { window.location.href = '/merchant-signup'; }}>
+                      <img src={brands} alt="brands" />
+                    </Button>
                   </div>
                 </div>
               </Col>
@@ -114,10 +116,9 @@ const Home = () => {
                 </CardDeck>
               </Carousel.Item>
             ))}
-
           </Carousel>
         </Container>
-        <Jumbotron style={{ margin: '0', background: '#F6F8F9' }} fluid>
+        <Jumbotron fluid>
           <Container>
             <div className="title">
               <Row>
@@ -160,7 +161,7 @@ const Home = () => {
           </Container>
         </Jumbotron>
 
-        <Jumbotron style={{ margin: '0', backgroundImage: `url(${metaverse})` }} fluid>
+        <Jumbotron style={{ backgroundImage: `url(${metaverse})` }} fluid>
           <Container>
             <div className="title2" id="downloads">
               <Row>
@@ -192,7 +193,7 @@ const Home = () => {
           </Container>
         </Jumbotron>
 
-        <Jumbotron style={{ margin: '0', background: '#4A90E2', color: 'white' }} fluid>
+        <Jumbotron fluid>
           <Container>
             <Row>
               <Col />
