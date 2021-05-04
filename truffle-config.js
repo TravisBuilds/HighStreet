@@ -18,12 +18,12 @@
  *
  */
 
-const HDWalletProvider = require('@truffle/hdwallet-provider');
+// const HDWalletProvider = require('@truffle/hdwallet-provider');
 // const infuraKey = "fj4jll3k.....";
 //
-const fs = require('fs');
-const privateKey = fs.readFileSync(".secret").toString().trim();
-const endpointUrl = fs.readFileSync(".endpoint").toString().trim();
+// const fs = require('fs');
+// const privateKey = fs.readFileSync(".secret").toString().trim();
+// const endpointUrl = fs.readFileSync(".endpoint").toString().trim();
 
 module.exports = {
   /**
@@ -59,12 +59,14 @@ module.exports = {
     // },
     // Useful for deploying to a public network.
     // NB: It's important to wrap the provider as a function.
-    rinkeby: {
-      provider: () => new HDWalletProvider([privateKey], endpointUrl),
-      network_id: 4,
-      gas: 4500000,
-      gasPrice: 10000000000,
-    },
+
+    // rinkeby: {
+    //   provider: () => new HDWalletProvider([privateKey], endpointUrl),
+    //   network_id: 4,
+    //   gas: 4500000,
+    //   gasPrice: 10000000000,
+    // },
+    
     // Useful for private networks
     // private: {
     // provider: () => new HDWalletProvider(mnemonic, `https://network.io`),

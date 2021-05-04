@@ -1,5 +1,6 @@
 pragma solidity ^0.8.2;
 
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 // import "@openzeppelin/contracts/access/Ownable.sol";
 import "./BancorBondingCurve.sol";
@@ -22,15 +23,24 @@ contract ProductToken is ERC20, BancorBondingCurve {
   uint32 public tradeinCount = 0;
   uint32 public supplyOffset;
 
+  IERC20 dai;
+
 	/**
    * @dev Constructor
    *
-   * @param _reserveRatio             the reserve ratio in the curve function
+   * @param _daiAddress               the address of Dai, which is used as a payment option.
+   * @param _reserveRatio             the reserve ratio in the curve function.
    * @param _maxTokenCount						the amount of token that will exist for this type.
+   * @param _supplyOffset             this amount is used to determine initial price.
+   * @param _baseReserve              the base amount of reserve tokens, in accordance to _supplyOffset.
+   *
   */
-  constructor(uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve) ERC20("ProductToken", "") public {		
-  	require(_maxTokenCount > 0, "Invalid max token count.");
+  constructor(address _daiAddress, uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve) ERC20("ProductToken", "") public {		
+  	require(_daiAddress!=address(0), "Invalid Dai token address");
+    require(_maxTokenCount > 0, "Invalid max token count.");
     require(_reserveRatio > 0, "Invalid reserve ratio");
+
+    dai = IERC20(_daiAddress);
 
     reserveBalance = _baseReserve;
     supplyOffset = _supplyOffset;
@@ -44,17 +54,38 @@ contract ProductToken is ERC20, BancorBondingCurve {
    * @dev When user wants to buy tokens from the pool
    *
   */
-  function buy() public payable {
-    require(msg.value > 0, "Must send ether to buy tokens.");
+  // function buy() public payable {
+  //   require(msg.value > 0, "Must send ether to buy tokens.");
+  //   uint256 amount;
+  //   uint256 change;    
+  //   (amount, change) = _buyForAmount(msg.value.mul(960000).div(1000000)); // ppm of 96%. 4% is the platform transaction fee
+  //   // return change back to the sender.
+  //   if (amount > 0) {                                               // If token transaction went through successfully
+    
+  //     payable(msg.sender).transfer(change);
+  //   }
+  //   else {                                                          // If token transaction failed
+    
+  //     payable(msg.sender).transfer(msg.value);                                 
+  //   }
+  // }
+  function buy(uint256 daiAmount) public {
+    require(daiAmount > 0, "Value of dai must be greater than 0 to buy tokens.");
+    // Has to ask user for approval here.
+    // bool allowed = dai.approve(address(this), daiAmount);
+    // require(allowed, "Purchase failed because transfer approval was denied.");
+    
+    bool success = dai.transferFrom(msg.sender, address(this), daiAmount);
+    require(success, "Purchase failed, amount to buy token was not successfully transferred.");
     uint256 amount;
-    uint256 change;    
-    (amount, change) = _buyForAmount(msg.value.mul(960000).div(1000000)); // ppm of 96%. 4% is the platform transaction fee
+    uint256 change;
+    (amount, change) = _buyForAmount(daiAmount.mul(960000).div(1000000)); // ppm of 96%. 4% is the platform transaction fee
     // return change back to the sender.
     if (amount > 0) {                                               // If token transaction went through successfully
-      payable(msg.sender).transfer(change);
+      dai.transfer(msg.sender, change);
     }
     else {                                                          // If token transaction failed
-      payable(msg.sender).transfer(msg.value);                                 
+      dai.transfer(msg.sender, daiAmount);                               
     }
   }
 
@@ -64,7 +95,8 @@ contract ProductToken is ERC20, BancorBondingCurve {
   */
  	function sell(uint32 _amount) public {
     uint256 returnAmount = _sellForAmount(_amount);
-    payable(msg.sender).transfer(returnAmount.mul(980000).div(1000000));     // ppm of 98%. 2% is the platform transaction fee
+    bool success = dai.transfer(msg.sender, returnAmount.mul(980000).div(1000000));        // ppm of 98%. 2% is the platform transaction fee
+    require(success, "selling token failed");
   }
 
 	/**
@@ -76,7 +108,7 @@ contract ProductToken is ERC20, BancorBondingCurve {
   	_tradeinForAmount(_amount);
   }
 
-  fallback () external payable { buy(); }
+  fallback () external { }      // should reject any ether transfer since we don't take ether.
 
   // View Functions for outside.
   function getAvailability()
@@ -201,6 +233,14 @@ contract ProductToken is ERC20, BancorBondingCurve {
     emit Tradein(msg.sender, _amount);
   }
 
+  // To-do:
   // Need to design function to withdraw liquidity and return it to the owner.
+  // All transfer functions here are vulnerable to the DDOS attack. Should implement “balance withdrawal” design pattern
+      // On second thought, this should be ok.
+  // Set gas price limit for front-running attack
+  // Implement Ownable for Factory and Token logics
+  // Implement Circuit breaker function
+  // Consider gas cost in the refund logic.
+  // Safemath 32 and Safemath 8
 
 }

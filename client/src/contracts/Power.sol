@@ -196,7 +196,7 @@ contract Power {
     - The output      is a value between 0 and floor(ln(2 ^ (256 - MAX_PRECISION) - 1) * 2 ^ MAX_PRECISION)
     This functions assumes that the numerator is larger than or equal to the denominator, because the output would be negative otherwise.
   */
-  function ln(uint256 _numerator, uint256 _denominator) internal view returns (uint256) {
+  function ln(uint256 _numerator, uint256 _denominator) internal pure returns (uint256) {
     assert(_numerator <= MAX_NUM);
 
     uint256 res = 0;
@@ -226,7 +226,7 @@ contract Power {
   /**
     Compute the largest integer smaller than or equal to the binary logarithm of the input.
   */
-  function floorLog2(uint256 _n) internal view returns (uint8) {
+  function floorLog2(uint256 _n) internal pure returns (uint8) {
     uint8 res = 0;
     uint256 n = _n;
 
@@ -282,7 +282,7 @@ contract Power {
       The global "maxExpArray" maps each "precision" to "((maximumExponent + 1) << (MAX_PRECISION - precision)) - 1".
       The maximum permitted value for "x" is therefore given by "maxExpArray[precision] >> (MAX_PRECISION - precision)".
   */
-  function fixedExp(uint256 _x, uint8 _precision) internal view returns (uint256) {
+  function fixedExp(uint256 _x, uint8 _precision) internal pure returns (uint256) {
     uint256 xi = _x;
     uint256 res = 0;
 
