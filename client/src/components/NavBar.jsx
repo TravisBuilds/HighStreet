@@ -14,7 +14,6 @@ const NavBar = () => {
   const connectWallet = async () => {
     if (window.ethereum) {
       window.web3 = new Web3(Web3.givenProvider || 'http://localhost:8485');
-      console.log('*********');
       try {
         const network = await window.web3.eth.net.getNetworkType();
         // console.log('network:', network);
@@ -33,7 +32,7 @@ const NavBar = () => {
 
   return (
     <>
-      <Navbar bg="light" variant="light">
+      <Navbar>
         <Navbar.Brand href="/">
           <img
             src={logo}
