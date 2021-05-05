@@ -11,6 +11,9 @@ import Carousel from 'react-bootstrap/Carousel';
 import { useHistory } from 'react-router-dom';
 import useInjectedWeb3 from '../components/Hooks/useInjectedWeb3';
 import useLoadinjectedEthersState from '../components/Hooks/useLoadInjectedEthersState';
+import ProductProvider from '../contexts/ProductProvider';
+import WalletProvider from '../contexts/WalletProvider';
+import User from '../libs/user';
 
 // temp asset import, will remove when datastructure is built
 import metamask from '../assets/metamask2.png';
@@ -20,14 +23,13 @@ import steam from '../assets/steam.png';
 import oculus from '../assets/oculus.png';
 import metaverse from '../assets/backgroundMetaverse.png';
 
-import ProductProvider from '../contexts/ProductProvider';
-
 const Home = () => {
   const history = useHistory();
   const handleClick = (path) => {
     history.push(path);
   };
 
+  const wallet = useContext(WalletProvider.context);
   const { products } = useContext(ProductProvider.context);
 
   useInjectedWeb3();
@@ -36,7 +38,7 @@ const Home = () => {
   return (
     <div className="landing">
       <div id="jumbo">
-        <Jumbotron style={{ margin: '0', background: '#4A90E2', color: 'white', }} fluid>
+        <Jumbotron fluid>
           <Container>
             <Row>
               <Col>
@@ -53,11 +55,13 @@ const Home = () => {
                 </h1>
                 <div className="mb-2">
                   <div className="loginButton">
-                    <Button variant="light">
+                    <Button variant="light" onClick={() => User.connectWallet(wallet)}>
                       <img src={metamask} alt="metamask" />
                     </Button>
 
-                    <Button variant="outline-light"><img src={brands} alt="brands" /></Button>
+                    <Button variant="outline-light" onClick={() => { window.location.href = '/merchant-signup'; }}>
+                      <img src={brands} alt="brands" />
+                    </Button>
                   </div>
                 </div>
               </Col>
@@ -114,10 +118,9 @@ const Home = () => {
                 </CardDeck>
               </Carousel.Item>
             ))}
-
           </Carousel>
         </Container>
-        <Jumbotron style={{ margin: '0', background: '#F6F8F9' }} fluid>
+        <Jumbotron fluid>
           <Container>
             <div className="title">
               <Row>
@@ -160,7 +163,7 @@ const Home = () => {
           </Container>
         </Jumbotron>
 
-        <Jumbotron style={{ margin: '0', backgroundImage: `url(${metaverse})` }} fluid>
+        <Jumbotron style={{ backgroundImage: `url(${metaverse})` }} fluid>
           <Container>
             <div className="title2" id="downloads">
               <Row>
@@ -192,7 +195,7 @@ const Home = () => {
           </Container>
         </Jumbotron>
 
-        <Jumbotron style={{ margin: '0', background: '#4A90E2', color: 'white' }} fluid>
+        <Jumbotron fluid>
           <Container>
             <Row>
               <Col />

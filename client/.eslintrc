@@ -18,6 +18,7 @@
       "ignoreRegExpLiterals": true
     }],
     "no-console": "warn",
+    "no-mixed-operators": "off",
     "no-underscore-dangle": "off",
     "no-unused-vars": "warn",
     "no-use-before-define": "warn",

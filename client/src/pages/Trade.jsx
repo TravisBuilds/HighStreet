@@ -8,9 +8,9 @@ import Col from 'react-bootstrap/Col';
 import Carousel from 'react-bootstrap/Carousel';
 import Tilt from 'react-tilt';
 import TradeCard from '../components/TradeCard';
-import ProductProvider from '../contexts/ProductProvider';
+import { ProductContext } from '../contexts/ProductState';
 
-const Market = () => {
+const Trade = () => {
   const [active, setActive] = useState('none');
   const [
     buttonDisabled
@@ -23,12 +23,12 @@ const Market = () => {
 
   console.log('this is active', active);
   const cart = active !== 'none' ? (
-    <TradeCard onChange={deactivate} active={active} style={{ zIndex: '10', position: 'fixed', top: '0px', width: '100vw', height: '100vh' }} />
+    <TradeCard onChange={deactivate} active={active} style={{ background: 'black', opacity: '1', zIndex: '10', position: 'fixed', top: '0px', width: '100vw', height: '100vh' }} />
   ) : (
     <TradeCard style={{ display: 'none' }} />
   );
 
-  const { products, tokenSold, tokenRedeemed } = useContext(ProductProvider.context);
+  const { products, tokenSold, tokenRedeemed } = useContext(ProductContext);
   // products.map( product =>{
   //     if (product.supply === product.available){
   //         setButtonDisabled(true)
@@ -38,7 +38,8 @@ const Market = () => {
   return (
     <div>
       {cart}
-      <Jumbotron className="cardJumbo" style={{ margin: '0', height: '100vh' }} fluid>
+      <Jumbotron className="cardJumbo" style={{ margin: '0', background: '#CCDAF5', height: '100vh' }} fluid>
+
         <Carousel fade interval={null} indicators={false}>
           {products.map((product) => (
             <Carousel.Item style={{ width: '25rem' }} key={product.name}>
@@ -46,7 +47,7 @@ const Market = () => {
                 <Row>
                   <Col>
                     <Tilt
-                      style={{ borderRadius: '8px' }}
+                      style={{ background: '#000', borderRadius: '8px' }}
                       options={{ scale: 1.01, max: 10, glare: true, 'max-glare': 1, speed: 1000 }}
                     >
                       <Card className="bg-dark text-white" style={{ border: 'none' }}>
@@ -61,7 +62,7 @@ const Market = () => {
                               USD
                             </h3>
                           </Card.Text>
-                          <Card.Footer style={{ padding: '0', border: '0' }}>
+                          <Card.Footer style={{ padding: '0', backgroundColor: 'none', border: '0' }}>
                             {product.available}
                             {' '}
                             out of
@@ -80,7 +81,7 @@ const Market = () => {
                     <div className="curvyButton">
                       <Button
                         variant="primary"
-                        style={{ width: '23rem', marginTop: '8px', marginBottom: '8px' }}
+                        style={{ background: '#4A90E2', width: '23rem', marginTop: '8px', marginBottom: '8px' }}
                         onClick={() => setActive(product.name)}
                         disabled={buttonDisabled}
                       >
@@ -95,7 +96,7 @@ const Market = () => {
                     <div className="curvyButton">
                       <Button
                         variant="secondary"
-                        style={{ width: '10.6rem' }}
+                        style={{ background: 'A0A3A6', width: '10.6rem' }}
                         onClick={() => tokenSold(product.name)}
                         disabled={buttonDisabled}
                       >
@@ -107,7 +108,7 @@ const Market = () => {
                     <div className="curvyButton">
                       <Button
                         variant="secondary"
-                        style={{ width: '10.6rem' }}
+                        style={{ background: 'A0A3A6', width: '10.6rem' }}
                         onClick={() => tokenRedeemed(product.name)}
                         disabled={buttonDisabled}
                       >
@@ -125,4 +126,4 @@ const Market = () => {
   );
 };
 
-export default Market;
+export default Trade;

@@ -1,7 +1,15 @@
-body {
+html {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    height: 100%;
+}
+
+body {
+    font-family: Raleway, sans-serif;
+    font-weight: 100;
     background-image: linear-gradient(#3736A1, #8283C5);
+    background-attachment: fixed;
+    color: white;
+    margin: 0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -14,9 +22,13 @@ code {
     height: 100%
 }
 
-html {
+.jumbotron {
     margin: 0;
-    height: 100%;
+    background: none;
+}
+
+.navbar-light .navbar-nav .nav-link {
+    color: white;
 }
 
 #feeStruct {
@@ -69,15 +81,10 @@ html {
     margin: 20px;
 }
 
-.jumbotron {
-    margin: 0;
-}
-
 .loginButton button {
     border-radius: 50px;
     margin-right: 10px;
 }
-
 .cardJumbo {
     display: flex;
     width: 100%;
@@ -114,8 +121,30 @@ html {
     height: 600px;
 }
 
+.countdownTimer {
+    text-align: center;
+}
+
+.countdownTimer h1 {
+    margin: 60px;
+}
+
+.countdownTimer p {
+    display: inline-block;
+    border: 3px solid #f1f2f6;
+    border-radius: 50%;
+    width: 300px;
+    height: 300px;
+    line-height: 280px;
+    font-size: 40px;
+    color: #fff;
+    text-align: center;
+    margin: 10px;
+}
+
 @media (max-width: 990px) {
     .shrinkGone {
         display: none;
     }
 }
+

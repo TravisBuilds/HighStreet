@@ -24,6 +24,7 @@
     "solc": "^0.8.4"
   },
   "scripts": {
+    "heroku-prebuild": "cd client; npm install --also=dev; npm run build; cd -",
     "start": "node server"
   }
 }

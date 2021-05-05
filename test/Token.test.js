@@ -54,7 +54,8 @@ contract('Token', (accounts) => {
 
 			it('account 1 buying one token with extra should return change', async() => {
 				const cost = await tokenInstance.getPriceForN.call('1')
-				const newCost = cost.add(new BN('100000'))			// round up for rounding...?
+				const newCost = cost.add(new BN('100000'))			
+				// console.log(cost.toString())
 				await tokenInstance.buy({value: newCost, from: buyer})
 				// check for transaction events
 			})
