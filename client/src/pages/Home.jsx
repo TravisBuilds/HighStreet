@@ -11,6 +11,9 @@ import Carousel from 'react-bootstrap/Carousel';
 import { useHistory } from 'react-router-dom';
 import useInjectedWeb3 from '../components/Hooks/useInjectedWeb3';
 import useLoadinjectedEthersState from '../components/Hooks/useLoadInjectedEthersState';
+import ProductProvider from '../contexts/ProductProvider';
+import WalletProvider from '../contexts/WalletProvider';
+import User from '../libs/user';
 
 // temp asset import, will remove when datastructure is built
 import metamask from '../assets/metamask2.png';
@@ -20,14 +23,13 @@ import steam from '../assets/steam.png';
 import oculus from '../assets/oculus.png';
 import metaverse from '../assets/backgroundMetaverse.png';
 
-import ProductProvider from '../contexts/ProductProvider';
-
 const Home = () => {
   const history = useHistory();
   const handleClick = (path) => {
     history.push(path);
   };
 
+  const wallet = useContext(WalletProvider.context);
   const { products } = useContext(ProductProvider.context);
 
   useInjectedWeb3();
@@ -53,7 +55,7 @@ const Home = () => {
                 </h1>
                 <div className="mb-2">
                   <div className="loginButton">
-                    <Button variant="light">
+                    <Button variant="light" onClick={() => User.connectWallet(wallet)}>
                       <img src={metamask} alt="metamask" />
                     </Button>
 
