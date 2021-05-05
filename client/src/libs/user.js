@@ -1,4 +1,6 @@
-function connectMetamask(walletAddress, avatarUrl) {
+const Web3 = require('web3');
+
+function _save(walletAddress, avatarUrl) {
   return fetch('/api/user/connectMetamask', {
     method: 'POST',
     body: JSON.stringify({
@@ -11,6 +13,25 @@ function connectMetamask(walletAddress, avatarUrl) {
   }).then((res) => res.json());
 }
 
+const connectWallet = async (context) => {
+  if (window.ethereum) {
+    window.web3 = new Web3(Web3.givenProvider || 'http://localhost:8485');
+    try {
+      const network = await window.web3.eth.net.getNetworkType();
+      // console.log('network:', network);
+      const account = await window.web3.eth.getAccounts();
+      console.log('account', account[0]);
+
+      _save(account[0], '');
+      context.setWallet({ address: account[0] });
+    } catch (error) {
+      console.log(error);
+    }
+  } else {
+    console.log('need metamask');
+  }
+};
+
 module.exports = {
-  connectMetamask
+  connectWallet
 };

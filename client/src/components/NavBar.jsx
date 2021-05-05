@@ -3,32 +3,12 @@ import Navbar from 'react-bootstrap/Navbar';
 import Button from 'react-bootstrap/Button';
 import Nav from 'react-bootstrap/Nav';
 import Form from 'react-bootstrap/Form';
-import Web3 from 'web3';
 import WalletProvider from '../contexts/WalletProvider';
 import User from '../libs/user';
 import logo from '../assets/lumiere.png';
 
 const NavBar = () => {
-  const w = useContext(WalletProvider.context);
-
-  const connectWallet = async () => {
-    if (window.ethereum) {
-      window.web3 = new Web3(Web3.givenProvider || 'http://localhost:8485');
-      try {
-        const network = await window.web3.eth.net.getNetworkType();
-        // console.log('network:', network);
-        const account = await window.web3.eth.getAccounts();
-        console.log('account', account[0]);
-
-        User.connectMetamask(account[0], '');
-        w.setWallet({ address: account[0] });
-      } catch (error) {
-        console.log(error);
-      }
-    } else {
-      console.log('need metamask');
-    }
-  };
+  const context = useContext(WalletProvider.context);
 
   return (
     <>
@@ -50,11 +30,11 @@ const NavBar = () => {
           <Nav.Link href="/#downloads">Download</Nav.Link>
         </Nav>
 
-        {w.wallet.address ? (
-          <Nav.Link>Wallet: {w.wallet.address.substr(0, 10)}</Nav.Link>
+        {context.wallet.address ? (
+          <Nav.Link>Wallet: {context.wallet.address.substr(0, 10)}</Nav.Link>
         ) : (
           <Form inline>
-            <Button variant="outline-primary" onClick={connectWallet}>Connect Wallet</Button>
+            <Button variant="outline-primary" onClick={() => User.connectWallet(context)}>Connect Wallet</Button>
           </Form>
         )}
       </Navbar>
