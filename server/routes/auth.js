@@ -6,7 +6,7 @@ function requireLogin() {
   const secret = process.env.JWT_SECRET;
   return expressJWT({
     secret,
-    algorithms: ['RS256'],
+    algorithms: ['HS256'],
     getToken: (req) => {
       if (req.headers.authorization && ['bearer', 'jwt'].includes(req.headers.authorization.split(' ')[0].toLowerCase())) {
         return req.headers.authorization.split(' ')[1];

@@ -1,6 +1,7 @@
 body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    background-image: linear-gradient(#3736A1, #8283C5);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -118,7 +119,3 @@ html {
         display: none;
     }
 }
-
-@media (max-width: 770px) {}
-
-@media (max-width: 660px) {}

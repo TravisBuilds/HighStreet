@@ -13,7 +13,7 @@ const About = () => {
 
   return (
     <div className="aboutPage">
-      <ReactMarkdown source={markdown} />
+      <ReactMarkdown>{markdown}</ReactMarkdown>
     </div>
   );
 };

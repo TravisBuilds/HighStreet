@@ -12,10 +12,10 @@ const initialState = {
 };
 
 // Create Context
-export const StoreContext = createContext(initialState);
+const StoreContext = createContext(initialState);
 
 // Provider Component
-export const StoreProvider = ({ children }) => {
+const StoreProvider = ({ children }) => {
   const [state, dispatch] = useReducer(StoreReducer, initialState);
 
   // Actions
@@ -81,3 +81,7 @@ export const StoreProvider = ({ children }) => {
     </StoreContext.Provider>
   );
 };
+
+StoreProvider.context = StoreContext;
+
+export default StoreProvider;

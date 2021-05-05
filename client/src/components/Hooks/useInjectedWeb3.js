@@ -1,8 +1,8 @@
 import { useContext, useEffect } from 'react';
-import { StoreContext } from '../../contexts/StoreState';
+import StoreProvider from '../../contexts/StoreProvider';
 
 export default function useInjectedWeb3() {
-  const { setSelectedEthAddr, setInjectedProvider } = useContext(StoreContext);
+  const { setSelectedEthAddr, setInjectedProvider } = useContext(StoreProvider.context);
 
   let provider;
 

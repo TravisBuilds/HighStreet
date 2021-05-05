@@ -8,9 +8,9 @@ import Col from 'react-bootstrap/Col';
 import Carousel from 'react-bootstrap/Carousel';
 import Tilt from 'react-tilt';
 import TradeCard from '../components/TradeCard';
-import { ProductContext } from '../contexts/ProductState';
+import ProductProvider from '../contexts/ProductProvider';
 
-const Trade = () => {
+const Market = () => {
   const [active, setActive] = useState('none');
   const [
     buttonDisabled
@@ -28,7 +28,7 @@ const Trade = () => {
     <TradeCard style={{ display: 'none' }} />
   );
 
-  const { products, tokenSold, tokenRedeemed } = useContext(ProductContext);
+  const { products, tokenSold, tokenRedeemed } = useContext(ProductProvider.context);
   // products.map( product =>{
   //     if (product.supply === product.available){
   //         setButtonDisabled(true)
@@ -126,4 +126,4 @@ const Trade = () => {
   );
 };
 
-export default Trade;
+export default Market;
