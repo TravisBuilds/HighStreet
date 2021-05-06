@@ -1,9 +1,10 @@
 const Web3 = require('web3');
 
-function _save(walletAddress, avatarUrl) {
+function save({ email, walletAddress, avatarUrl }) {
   return fetch('/api/user/connectMetamask', {
     method: 'POST',
     body: JSON.stringify({
+      email,
       walletAddress,
       avatarUrl
     }),
@@ -22,7 +23,7 @@ const connectWallet = async (context) => {
       const account = await window.web3.eth.getAccounts();
       console.log('account', account[0]);
 
-      _save(account[0], '');
+      save(account[0], '');
       context.setWallet({ address: account[0] });
     } catch (error) {
       console.log(error);
@@ -32,6 +33,7 @@ const connectWallet = async (context) => {
   }
 };
 
-module.exports = {
-  connectWallet
+export default {
+  connectWallet,
+  save
 };

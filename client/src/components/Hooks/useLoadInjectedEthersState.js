@@ -8,8 +8,6 @@ export default function useLoadInjectedEthersState() {
 
   useEffect(() => {
     if (store.injectedProvider) {
-      console.log('using ethers');
-
       if (store.injectedProvider.selectedAddress) {
         // dispatch({
         //   type: ActionType.SET_SELECTED_ETH_ADDR,

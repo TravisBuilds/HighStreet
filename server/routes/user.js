@@ -3,21 +3,21 @@ const db = require('../lib/db');
 
 async function connectMetamask(req, res) {
   const { users } = db.collections;
-  const { walletAddress, avatarUrl } = req.body;
+  const { email, walletAddress, avatarUrl } = req.body;
 
-  const user = await users.findOne({ walletAddress });
+  const user = await users.findOne({ email });
   if (user) {
     res.send({ user });
     return;
   }
 
-  const newUser = await users.insertOne({ walletAddress, avatarUrl });
+  const newUser = await users.insertOne({ email, walletAddress, avatarUrl });
   res.send({ user: newUser });
 }
 
 async function getByWalletAddress(req, res) {
-  const { walletAddress } = req.query;
-  const user = await users.findOne({ walletAddress });
+  const { email } = req.query;
+  const user = await users.findOne({ email });
   res.send({ user });
 }
 

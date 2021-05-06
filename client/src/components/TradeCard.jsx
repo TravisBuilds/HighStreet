@@ -30,20 +30,12 @@ const TradeCard = (props) => {
 
   const { products, tokenBought } = useContext(ProductProvider.context);
 
-  console.log(myProduct);
-  console.log('here are props');
-  console.log(props);
-
   useEffect(() => {
     if (props.active !== undefined) {
       const myProductX = products.find((product) => (product.name === props.active ? product : null));
-      console.log('i m alive', myProductX);
       setMyProduct(myProductX);
     }
   }, [props]);
-
-  // setMyProduct(myProductX)
-  console.log('here is my product', myProduct);
 
   const deactivate = () => {
     props.onChange('none');

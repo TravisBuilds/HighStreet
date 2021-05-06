@@ -18,8 +18,25 @@ code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
+a {
+    color: white;
+}
+
+.navbar-light .navbar-nav .nav-link {
+    margin-right: 20px;
+}
+
+.navbar-light .navbar-nav .nav-link:hover {
+    color: #eee;
+    text-decoration: none;
+}
+
 #root {
     height: 100%
+}
+
+.loginButton .btn {
+    margin: 20px 20px 0 0;
 }
 
 .jumbotron {
@@ -59,53 +76,8 @@ code {
     margin: auto;
 }
 
-.dlButtons {
-    margin: auto;
-    width: 50%;
-    padding: 10px;
-    display: block;
-}
-
-.dlButtons img {
-    width: 100%
-}
-
-.dlButtonRow {
-    margin: auto;
-    width: 50%;
-    padding: 10px;
-    display: block;
-}
-
-.discoverCol {
-    margin: 20px;
-}
-
-.loginButton button {
-    border-radius: 50px;
-    margin-right: 10px;
-}
-.cardJumbo {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-}
-
 .curvyButton button {
     border-radius: 50px;
-}
-
-#Caro div div a {
-    display: none;
-}
-
-#Caro div div ol li {
-    background-color: skyblue;
-    border-radius: 50%;
-    height: 5px;
-    width: 5px;
 }
 
 .aboutPage {
@@ -117,7 +89,7 @@ code {
 }
 
 .RPMClass {
-    width: 80%;
+    width: 100%;
     height: 600px;
 }
 

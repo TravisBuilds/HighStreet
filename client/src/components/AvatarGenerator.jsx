@@ -1,86 +1,77 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
-import UserProvider from '../contexts/UserProvider';
+import Modal from 'react-bootstrap/Modal';
+import WalletProvider from '../contexts/WalletProvider';
 import User from '../libs/user';
 
-const AvatarGenerator = () => {
-  const [avatarLink, setAvatarLink] = useState('');
-
-  const walletAddress = useContext(UserProvider.context);
+const AvatarGenerator = (props) => {
+  let avatarUrl;
+  const { wallet } = useContext(WalletProvider.context);
 
   const receiveMessage = (event) => {
-    if (!avatarLink) {
-      if (typeof event.data === 'string') {
-        const avatarUrl = event.data;
-        setAvatarLink(avatarUrl);
-        User.connectMetamask({
-          walletAddress,
-          avatarUrl
-        });
-      }
+    if (typeof event.data === 'string') {
+      console.log('************* avatar generated');
+      console.log(event.data);
+      avatarUrl = event.data;
+      User.save({
+        email: props.email,
+        walletAddress: wallet.address,
+        avatarUrl
+      });
     }
   };
 
-  if (avatarLink !== '') {
-    // fetch(`/api/user/${walletAddress}`, {
-    //   method: 'POST',
-    //   headers: { 'content-type': 'application/json' },
-    //   credentials: 'include',
-    //   mode: 'cors',
-    //   body: JSON.stringify({ avatarLink, googleId: user.googleId })
-    // });
-  }
+  // fetch(`/api/user/${wallet.address}`, {
+  //   method: 'POST',
+  //   headers: { 'content-type': 'application/json' },
+  //   credentials: 'include',
+  //   mode: 'cors',
+  //   body: JSON.stringify({ avatarLink, googleId: user.googleId })
+  // });
 
   window.addEventListener('message', receiveMessage, false);
 
-  const disableButton = () => {
-    const button = document.getElementById('startButton');
-    button.style.display = 'none';
-  };
+  useEffect(() => {
+    const generatorDiv = document.querySelector('.RPMClass');
+    if (!generatorDiv) return;
 
-  const makeAvatar = () => {
-    disableButton();
     let iframe = document.getElementById('iframe');
     if (iframe) {
       iframe.id = 'iframe';
       iframe.src = 'https://lumierevr.readyplayer.me/';
       iframe.className = 'RPMClass';
       iframe.allow = 'camera *; microphone *';
-      iframe.contents();
+      // iframe.contents();
     } else {
       iframe = document.createElement('iframe');
-      // console.log(iframe);
       iframe.id = 'iframe';
       iframe.src = 'https://lumierevr.readyplayer.me/';
       iframe.className = 'RPMClass';
       iframe.allow = 'camera *; microphone *';
-      console.log(document.querySelector('.RPMClass'));
       document.querySelector('.RPMClass').appendChild(iframe);
-      console.log(`ending here${document.querySelector('.RPMClass').appendChild(iframe)}`);
     }
-  };
+  });
 
   return (
-    <div className="profilePage">
-      <p className="page-title" style={{ textAlign: 'center' }}>
+    <Modal show={props.show} size="lg" onHide={() => props.close()}>
+      <Modal.Header closeButton>
+        <Modal.Title>Avatar Generator</Modal.Title>
+      </Modal.Header>
 
-        {/* Your Avatar Goes Here */}
-      </p>
+      <Modal.Body>
+        <div className="profilePage">
+          <p className="page-title" style={{ textAlign: 'center' }}>
+            {/* Your Avatar Goes Here */}
+          </p>
+          <div className="RPMClass" />
+        </div>
+      </Modal.Body>
 
-      <br />
-      <Button
-        id="startButton"
-        variant="outlined"
-        color="primary"
-        href=""
-        style={{ color: 'black', display: 'inline-block', left: '49%' }}
-        onClick={makeAvatar}
-      >
-        Generate
-      </Button>
-
-      <div className="RPMClass" />
-    </div>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={() => props.close()}>Close</Button>
+        {/* <Button variant="primary">Save changes</Button> */}
+      </Modal.Footer>
+    </Modal>
   );
 };
 

@@ -5,7 +5,7 @@ import Nav from 'react-bootstrap/Nav';
 import Form from 'react-bootstrap/Form';
 import WalletProvider from '../contexts/WalletProvider';
 import User from '../libs/user';
-import logo from '../assets/lumiere.png';
+import logo from '../assets/logoH.png';
 
 const NavBar = () => {
   const context = useContext(WalletProvider.context);
@@ -25,9 +25,10 @@ const NavBar = () => {
         <Nav className="ml-auto">
           <Nav.Link href="/">Home</Nav.Link>
           <Nav.Link href="/about">About</Nav.Link>
-          <Nav.Link href="/market">Market</Nav.Link>
+          <Nav.Link href="/coming-soon">Market</Nav.Link>
+          {/* <Nav.Link href="/market">Market</Nav.Link> */}
           {/* <Nav.Link href="/discover">Discover</Nav.Link> */}
-          <Nav.Link href="/#downloads">Download</Nav.Link>
+          {/* <Nav.Link href="/#downloads">Download</Nav.Link> */}
         </Nav>
 
         {context.wallet.address ? (
