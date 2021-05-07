@@ -1,5 +1,9 @@
-const { reset } = require('nodemon');
 const db = require('../lib/db');
+
+async function emailSignup(req, res) {
+  const { name, email, password } = req.body;
+  res.send({});
+}
 
 async function connectMetamask(req, res) {
   const { users } = db.collections;
@@ -22,6 +26,7 @@ async function getByWalletAddress(req, res) {
 }
 
 module.exports = {
+  emailSignup,
   connectMetamask,
   getByWalletAddress
 };

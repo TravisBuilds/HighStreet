@@ -10,6 +10,7 @@ const cookieParser = require('cookie-parser');
 const db = require('./lib/db');
 const passport = require('./lib/passport');
 const Auth = require('./routes/auth');
+const Product = require('./routes/product');
 const User = require('./routes/user');
 
 const app = express();
@@ -22,8 +23,11 @@ app.use(passport.initialize());
 app.get('/auth/instagram', passport.authenticate('instagram'));
 app.get('/auth/instagram/callback', passport.authenticate('instagram', { failureRedirect: '/login' }), Auth.oauthCallback);
 
+app.post('/api/user', User.emailSignup);
 app.get('/api/user/:walletAddress', User.getByWalletAddress);
 app.post('/api/user/connectMetamask', User.connectMetamask);
+
+app.get('/api/products', Product.list);
 
 app.use('/', express.static(path.join(__dirname, '../client/build')));
 app.use('/:page', express.static(path.join(__dirname, '../client/build')));

@@ -21,6 +21,7 @@ const NavBar = () => {
             className="d-inline-block align-top"
             alt="React Bootstrap logo"
           />
+          <span className="logo-text">ighStreet.Market</span>
         </Navbar.Brand>
         <Nav className="ml-auto">
           <Nav.Link href="/">Home</Nav.Link>
