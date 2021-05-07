@@ -233,7 +233,6 @@ contract ProductToken is ERC20, BancorBondingCurve {
     emit Tradein(msg.sender, _amount);
   }
 
-  // Need to design function to withdraw liquidity and return it to the owner.
   // To-do:
   // Need to design function to withdraw liquidity and return it to the owner.
   // All transfer functions here are vulnerable to the DDOS attack. Should implement “balance withdrawal” design pattern
@@ -242,6 +241,16 @@ contract ProductToken is ERC20, BancorBondingCurve {
   // Implement Ownable for Factory and Token logics
   // Implement Circuit breaker function
   // Consider gas cost in the refund logic.
-  // Safemath 32 and Safemath 8
-
+  // Safemath 32
+  // Split platform fees into bucket: 
+  //    Buy 4%{ 
+  //      1% merchant,
+  //      1% Insurance,
+  //      2% Platform staking
+  //    }
+  //    Sell 2%{
+  //      1% insurance,
+  //      1% Merchant
+  //    }
+  // Tradein to a pending process that does not burn the token until shipment verification is confirmed.
 }

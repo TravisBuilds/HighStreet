@@ -1,5 +1,6 @@
 import React, { createContext, useReducer } from 'react';
-// import { ethers } from 'ethers';
+// import Maker from '@makerdao/dai'; // makerdao is a library that allows for interaction with the DAI coin.
+import { ethers } from 'ethers';
 import ProductReducer from './ProductReducer';
 import kalonCard from '../assets/product1.png';
 import loreal from '../assets/product2.png';
@@ -9,30 +10,81 @@ import kalonfeature from '../assets/kalon.png';
 import lvmhfeature from '../assets/lvmh.png';
 import lorealfeature from '../assets/loreal.png';
 import randomfeature from '../assets/randomfeature.png';
-// import Token from '../build/contracts/ProductToken.json';
+// abstract bridge interface for solidity
+import Token from '../build/contracts/ProductToken.json';
+import Factory from '../build/contracts/TokenFactory.json';
 
-// const url = 'https://mainnet.infura.io/v3/8b2af5854ccb42c5a77e0240af22f281';
-// const provider = new ethers.providers.Web3Provider(window.ethereum);
-// const signer = provider.getSigner();
-// let networkId;
-// let contract;
-// let contractWSigner;
-// provider.getNetwork().then((result) => {
-//   console.log(`Network Retrieved: ${result}`);
-//   networkId = result.chainId;
-//   console.log(`Network ID: ${networkId}`);
-//   const networkData = Token.networks[networkId];
-//   if (networkData) {
-//     console.log('Ready to connect to contract.');
-//     contract = new ethers.Contract(networkData.address, Token.abi, provider);
-//     contractWSigner = contract.connect(signer);
-//     console.log(contractWSigner);
-//   } else {
-//     console.log("Contract wasn't deployed properly.");
-//   }
-// }).catch((e) => {
-//   console.log(e);
-// });
+// class level variables that store much needed handles
+const provider = new ethers.providers.Web3Provider(window.ethereum);
+const signer = provider.getSigner(); // this is the account that user uses to make payment.
+let factoryContract; // this handle is used to call view functions from the smart contract.
+// let factoryContractWSigner;  // this handle is used to call state-changing functions from the smart contract.
+
+// function that initialize the solidity smart contract handles
+// async fu nction initializeNetwork() {
+provider.getNetwork().then((result) => {
+  console.log(`Network Retrieved: ${result}`);
+  const networkId = result.chainId;
+  console.log(`Network ID: ${networkId}`);
+  const networkData = Factory.networks[networkId];
+  if (networkData) {
+    console.log('Ready to connect to contract.');
+    factoryContract = new ethers.Contract(networkData.address, Factory.abi, provider);
+    // factoryContractWSigner = factoryContract.connect(signer);
+  } else {
+    console.log("Contract wasn't deployed properly.");
+  }
+}).catch((e) => {
+  console.log(e);
+});
+// }
+
+let tokenAddress;
+let token; // this is the token handle for a particular token user is interested.
+// for the following functions, I assume that token has been set accordingly.
+let tokenWSigner; // again, this is the token handle that is required to make any state changing method calls
+
+// const tokenService = Maker.service('token');
+// const dai = tokenService.getToken('DAI');
+
+// This function retrieve the address of a token by its name.
+// then it creates a token handle with
+async function retrieveTokenByName(name) {
+  await factoryContract.retrieveToken(name).then((result) => {
+    tokenAddress = result;
+    token = new ethers.Contract(tokenAddress, Token.abi, provider);
+    tokenWSigner = token.connect(signer);
+  }).catch((e) => {
+    console.log(e);
+  });
+}
+
+async function getAvailability() {
+  return token.getAvailability();
+}
+
+async function getPrice() {
+  return token.getCurrentPrice();
+}
+
+async function getPriceForN(tokens) { // token must be a number that's smaller than 2^32 - 1
+  return token.getPriceForN(tokens);
+}
+
+async function buy(cashUpperBound) { // purchase tokens based on a cash upper bound
+  // need to implment DAI handle
+  // Dai handle then needs to approve the above amount to be withdrawn
+  // await dai.approve(tokenAddress, cashUpperBound);
+  await token.buy(cashUpperBound);
+}
+
+async function sell(tokenAmount) { // token must be a number that's smaller than 2^32 - 1
+  await token.sell(tokenAmount);
+}
+
+async function tradeIn(tokenAmount) { // token must be a number that's smaller than 2^32 - 1
+  await token.tradein(tokenAmount);
+}
 
 // import ProductToken.sol
 // Initial Placeholder
@@ -93,7 +145,15 @@ const ProductProvider = ({ children }) => {
   const [state, dispatch] = useReducer(ProductReducer, initialState);
 
   // Actions
-  function tokenBought(selectedToken) {
+  async function tokenBought(selectedToken) {
+    // await initializeNetwork();
+    const a = await retrieveTokenByName('Kalon Tea');
+    await getAvailability(a).then((result) => {
+      console.log(`Availibility of token: ${result}`);
+    }).catch((e) => {
+      console.log(e);
+    });
+
     dispatch({
       type: 'TOKEN_BOUGHT',
       payload: selectedToken
