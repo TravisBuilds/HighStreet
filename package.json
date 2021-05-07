@@ -7,7 +7,9 @@
   },
   "devDependencies": {
     "@openzeppelin/truffle-upgrades": "^1.5.2",
+    "@openzeppelin/upgrades": "^2.8.0",
     "chai": "^4.3.4",
-    "chai-bn": "^0.2.1"
+    "chai-bn": "^0.2.1",
+    "zos-lib": "^2.4.3"
   }
 }
