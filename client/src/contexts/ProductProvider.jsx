@@ -1,5 +1,5 @@
 import React, { createContext, useReducer } from 'react';
-// import Maker from '@makerdao/dai'; // makerdao is a library that allows for interaction with the DAI coin.
+// import { McdPlugin } from '@makerdao/dai'; // makerdao is a library that allows for interaction with the DAI coin.
 import { ethers } from 'ethers';
 import ProductReducer from './ProductReducer';
 import kalonCard from '../assets/product1.png';
@@ -13,19 +13,34 @@ import randomfeature from '../assets/randomfeature.png';
 // abstract bridge interface for solidity
 import Token from '../build/contracts/ProductToken.json';
 import Factory from '../build/contracts/TokenFactory.json';
+import Dai from '../build/contracts/DaiMock.json';
 
 // class level variables that store much needed handles
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 const signer = provider.getSigner(); // this is the account that user uses to make payment.
 let factoryContract; // this handle is used to call view functions from the smart contract.
 // let factoryContractWSigner;  // this handle is used to call state-changing functions from the smart contract.
-
+let daiAddress; // this is the address for Dai tokens, it is pre-defined based on which network user is connected to.
+let daiContract;
+let daiContractWSigner;
 // function that initialize the solidity smart contract handles
 // async fu nction initializeNetwork() {
 provider.getNetwork().then((result) => {
   console.log(`Network Retrieved: ${result}`);
   const networkId = result.chainId;
   console.log(`Network ID: ${networkId}`);
+  switch (networkId) {
+    case '1': // This is for Main Net
+      daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
+      break;
+    case '42': // This is for Kovan Test Net
+      daiAddress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';
+      break;
+    default:
+      daiAddress = '';
+  }
+  daiContract = new ethers.Contract(daiAddress, Dai.abi, provider);
+  daiContractWSigner = daiContract.connect(signer);
   const networkData = Factory.networks[networkId];
   if (networkData) {
     console.log('Ready to connect to contract.');
@@ -43,8 +58,10 @@ let tokenAddress;
 let token; // this is the token handle for a particular token user is interested.
 // for the following functions, I assume that token has been set accordingly.
 let tokenWSigner; // again, this is the token handle that is required to make any state changing method calls
+// const maker = Maker.create('test');
 
-// const tokenService = Maker.service('token');
+// await maker.authenticate();
+// const tokenService = maker.service('token');
 // const dai = tokenService.getToken('DAI');
 
 // This function retrieve the address of a token by its name.
@@ -74,8 +91,12 @@ async function getPriceForN(tokens) { // token must be a number that's smaller t
 async function buy(cashUpperBound) { // purchase tokens based on a cash upper bound
   // need to implment DAI handle
   // Dai handle then needs to approve the above amount to be withdrawn
-  // await dai.approve(tokenAddress, cashUpperBound);
-  await token.buy(cashUpperBound);
+  // here we assume that cashUpperBound has already been parsed to 18 decimals
+  await daiContractWSigner.approve(tokenAddress, cashUpperBound).then(async () => {
+    token.buy(cashUpperBound);
+  }).catch((e) => {
+    console.log(e);
+  });
 }
 
 async function sell(tokenAmount) { // token must be a number that's smaller than 2^32 - 1

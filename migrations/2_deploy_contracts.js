@@ -6,9 +6,9 @@ const Token = artifacts.require("ProductToken");
 module.exports = async function (deployer, network, accounts ) {
 	let daiAdress;
 	if (network=='mainnet') {
-		daiAdress = '';			// fill in the dai address from mainnet
-	} else if (network=='rinkeby') {
-		daiAdress = '';			// fill in the dai address from rinkeby, if there is any
+		daiAdress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';			// fill in the dai address from mainnet
+	} else if (network=='kovan') {
+		daiAdress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';			// fill in the dai address from kovan
 	} else {
 		await deployer.deploy(DaiMock);
 		const dai = await DaiMock.deployed();
