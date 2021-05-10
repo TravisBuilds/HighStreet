@@ -21,8 +21,8 @@ const signer = provider.getSigner(); // this is the account that user uses to ma
 let factoryContract; // this handle is used to call view functions from the smart contract.
 // let factoryContractWSigner;  // this handle is used to call state-changing functions from the smart contract.
 let daiAddress; // this is the address for Dai tokens, it is pre-defined based on which network user is connected to.
-let daiContract;
-let daiContractWSigner;
+// let daiContract;
+// let daiContractWSigner;
 // function that initialize the solidity smart contract handles
 // async fu nction initializeNetwork() {
 provider.getNetwork().then((result) => {
@@ -39,12 +39,13 @@ provider.getNetwork().then((result) => {
     default:
       daiAddress = '';
   }
-  daiContract = new ethers.Contract(daiAddress, Dai.abi, provider);
-  daiContractWSigner = daiContract.connect(signer);
+
   const networkData = Factory.networks[networkId];
   if (networkData) {
     console.log('Ready to connect to contract.');
     factoryContract = new ethers.Contract(networkData.address, Factory.abi, provider);
+    // daiContract = new ethers.Contract(daiAddress, Dai.abi, provider);
+    // daiContractWSigner = daiContract.connect(signer);
     // factoryContractWSigner = factoryContract.connect(signer);
   } else {
     console.log("Contract wasn't deployed properly.");
@@ -92,19 +93,19 @@ async function buy(cashUpperBound) { // purchase tokens based on a cash upper bo
   // need to implment DAI handle
   // Dai handle then needs to approve the above amount to be withdrawn
   // here we assume that cashUpperBound has already been parsed to 18 decimals
-  await daiContractWSigner.approve(tokenAddress, cashUpperBound).then(async () => {
-    token.buy(cashUpperBound);
-  }).catch((e) => {
-    console.log(e);
-  });
+  // await daiContractWSigner.approve(tokenAddress, cashUpperBound).then(async () => {
+  //   tokenWSigner.buy(cashUpperBound);
+  // }).catch((e) => {
+  //   console.log(e);
+  // });
 }
 
 async function sell(tokenAmount) { // token must be a number that's smaller than 2^32 - 1
-  await token.sell(tokenAmount);
+  await tokenWSigner.sell(tokenAmount);
 }
 
 async function tradeIn(tokenAmount) { // token must be a number that's smaller than 2^32 - 1
-  await token.tradein(tokenAmount);
+  await tokenWSigner.tradein(tokenAmount);
 }
 
 // import ProductToken.sol
