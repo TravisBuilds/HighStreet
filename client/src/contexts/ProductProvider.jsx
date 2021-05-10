@@ -21,8 +21,8 @@ const signer = provider.getSigner(); // this is the account that user uses to ma
 let factoryContract; // this handle is used to call view functions from the smart contract.
 // let factoryContractWSigner;  // this handle is used to call state-changing functions from the smart contract.
 let daiAddress; // this is the address for Dai tokens, it is pre-defined based on which network user is connected to.
-// let daiContract;
-// let daiContractWSigner;
+let daiContract;
+let daiContractWSigner;
 // function that initialize the solidity smart contract handles
 // async fu nction initializeNetwork() {
 provider.getNetwork().then((result) => {
@@ -30,22 +30,30 @@ provider.getNetwork().then((result) => {
   const networkId = result.chainId;
   console.log(`Network ID: ${networkId}`);
   switch (networkId) {
-    case '1': // This is for Main Net
+    case 1: // This is for Main Net
+      console.log('Main net selected');
       daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
       break;
-    case '42': // This is for Kovan Test Net
+    case 42: // This is for Kovan Test Net
+      console.log('Kovan net selected');
       daiAddress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';
       break;
+    case 1337:
+      console.log('Ganache local net selected');
+      daiAddress = Dai.networks[networkId].address;
+      break;
     default:
+      console.log('Dai is not supported on other platforms, an error should be thrown');
       daiAddress = '';
   }
 
   const networkData = Factory.networks[networkId];
   if (networkData) {
     console.log('Ready to connect to contract.');
+    console.log(`Dai Address is set to ${daiAddress}`);
     factoryContract = new ethers.Contract(networkData.address, Factory.abi, provider);
-    // daiContract = new ethers.Contract(daiAddress, Dai.abi, provider);
-    // daiContractWSigner = daiContract.connect(signer);
+    daiContract = new ethers.Contract(daiAddress, Dai.abi, provider);
+    daiContractWSigner = daiContract.connect(signer);
     // factoryContractWSigner = factoryContract.connect(signer);
   } else {
     console.log("Contract wasn't deployed properly.");
@@ -93,11 +101,11 @@ async function buy(cashUpperBound) { // purchase tokens based on a cash upper bo
   // need to implment DAI handle
   // Dai handle then needs to approve the above amount to be withdrawn
   // here we assume that cashUpperBound has already been parsed to 18 decimals
-  // await daiContractWSigner.approve(tokenAddress, cashUpperBound).then(async () => {
-  //   tokenWSigner.buy(cashUpperBound);
-  // }).catch((e) => {
-  //   console.log(e);
-  // });
+  await daiContractWSigner.approve(tokenAddress, cashUpperBound).then(async () => {
+    tokenWSigner.buy(cashUpperBound);
+  }).catch((e) => {
+    console.log(e);
+  });
 }
 
 async function sell(tokenAmount) { // token must be a number that's smaller than 2^32 - 1
@@ -172,6 +180,7 @@ const ProductProvider = ({ children }) => {
     const a = await retrieveTokenByName('Kalon Tea');
     await getAvailability(a).then((result) => {
       console.log(`Availibility of token: ${result}`);
+      // return buy('13200000000000000000');
     }).catch((e) => {
       console.log(e);
     });
