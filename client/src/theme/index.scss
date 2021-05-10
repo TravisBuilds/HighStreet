@@ -170,6 +170,11 @@ a {
     }
 }
 
+.carousel-inner {
+    width: 25rem;
+    margin: 0 auto;
+}
+
 @media (max-width: 990px) {
     .shrinkGone {
         display: none;

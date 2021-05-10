@@ -3,13 +3,13 @@ import React, { createContext, useReducer } from 'react';
 import { ethers } from 'ethers';
 import ProductReducer from './ProductReducer';
 import kalonCard from '../assets/product1.png';
-import loreal from '../assets/product2.png';
-import mystery from '../assets/product3.png';
-import lvmh from '../assets/product4.png';
+// import loreal from '../assets/product2.png';
+// import mystery from '../assets/product3.png';
+// import lvmh from '../assets/product4.png';
 import kalonfeature from '../assets/kalon.png';
-import lvmhfeature from '../assets/lvmh.png';
-import lorealfeature from '../assets/loreal.png';
-import randomfeature from '../assets/randomfeature.png';
+// import lvmhfeature from '../assets/lvmh.png';
+// import lorealfeature from '../assets/loreal.png';
+// import randomfeature from '../assets/randomfeature.png';
 // abstract bridge interface for solidity
 import Token from '../build/contracts/ProductToken.json';
 import Factory from '../build/contracts/TokenFactory.json';
@@ -130,39 +130,39 @@ const initialState = {
       tagline: 'Essence of Nature',
       blurb: "Nature's first green is gold, infused in a liquor that will make it truly last forever",
       feature: kalonfeature
-    },
-    {
-      name: "L'Oréal ",
-      ticker: 'OREAL',
-      price: 20,
-      supply: 2500, // etc.
-      available: 2500,
-      img: loreal,
-      tagline: "Because you're worth it ",
-      blurb: "Be the star that you were always meant to be, L'oreal, because you're worth it",
-      feature: lorealfeature
-    },
-    {
-      name: 'Mystery Box',
-      ticker: 'RAND',
-      price: 15,
-      supply: 1000,
-      available: 1000,
-      img: mystery,
-      tagline: 'Try Me',
-      blurb: 'buy me for the chance to redeem anything in our entire catalog',
-      feature: randomfeature
-    },
-    {
-      name: 'LVMH',
-      ticker: 'LVMH',
-      price: 122,
-      supply: 3000,
-      available: 3000,
-      img: lvmh,
-      tagline: 'Making it Real',
-      blurb: 'A timeless first and a vibrant way to touch up both your digital and IRL identity',
-      feature: lvmhfeature
+    // },
+    // {
+    //   name: "L'Oréal ",
+    //   ticker: 'OREAL',
+    //   price: 20,
+    //   supply: 2500, // etc.
+    //   available: 2500,
+    //   img: loreal,
+    //   tagline: "Because you're worth it ",
+    //   blurb: "Be the star that you were always meant to be, L'oreal, because you're worth it",
+    //   feature: lorealfeature
+    // },
+    // {
+    //   name: 'Mystery Box',
+    //   ticker: 'RAND',
+    //   price: 15,
+    //   supply: 1000,
+    //   available: 1000,
+    //   img: mystery,
+    //   tagline: 'Try Me',
+    //   blurb: 'buy me for the chance to redeem anything in our entire catalog',
+    //   feature: randomfeature
+    // },
+    // {
+    //   name: 'LVMH',
+    //   ticker: 'LVMH',
+    //   price: 122,
+    //   supply: 3000,
+    //   available: 3000,
+    //   img: lvmh,
+    //   tagline: 'Making it Real',
+    //   blurb: 'A timeless first and a vibrant way to touch up both your digital and IRL identity',
+    //   feature: lvmhfeature
     }
   ]
 };
@@ -207,13 +207,25 @@ const ProductProvider = ({ children }) => {
 
   return (
     <ProductContext.Provider value={{
-      products: state.products, tokenBought, tokenSold, tokenRedeemed
+      products: state.products,
+      tokenBought,
+      tokenSold,
+      tokenRedeemed
     }}
     >
       {children}
     </ProductContext.Provider>
   );
 };
+
+// TODO: move all these to libs
+ProductProvider.getPriceForN = getPriceForN;
+ProductProvider.retrieveTokenByName = retrieveTokenByName;
+ProductProvider.getAvailability = getAvailability;
+ProductProvider.getPrice = getPrice;
+ProductProvider.buy = buy;
+ProductProvider.sell = sell;
+ProductProvider.tradeIn = tradeIn;
 
 ProductProvider.context = ProductContext;
 
