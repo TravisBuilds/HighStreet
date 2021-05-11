@@ -52,8 +52,6 @@ Implementing initial pricing is where deviation starts to show. Initially we tho
 
 An alternative we chose to pursue is an equation similar to eq. 14. This has an advantage in that we don’t have to modify any code of the existing Bancor curve implementation. What we have to take into account however, is that based on the initial price (the ideal y intercept of p(s) when s = 0), we have to compute supply shift and reserve balance as prerequisites when creating a new token.
 
-<iframe frameBorder="0" width="100%" height="100%" style="min-width: 400px; min-height:400px" src="https://www.mathcha.io/editor/gPB75sMqf1yhZGz3EphP29jqNF3GrNOXIZyJY64?embedded=true" ></iframe>
-
 ## Whale Alert 
 In order to defend against pumps and dumps, we've incorporated two main forms of defense. The first is by means of the reserve ratio. The higher the reserve ratio between Reserve Token Balance and Product Token will lower the price sensitivity, this means depending on the product we can tweak the reserve ratio to ensure drastic price swings don't occur. The second is by means of KYC, we understand this may be a hotly debated issue, however as of now we have no other means of limiting the amount of the same product each individual can buy. This being said, we are open for community suggestions and open the floor to any members who may have a better and more anonymous way of ensuring a few individuals don't ruin the fun for everyone! 
 
