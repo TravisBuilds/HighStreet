@@ -63,26 +63,6 @@ An alternative we chose to pursue is an equation similar to eq. 14. This has an 
 ## Whale Alert 
 In order to defend against pumps and dumps, we've incorporated two main forms of defense. The first is by means of the reserve ratio. The higher the reserve ratio between Reserve Token Balance and Product Token will lower the price sensitivity, this means depending on the product we can tweak the reserve ratio to ensure drastic price swings don't occur. The second is by means of KYC, we understand this may be a hotly debated issue, however as of now we have no other means of limiting the amount of the same product each individual can buy. This being said, we are open for community suggestions and open the floor to any members who may have a better and more anonymous way of ensuring a few individuals don't ruin the fun for everyone! 
 
-# Staking Yield and Token Utilities 
-
-## Membership
-Membership is a right earned by staking our platform token. Platform token utility includes the right to purchase product tokens, as well as the right to governance once our platform transitions into a full DAO.  
-
-## Governance 
-Owning platform tokens enable users to participate in the governance process through a decentralized organization, with proposals and voting structures. They are also able to vote on issues related to operations and how to streamline and onboard future products. 
-
-
-## Staking Yield 
-Staking incentives are our way of creating monetary and governance incentives for our most committed members. Based on our staking and reward projections. Liquidity providers for our platform token will have product tokens allocated to them everytime a new product is dropped. A portion of platform tokens are also reserved for early stakers, this incentivizes stakers to hold their tokens while the market is maturing and new brands and shops are being added. Staking rewards will decrease as platform becomes self sustaining. 
-
-
-[![allocation](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/whiteal.png?raw=true "allocation")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/whiteal.png?raw=true "allocation")
-
-## Tokenomics 
-[![tokenomics](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/tokenomics.png?raw=true "allocation")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/tokenomics.png?raw=true "tokenomics")
-
-## Future Endeavors 
-As our market evolves, so does the complexity of our tokenomics. Our goal is to create a truly decentralized metaverse where gamers and game developers alike can link their worlds to our market place with a simple pluggin. Our proof of play based liquidity mining today serves as an incentive not only for VR users to migrate onto the platform, but also serves as a potential catalyst for newcomers into the world of virtual reality. We reward users with Street Tokens based on platform usage, and as such we can learn and improve the overall system of the marketplace. However one of the stretch goals we wish to achieve by the end of the year has to be the third party Unity Sdk. We throughout the next couple months our team can work out a series of metrics and criteria to qualify certain gaming actions as “mine-able”. Some of these requirements include actions that take a definite amount of time to prevent botting, or strong anti-cheat softwares to prevent malicious users in abusing the system. Once a cross-genre list of rules can be generated than we should be able to simply plug into any existing game’s source code and allow their users to start mining for tokens on Viveport. 
 
 # Tech Breakdown 
 ## Backend: Ethereum/Solidity 
@@ -104,3 +84,22 @@ The VR Component is an extension to the marketplace built in Unity. The VR Marke
 We believe the future home of digital assets will most certainly be in Virtual Reality. We are building the shopping component of the shared metaverse. 
 [![feature](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/feature.png?raw=true "feature")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/feature.png?raw=true "feature")
 
+# Staking Yield and Token Utilities 
+
+## Membership
+Membership is a right earned by staking our platform token. Platform token utility includes the right to purchase product tokens, as well as the right to governance once our platform transitions into a full DAO.  
+
+## Governance 
+Owning platform tokens enable users to participate in the governance process through a decentralized organization, with proposals and voting structures. They are also able to vote on issues related to operations and how to streamline and onboard future products. 
+
+## Tokenomics 
+[![tokenomics](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/tokenomics.png?raw=true "allocation")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/tokenomics.png?raw=true "tokenomics")
+
+## Staking Yield 
+Staking incentives are our way of creating monetary and governance incentives for our most committed members. Highstreet Market is introducing a new type of liquidity mining based on a proof of play system, where users can earn Street Tokens by completing certain tasks in the marketplace. At the start we will be joining forces with HTC and their Viveport platform to allow existing Viveport subscribers to turn on the mining option and start earning Street Tokens on day one. The tokens can be directly sold on centralized and decentralized exchanges, however as a further incentive for users to provide utility to the platform, users who purchase products through the marketplace using our Street Token will be rewarded with a portion of our transaction fees. Essentially, the more they buy the more they earn!
+
+## Future Endeavors 
+As our market evolves, so does the complexity of our tokenomics. Our goal is to create a truly decentralized metaverse where gamers and game developers alike can link their worlds to our market place with a simple pluggin. Our proof of play based liquidity mining today serves as an incentive not only for VR users to migrate onto the platform, but also serves as a potential catalyst for newcomers into the world of virtual reality. We reward users with Street Tokens based on platform usage, and as such we can learn and improve the overall system of the marketplace. However one of the stretch goals we wish to achieve by the end of the year has to be the third party Unity Sdk. We throughout the next couple months our team can work out a series of metrics and criteria to qualify certain gaming actions as “mine-able”. Some of these requirements include actions that take a definite amount of time to prevent botting, or strong anti-cheat softwares to prevent malicious users in abusing the system. Once a cross-genre list of rules can be generated than we should be able to simply plug into any existing game’s source code and allow their users to start mining for tokens on Viveport. 
+
+
+[![allocation](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/whiteal.png?raw=true "allocation")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/whiteal.png?raw=true "allocation")
