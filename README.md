@@ -104,7 +104,3 @@ The VR Component is an extension to the marketplace built in Unity. The VR Marke
 We believe the future home of digital assets will most certainly be in Virtual Reality. We are building the shopping component of the shared metaverse. 
 [![feature](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/feature.png?raw=true "feature")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/feature.png?raw=true "feature")
 
-# Investors and Partners 
-### As leading innovators in the digital space since 2015, we've established strong investor relations as well as brand partnerships with Tier One companies
-
-[![partnerships](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/backing.png?raw=true "partnerships")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/backing.png?raw=true "partnerships")
