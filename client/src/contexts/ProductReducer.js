@@ -2,6 +2,34 @@
 
 export default (state, action) => {
   switch (action.type) {
+    case 'TOKEN_AVAILABLE':
+      return {
+        ...state,
+        products: state.products.map((product) => {
+          if (product.name === action.product.name) {
+            const updatedProduct = {
+              ...product,
+              available: action.available
+            };
+            return updatedProduct;
+          }
+          return product;
+        })
+      };
+    case 'TOKEN_PRICE':
+      return {
+        ...state,
+        products: state.products.map((product) => {
+          if (product.name === action.product.name) {
+            const updatedProduct = {
+              ...product,
+              price: action.price
+            };
+            return updatedProduct;
+          }
+          return product;
+        })
+      };
     case 'TOKEN_BOUGHT':
       return {
         ...state,

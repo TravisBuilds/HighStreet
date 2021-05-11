@@ -3,13 +3,13 @@ import React, { createContext, useReducer } from 'react';
 import { ethers } from 'ethers';
 import ProductReducer from './ProductReducer';
 import kalonCard from '../assets/product1.png';
-// import loreal from '../assets/product2.png';
-// import mystery from '../assets/product3.png';
-// import lvmh from '../assets/product4.png';
+import loreal from '../assets/product2.png';
+import mystery from '../assets/product3.png';
+import lvmh from '../assets/product4.png';
 import kalonfeature from '../assets/kalon.png';
-// import lvmhfeature from '../assets/lvmh.png';
-// import lorealfeature from '../assets/loreal.png';
-// import randomfeature from '../assets/randomfeature.png';
+import lvmhfeature from '../assets/lvmh.png';
+import lorealfeature from '../assets/loreal.png';
+import randomfeature from '../assets/randomfeature.png';
 // abstract bridge interface for solidity
 import Token from '../build/contracts/ProductToken.json';
 import Factory from '../build/contracts/TokenFactory.json';
@@ -85,15 +85,15 @@ async function retrieveTokenByName(name) {
   });
 }
 
-async function getAvailability() {
+function getAvailability() {
   return token.getAvailability();
 }
 
-async function getPrice() {
+function getPrice() {
   return token.getCurrentPrice();
 }
 
-async function getPriceForN(tokens) { // token must be a number that's smaller than 2^32 - 1
+function getPriceForN(tokens) { // token must be a number that's smaller than 2^32 - 1
   return token.getPriceForN(tokens);
 }
 
@@ -130,39 +130,39 @@ const initialState = {
       tagline: 'Essence of Nature',
       blurb: "Nature's first green is gold, infused in a liquor that will make it truly last forever",
       feature: kalonfeature
-    // },
-    // {
-    //   name: "L'Oréal ",
-    //   ticker: 'OREAL',
-    //   price: 20,
-    //   supply: 2500, // etc.
-    //   available: 2500,
-    //   img: loreal,
-    //   tagline: "Because you're worth it ",
-    //   blurb: "Be the star that you were always meant to be, L'oreal, because you're worth it",
-    //   feature: lorealfeature
-    // },
-    // {
-    //   name: 'Mystery Box',
-    //   ticker: 'RAND',
-    //   price: 15,
-    //   supply: 1000,
-    //   available: 1000,
-    //   img: mystery,
-    //   tagline: 'Try Me',
-    //   blurb: 'buy me for the chance to redeem anything in our entire catalog',
-    //   feature: randomfeature
-    // },
-    // {
-    //   name: 'LVMH',
-    //   ticker: 'LVMH',
-    //   price: 122,
-    //   supply: 3000,
-    //   available: 3000,
-    //   img: lvmh,
-    //   tagline: 'Making it Real',
-    //   blurb: 'A timeless first and a vibrant way to touch up both your digital and IRL identity',
-    //   feature: lvmhfeature
+    },
+    {
+      name: "L'Oréal ",
+      ticker: 'OREAL',
+      price: 20,
+      supply: 2500, // etc.
+      available: 2500,
+      img: loreal,
+      tagline: "Because you're worth it ",
+      blurb: "Be the star that you were always meant to be, L'oreal, because you're worth it",
+      feature: lorealfeature
+    },
+    {
+      name: 'Mystery Box',
+      ticker: 'RAND',
+      price: 15,
+      supply: 1000,
+      available: 1000,
+      img: mystery,
+      tagline: 'Try Me',
+      blurb: 'buy me for the chance to redeem anything in our entire catalog',
+      feature: randomfeature
+    },
+    {
+      name: 'LVMH',
+      ticker: 'LVMH',
+      price: 122,
+      supply: 3000,
+      available: 3000,
+      img: lvmh,
+      tagline: 'Making it Real',
+      blurb: 'A timeless first and a vibrant way to touch up both your digital and IRL identity',
+      feature: lvmhfeature
     }
   ]
 };
@@ -175,57 +175,88 @@ const ProductProvider = ({ children }) => {
   const [state, dispatch] = useReducer(ProductReducer, initialState);
 
   // Actions
-  async function tokenBought(selectedToken) {
-    // await initializeNetwork();
-    const a = await retrieveTokenByName('Kalon Tea');
-    await getAvailability(a).then((result) => {
-      console.log(`Availibility of token: ${result}`);
-      // return buy('13200000000000000000');
+  async function tokenBuy(product) {
+    const a = await retrieveTokenByName(product.name);
+    await buy(a).then((result) => {
+      console.log(result);
+      dispatch({
+        type: 'TOKEN_BOUGHT',
+        product,
+        result
+      });
     }).catch((e) => {
       console.log(e);
     });
+  }
 
-    dispatch({
-      type: 'TOKEN_BOUGHT',
-      payload: selectedToken
+  async function tokenSell(product) {
+    const a = await retrieveTokenByName(product.name);
+    await sell(a).then((result) => {
+      console.log(result);
+      dispatch({
+        type: 'TOKEN_SOLD',
+        product,
+        result
+      });
+    }).catch((e) => {
+      console.log(e);
     });
   }
 
-  function tokenSold(product) {
-    dispatch({
-      type: 'TOKEN_SOLD',
-      payload: product
+  async function tokenRedeem(product) {
+    const a = await retrieveTokenByName(product.name);
+    await tradeIn(a).then((result) => {
+      console.log(result);
+      dispatch({
+        type: 'TOKEN_REDEEMED',
+        product,
+        result
+      });
+    }).catch((e) => {
+      console.log(e);
     });
   }
 
-  function tokenRedeemed(product) {
-    dispatch({
-      type: 'TOKEN_REDEEMED',
-      payload: product
+  async function tokenAvailable(product) {
+    const a = await retrieveTokenByName(product.name);
+    await getAvailability(a).then((available) => {
+      dispatch({
+        type: 'TOKEN_AVAILABLE',
+        product,
+        available
+      });
+    }).catch((e) => {
+      console.log(e);
+    });
+  }
+
+  async function tokenPrice(product) {
+    const a = await retrieveTokenByName(product.name);
+    await getPrice(a).then((price) => {
+      dispatch({
+        type: 'TOKEN_PRICE',
+        product,
+        price
+      });
+    }).catch((e) => {
+      console.log(e);
     });
   }
 
   return (
     <ProductContext.Provider value={{
       products: state.products,
-      tokenBought,
-      tokenSold,
-      tokenRedeemed
+      tokenAvailable,
+      tokenPrice,
+      tokenBuy,
+      tokenSell,
+      tokenRedeem
     }}
     >
       {children}
     </ProductContext.Provider>
   );
 };
-
-// TODO: move all these to libs
-ProductProvider.getPriceForN = getPriceForN;
-ProductProvider.retrieveTokenByName = retrieveTokenByName;
-ProductProvider.getAvailability = getAvailability;
-ProductProvider.getPrice = getPrice;
-ProductProvider.buy = buy;
-ProductProvider.sell = sell;
-ProductProvider.tradeIn = tradeIn;
 
 ProductProvider.context = ProductContext;
 
