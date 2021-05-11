@@ -28,6 +28,7 @@ const Market = () => {
     <TradeCard style={{ display: 'none' }} />
   );
 
+  const { getAvailability, getPrice, buy, sell, tradeIn } = ProductProvider;
   const { products, tokenSold, tokenRedeemed } = useContext(ProductProvider.context);
   // products.map( product =>{
   //     if (product.supply === product.available){
@@ -56,13 +57,13 @@ const Market = () => {
                           <Card.Title>{product.ticker}</Card.Title>
                           <Card.Text style={{ margin: '0' }}>
                             <h3>
-                              {product.price.toFixed(4)}
+                              {getPrice(product.ticker)}
                               {' '}
                               USD
                             </h3>
                           </Card.Text>
                           <Card.Footer style={{ padding: '0', border: '0' }}>
-                            {product.available}
+                            {getAvailability(product.ticker)}
                             {' '}
                             out of
                             {product.supply}
@@ -81,7 +82,7 @@ const Market = () => {
                       <Button
                         variant="primary"
                         style={{ width: '23rem', marginTop: '8px', marginBottom: '8px' }}
-                        onClick={() => setActive(product.name)}
+                        onClick={() => buy(product.ticker)}
                         disabled={buttonDisabled}
                       >
                         <strong>Buy</strong>
@@ -96,7 +97,7 @@ const Market = () => {
                       <Button
                         variant="secondary"
                         style={{ width: '10.6rem' }}
-                        onClick={() => tokenSold(product.name)}
+                        onClick={() => sell(product.ticker)}
                         disabled={buttonDisabled}
                       >
                         <strong>Sell</strong>
@@ -108,7 +109,7 @@ const Market = () => {
                       <Button
                         variant="secondary"
                         style={{ width: '10.6rem' }}
-                        onClick={() => tokenRedeemed(product.name)}
+                        onClick={() => tradeIn(product.ticker)}
                         disabled={buttonDisabled}
                       >
                         <strong>Redeem</strong>

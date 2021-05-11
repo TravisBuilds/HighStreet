@@ -96,7 +96,7 @@ const Home = () => {
               </a>
             </Col>
             <Col>
-              <a href="/coming-soon">
+              <a href="/market">
                 <Image src={marketplace} fluid rounded />
                 <h4>Marketplace</h4>
               </a>
