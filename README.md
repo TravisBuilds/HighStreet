@@ -56,7 +56,7 @@ Implementing initial pricing is where deviation starts to show. Initially we tho
 
 [![Eq3](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/Eq3.png?raw=true "Eq3")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/Eq3.png?raw=true "Eq3")
 
-An alternative we chose to pursue is an equation similar to eq. 14. This has an advantage in that we don’t have to modify any code of the existing Bancor curve implementation. What we have to take into account however, is that based on the initial price (the ideal y intercept of p(s) when s = 0), we have to compute supply shift and reserve balance as prerequisites when creating a new token.
+An alternative we chose to pursue is an equation similar to eq. 14. This has an advantage in that this does not modify any code of the existing Bancor curve implementation, and thereby minimizes risks for coding error. What we have to take into account however, is that based on the initial price (the ideal y intercept of p(s) when s = 0), we have to compute supply shift and reserve balance as prerequisites when creating a new token.
 
 [![Eq4](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/Eq4.png?raw=true "Eq4")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/Eq4.png?raw=true "Eq4")
 
