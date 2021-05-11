@@ -44,13 +44,21 @@ Right off the bat, we are met with the realization that at a certain level, we a
 
 In order to solve the above mentioned problems, we had to do a deep dive on the derivation process of the Bancor equation. We started with the fundamental idea that we wanted a curve that resembled some sort of hockey stick growth: as supply is driven closer to the upper cap, the price for each token increases more drastically. With an exponential equation (eq. 1), we can control the behavior of token prices on both ends of the spectrum: m will control price behavior when supply in circulation is low, and n will control price behavior when supply in circulation is high.
 
+[![Eq1](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/Eq1.png?raw=true "Eq1")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/Eq1.png?raw=true "Eq1")
+
 In order to address the issue that our token cannot be fragmented, we have to look for a way to precisely calculate the price to purchase one token based on the instantaneous price function given in equation 1. Upon further learning, we realized that the area under the pricing curve actually represents the total amount of stake tokens in the pool. Hence we can model changes in reserve balance by computing the anti-derivative of the pricing function (eq. 2). Thereby, we can derive the equation further to compute precisely the price for k tokens given the existing supply of x (eq. 3 - 9). So far, this is all within the scope of bancor formula implementation; we had to make adjustments on our business logic to account for the indivisible nature of our tokens (i.e, adjust for price calculation and token transaction logic), but no deviation from existing Bancor implementation thus far.
+
+[![Eq2](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/Eq2.png?raw=true "Eq2")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/Eq2.png?raw=true "Eq2")
 
 ### Amendment with initial price implementation
 
 Implementing initial pricing is where deviation starts to show. Initially we thought about modifying the pricing function with a constant (eq. 10). This however introduces a new complexity, as we have arrived at a term that cannot be simplified easily (eq. 11 - 13), and not computationally viable if calculated as is. 
 
+[![Eq3](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/Eq3.png?raw=true "Eq3")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/Eq3.png?raw=true "Eq3")
+
 An alternative we chose to pursue is an equation similar to eq. 14. This has an advantage in that we don’t have to modify any code of the existing Bancor curve implementation. What we have to take into account however, is that based on the initial price (the ideal y intercept of p(s) when s = 0), we have to compute supply shift and reserve balance as prerequisites when creating a new token.
+
+[![Eq4](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/Eq4.png?raw=true "Eq4")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/Eq4.png?raw=true "Eq4")
 
 ## Whale Alert 
 In order to defend against pumps and dumps, we've incorporated two main forms of defense. The first is by means of the reserve ratio. The higher the reserve ratio between Reserve Token Balance and Product Token will lower the price sensitivity, this means depending on the product we can tweak the reserve ratio to ensure drastic price swings don't occur. The second is by means of KYC, we understand this may be a hotly debated issue, however as of now we have no other means of limiting the amount of the same product each individual can buy. This being said, we are open for community suggestions and open the floor to any members who may have a better and more anonymous way of ensuring a few individuals don't ruin the fun for everyone! 
