@@ -81,6 +81,9 @@ Staking incentives are our way of creating monetary and governance incentives fo
 ## Tokenomics 
 [![tokenomics](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/tokenomics.png?raw=true "allocation")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/tokenomics.png?raw=true "tokenomics")
 
+## Future Endeavors 
+As our market evolves, so does the complexity of our tokenomics. Our goal is to create a truly decentralized metaverse where gamers and game developers alike can link their worlds to our market place with a simple pluggin. Our proof of play based liquidity mining today serves as an incentive not only for VR users to migrate onto the platform, but also serves as a potential catalyst for newcomers into the world of virtual reality. We reward users with Street Tokens based on platform usage, and as such we can learn and improve the overall system of the marketplace. However one of the stretch goals we wish to achieve by the end of the year has to be the third party Unity Sdk. We throughout the next couple months our team can work out a series of metrics and criteria to qualify certain gaming actions as “mine-able”. Some of these requirements include actions that take a definite amount of time to prevent botting, or strong anti-cheat softwares to prevent malicious users in abusing the system. Once a cross-genre list of rules can be generated than we should be able to simply plug into any existing game’s source code and allow their users to start mining for tokens on Viveport. 
+
 # Tech Breakdown 
 ## Backend: Ethereum/Solidity 
 Smart contracts written in solidity will mint new product tokens everytime a user deposits DAI or ETH into the Product Reserve Pools. The Product Token Value is calculated via a pricing function that you can directly inspect in this respository. 
