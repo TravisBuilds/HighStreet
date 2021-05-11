@@ -31,8 +31,30 @@ Although there are many bonding curve formulas out there, we are adopting the Ba
 Every buy and sell moves the Reserve Token Balance and Continuous Token Market cap, so in order to maintain our Reserve Ratio, the price of the Continuous(Product) Token will be continuously recalculated.
 
 ## Our Pricing Formula (Optimization in progress, open to suggestions)
-Although the Bancor Formula created tremendous breakthroughs in the world of automated market making, it does not work out of the box for our purpose. Since our curve cannot begin with a price of 0 dollars at 0 supply, we must derrive a new curve to address this. The formula can be seen here. We'll likely release a medium post explaining some of the modifications made to provide more clarity and transparency to users. 
-[![pricing](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/pricing.png?raw=true "pricing")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/bancor.png?raw=true "pricing")
+Our journey to discover the right bonding curve
+
+In the beginning we set our eyes upon the famous Bancor bonding curve. It's one of the most popular bonding curves and one with most plentiful implementations for us to reference. However there were certain difficulties that we faced along the way, these will be detailed below along with the solution we came up with.
+
+
+Bancor bonding curve is not designed for real world products
+
+Right off the bat, we are met with the realization that at a certain level, we are fighting with the design of this bonding curve. A lot of assumptions that we take for granted in the retail world do not apply when we try to plug them into an arbitrary function such as a bonding curve. For example, with the above formula, we should be able to conclude that token price = Reserve Balance / (Supply * reserve ratio), but there is a catch. The formula is designed for a fragmentable token, as such the above price calculation computes instantaneous price at a given supply down to the 10^18th decimal. Such pricing logic won't make sense for a token that has to be whole, since they are directly pegged to a real world item. Being fragmentable probably makes more sense as an investment holding but in this case we wanted to design something that encourages user redemption, so our retail partners can sell their product to their desired customers. Being a retail oriented token brings another conflict with the Bancor bonding curve implementation, and that is retail products need to have initial value. Each token that is minted has to take into account the associated market value of the product that it is pegged to. Again, this is complicated by the Bancor bonding curve; given the above equation, when supply is 0, price is 0.
+
+
+If one cannot look sideways, look under
+
+In order to solve the above mentioned problems, we had to do a deep dive on the derivation process of the Bancor equation. We started with the fundamental idea that we wanted a curve that resembled some sort of hockey stick growth: as supply is driven closer to the upper cap, the price for each token increases more drastically. With an exponential equation (eq. 1), we can control the behavior of token prices on both ends of the spectrum: m will control price behavior when supply in circulation is low, and n will control price behavior when supply in circulation is high.
+
+In order to address the issue that our token cannot be fragmented, we have to look for a way to precisely calculate the price to purchase one token based on the instantaneous price function given in equation 1. Upon further learning, we realized that the area under the pricing curve actually represents the total amount of stake tokens in the pool. Hence we can model changes in reserve balance by computing the anti-derivative of the pricing function (eq. 2). Thereby, we can derive the equation further to compute precisely the price for k tokens given the existing supply of x (eq. 3 - 9). So far, this is all within the scope of bancor formula implementation; we had to make adjustments on our business logic to account for the indivisible nature of our tokens (i.e, adjust for price calculation and token transaction logic), but no deviation from existing Bancor implementation thus far.
+
+
+Amendment with initial price implementation
+
+Implementing initial pricing is where deviation starts to show. Initially we thought about modifying the pricing function with a constant (eq. 10). This however introduces a new complexity, as we have arrived at a term that cannot be simplified easily (eq. 11 - 13), and not computationally viable if calculated as is. 
+
+An alternative we chose to pursue is an equation similar to eq. 14. This has an advantage in that we don’t have to modify any code of the existing Bancor curve implementation. What we have to take into account however, is that based on the initial price (the ideal y intercept of p(s) when s = 0), we have to compute supply shift and reserve balance as prerequisites when creating a new token.
+
+<iframe frameBorder="0" width="100%" height="100%" style="min-width: 400px; min-height:400px" src="https://www.mathcha.io/editor/gPB75sMqf1yhZGz3EphP29jqNF3GrNOXIZyJY64?embedded=true" ></iframe>
 
 ## Whale Alert 
 In order to defend against pumps and dumps, we've incorporated two main forms of defense. The first is by means of the reserve ratio. The higher the reserve ratio between Reserve Token Balance and Product Token will lower the price sensitivity, this means depending on the product we can tweak the reserve ratio to ensure drastic price swings don't occur. The second is by means of KYC, we understand this may be a hotly debated issue, however as of now we have no other means of limiting the amount of the same product each individual can buy. This being said, we are open for community suggestions and open the floor to any members who may have a better and more anonymous way of ensuring a few individuals don't ruin the fun for everyone! 
