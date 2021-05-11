@@ -34,11 +34,11 @@ Every buy and sell moves the Reserve Token Balance and Continuous Token Market c
 
 ### Our journey to discover the right bonding curve
 
-In the beginning we set our eyes upon the famous Bancor bonding curve. It's one of the most popular bonding curves and one with most plentiful implementations for us to reference. However there were certain difficulties that we faced along the way, these will be detailed below along with the solution we came up with.
+Initially we had our sights on the famous Bancor Bonding curve. Not only was it the most popular but also the most documented and referenced literature. However very quickly we discovered its limitations pertaining our specific use case. 
 
 ### Bancor bonding curve is not designed for real world products
 
-Right off the bat, we are met with the realization that at a certain level, we are fighting with the design of this bonding curve. A lot of assumptions that we take for granted in the retail world do not apply when we try to plug them into an arbitrary function such as a bonding curve. For example, with the above formula, we should be able to conclude that token price = Reserve Balance / (Supply * reserve ratio), but there is a catch. The formula is designed for a fragmentable token, as such the above price calculation computes instantaneous price at a given supply down to the 10^18th decimal. Such pricing logic won't make sense for a token that has to be whole, since they are directly pegged to a real world item. Being a retail oriented token brings another conflict with the Bancor bonding curve implementation, and that is retail products need to have initial value. Each token that is minted has to take into account the associated market value of the product that it is pegged to. Again, this is complicated by the Bancor bonding curve; given the above equation, when supply is 0, price is 0.
+From the beginning, we can already foresee that a lot of the features and results that we seek for a bonding curve based commerce platform directly goes against the nature of bancor’s implementation. At a glance the Bancor curve should be able to conclude that token price = Reserve Balance / (Supply * reserve ratio). However there’s a catch here, this formula is designed for a framgentable token, thus the pricing function computes instantaneous price at a given supply value down to 10^18th decimal. This pricing logic falls apart completely when each product token by design has to be whole. Since each token is pegged to a real world item, it does not make sense for buyers to own partial products. Additionally because these are real items with real world market value we cannot initialize the token price at $0 when supply is also at 0. 
 
 ### If one cannot look sideways, look under
 
