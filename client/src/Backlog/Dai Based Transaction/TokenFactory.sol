@@ -1,23 +1,26 @@
 pragma solidity ^0.8.2;
 
+// import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "./ProductToken.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract TokenFactory is Ownable { // is Initializable{
+contract TokenFactory { // is Initializable{
 
+	address public owner;
+	address daiAddress;
 	mapping(string => address) registry;
 
-	constructor() public {
-		// owner = msg.sender;
+	constructor(address _daiAddress) public {
+		owner = msg.sender;
+		daiAddress = _daiAddress;
 	}
 
-	// modifier onlyOwner {
- //        require(
- //            msg.sender == owner,
- //            "Only owner can call this function."
- //        );
- //        _;
- //  }
+	modifier onlyOwner {
+        require(
+            msg.sender == owner,
+            "Only owner can call this function."
+        );
+        _;
+  }
 
 	// function initialize() public initializer {
 
@@ -25,7 +28,7 @@ contract TokenFactory is Ownable { // is Initializable{
 
 	function createToken(string memory _productName, uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve) public onlyOwner {
 		require(registry[_productName]==address(0), "The product token already exist");
-		address newToken = address(new ProductToken(_reserveRatio, _maxTokenCount, _supplyOffset, _baseReserve));
+		address newToken = address(new ProductToken(daiAddress, _reserveRatio, _maxTokenCount, _supplyOffset, _baseReserve));
 		registry[_productName] = newToken;
 	}
 

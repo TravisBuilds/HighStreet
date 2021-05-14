@@ -23,18 +23,24 @@ contract ProductToken is ERC20, BancorBondingCurve {
   uint32 public tradeinCount = 0;
   uint32 public supplyOffset;
 
+  IERC20 dai;
+
 	/**
    * @dev Constructor
    *
+   * @param _daiAddress               the address of Dai, which is used as a payment option.
    * @param _reserveRatio             the reserve ratio in the curve function.
    * @param _maxTokenCount						the amount of token that will exist for this type.
    * @param _supplyOffset             this amount is used to determine initial price.
    * @param _baseReserve              the base amount of reserve tokens, in accordance to _supplyOffset.
    *
   */
-  constructor(uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve) ERC20("ProductToken", "") public {		
+  constructor(address _daiAddress, uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve) ERC20("ProductToken", "") public {		
+  	require(_daiAddress!=address(0), "Invalid Dai token address");
     require(_maxTokenCount > 0, "Invalid max token count.");
     require(_reserveRatio > 0, "Invalid reserve ratio");
+
+    dai = IERC20(_daiAddress);
 
     reserveBalance = _baseReserve;
     supplyOffset = _supplyOffset;
@@ -47,34 +53,50 @@ contract ProductToken is ERC20, BancorBondingCurve {
   /**
    * @dev When user wants to buy tokens from the pool
    *
-   * @param _amount             the amount of tokens to be bought.
   */
-  function buy(uint32 _amount) public payable {
-    require(msg.value > 0, "Must send ether to buy tokens.");
-
-
+  // function buy() public payable {
+  //   require(msg.value > 0, "Must send ether to buy tokens.");
+  //   uint256 amount;
+  //   uint256 change;    
+  //   (amount, change) = _buyForAmount(msg.value.mul(960000).div(1000000)); // ppm of 96%. 4% is the platform transaction fee
+  //   // return change back to the sender.
+  //   if (amount > 0) {                                               // If token transaction went through successfully
+    
+  //     payable(msg.sender).transfer(change);
+  //   }
+  //   else {                                                          // If token transaction failed
+    
+  //     payable(msg.sender).transfer(msg.value);                                 
+  //   }
+  // }
+  function buy(uint256 daiAmount) public {
+    require(daiAmount > 0, "Value of dai must be greater than 0 to buy tokens.");
+    // Has to ask user for approval here.
+    // bool allowed = dai.approve(address(this), daiAmount);
+    // require(allowed, "Purchase failed because transfer approval was denied.");
+    
+    bool success = dai.transferFrom(msg.sender, address(this), daiAmount);
+    require(success, "Purchase failed, amount to buy token was not successfully transferred.");
     uint256 amount;
-    uint256 change;    
-    (amount, change) = _buyForAmount(msg.value.mul(960000).div(1000000), _amount); // ppm of 96%. 4% is the platform transaction fee
+    uint256 change;
+    (amount, change) = _buyForAmount(daiAmount.mul(960000).div(1000000)); // ppm of 96%. 4% is the platform transaction fee
     // return change back to the sender.
     if (amount > 0) {                                               // If token transaction went through successfully
-    
-      payable(msg.sender).transfer(change);
+      dai.transfer(msg.sender, change);
     }
     else {                                                          // If token transaction failed
-    
-      payable(msg.sender).transfer(msg.value);                                 
+      dai.transfer(msg.sender, daiAmount);                               
     }
   }
 
 	/**
    * @dev When user wants to sell their tokens back to the pool
    *
-   * @param _amount             the amount of tokens to be sold.
   */
  	function sell(uint32 _amount) public {
     uint256 returnAmount = _sellForAmount(_amount);
-    payable(msg.sender).transfer(returnAmount.mul(980000).div(1000000));     // ppm of 98%. 2% is the platform transaction fee
+    bool success = dai.transfer(msg.sender, returnAmount.mul(980000).div(1000000));        // ppm of 98%. 2% is the platform transaction fee
+    require(success, "selling token failed");
   }
 
 	/**
@@ -145,38 +167,23 @@ contract ProductToken is ERC20, BancorBondingCurve {
    * if any tokens purchases are confirmed, it will update ownerTokenCount mappin. 
    *
    * @param _deposit              reserve total deposited
-   * @param _amount               the amount of tokens to be bought.
    *
    * @return token                amount bought in product token
   */
-  function _buyForAmount(uint256 _deposit, uint32 _amount)
+  function _buyForAmount(uint256 _deposit)
     internal returns (uint32, uint256)
   {
   	require(getAvailability() > 0, "Sorry, this token is sold out.");
     require(_deposit > 0, "Deposit must be non-zero.");
-    // Special case, buy 0 tokens, return all fund back to user.
-    if (_amount == 0) {
-      return (0, _deposit);
-    }
 
-    uint32 amount;
-    uint256 actualDeposit;
-
-    // uint32 amount = calculateBuyReturn(_deposit);	    // have to make it discrete here. Replace amount with uint32
+    uint32 amount = calculateBuyReturn(_deposit);	    // have to make it discrete here. Replace amount with uint32
 
     // If the amount in _deposit is more than enough to buy out the rest of the token in the pool
     if (amount > getAvailability()) {   // this logic can be refactored.
       amount = getAvailability();
     }
 
-    actualDeposit = getPriceForN(_amount);     // this currently does not account any transaction fee
-    if (actualDeposit > _deposit) {   // if user deposited token is not enough to buy ideal amount. This is a fallback option.
-      amount = calculateBuyReturn(_deposit);
-      actualDeposit = getPriceForN(amount);
-    } else {
-      amount = _amount;
-    }
-
+    uint256 actualDeposit = getPriceForN(amount);     // this currently does not account any transaction fee
     _mint(msg.sender, amount);
     reserveBalance = reserveBalance.add(actualDeposit);
     emit Buy(msg.sender, amount, actualDeposit);		// probably needs to be redesigned for ease of read and understanding.
