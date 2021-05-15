@@ -7,3 +7,4 @@ server/config/config.env
 server/server.*
 .endpoint
 .secret
+.mnemonic
