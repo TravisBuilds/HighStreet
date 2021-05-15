@@ -18,12 +18,17 @@
  *
  */
 
+const wrapProvider = require('arb-ethers-web3-bridge').wrapProvider;
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 // const infuraKey = "fj4jll3k.....";
 //
 const fs = require('fs');
+// For Kovan testnet and mainnet using Infura
 const privateKey = fs.readFileSync(".secret").toString().trim();
 const endpointUrl = fs.readFileSync(".endpoint").toString().trim();
+// Using Arbitrum chain on Kovan net.
+const mnemonic = fs.readFileSync(".mnemonic").toString().trim();
+const arbProviderUrl = "https://kovan4.arbitrum.io/rpc";
 
 module.exports = {
   /**
@@ -65,6 +70,17 @@ module.exports = {
       network_id: 42,
       gas: 4500000,
       gasPrice: 10000000000,
+    },
+
+    arbitrum: {
+      provider: function () {
+        // return wrapped provider:
+        return wrapProvider(
+          new HDWalletProvider(mnemonic, arbProviderUrl)
+        )
+      },
+      network_id: '*',
+      gasPrice: 0,
     },
     
     // Useful for private networks
