@@ -16,7 +16,7 @@ module.exports = async function (deployer, network, accounts ) {
 	// 	daiAdress = dai.address;
 	// }
 
-	// await deployer.deploy(Token, daiAdress, 330000, 500, 3, web3.utils.toWei('9', 'ether'));			// initialize reserve ratio for the token in ppm, stand in for testing.
+	// await deployer.deploy(Token, 330000, 500, 3, web3.utils.toWei('9', 'ether'));			// initialize reserve ratio for the token in ppm, stand in for testing.
 	// const token = await Token.deployed();
 	
 	await deployer.deploy(Factory, {from: accounts[0]});

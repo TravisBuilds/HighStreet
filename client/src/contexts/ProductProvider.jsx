@@ -13,7 +13,7 @@ import randomfeature from '../assets/randomfeature.png';
 // abstract bridge interface for solidity
 import Token from '../build/contracts/ProductToken.json';
 import Factory from '../build/contracts/TokenFactory.json';
-import Dai from '../build/contracts/DaiMock.json';
+// import Dai from '../build/contracts/DaiMock.json';
 
 // class level variables that store much needed handles
 const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -29,31 +29,31 @@ provider.getNetwork().then((result) => {
   console.log(`Network Retrieved: ${result}`);
   const networkId = result.chainId;
   console.log(`Network ID: ${networkId}`);
-  switch (networkId) {
-    case 1: // This is for Main Net
-      console.log('Main net selected');
-      daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
-      break;
-    case 42: // This is for Kovan Test Net
-      console.log('Kovan net selected');
-      daiAddress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';
-      break;
-    case 1337:
-      console.log('Ganache local net selected');
-      daiAddress = Dai.networks[networkId].address;
-      break;
-    default:
-      console.log('Dai is not supported on other platforms, an error should be thrown');
-      daiAddress = '';
-  }
+  // switch (networkId) {
+  //   case 1: // This is for Main Net
+  //     console.log('Main net selected');
+  //     daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
+  //     break;
+  //   case 42: // This is for Kovan Test Net
+  //     console.log('Kovan net selected');
+  //     daiAddress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';
+  //     break;
+  //   case 1337:
+  //     console.log('Ganache local net selected');
+  //     daiAddress = Dai.networks[networkId].address;
+  //     break;
+  //   default:
+  //     console.log('Dai is not supported on other platforms, an error should be thrown');
+  //     daiAddress = '';
+  // }
 
   const networkData = Factory.networks[networkId];
   if (networkData) {
     console.log('Ready to connect to contract.');
     console.log(`Dai Address is set to ${daiAddress}`);
     factoryContract = new ethers.Contract(networkData.address, Factory.abi, provider);
-    daiContract = new ethers.Contract(daiAddress, Dai.abi, provider);
-    daiContractWSigner = daiContract.connect(signer);
+    // daiContract = new ethers.Contract(daiAddress, Dai.abi, provider);
+    // daiContractWSigner = daiContract.connect(signer);
     // factoryContractWSigner = factoryContract.connect(signer);
   } else {
     console.log("Contract wasn't deployed properly.");
@@ -76,13 +76,13 @@ let tokenWSigner; // again, this is the token handle that is required to make an
 // This function retrieve the address of a token by its name.
 // then it creates a token handle with
 async function retrieveTokenByName(name) {
-  await factoryContract.retrieveToken(name).then((result) => {
-    tokenAddress = result;
-    token = new ethers.Contract(tokenAddress, Token.abi, provider);
-    tokenWSigner = token.connect(signer);
-  }).catch((e) => {
-    console.log(e);
-  });
+  // await factoryContract.retrieveToken(name).then((result) => {
+  //   tokenAddress = result;
+  //   token = new ethers.Contract(tokenAddress, Token.abi, provider);
+  //   tokenWSigner = token.connect(signer);
+  // }).catch((e) => {
+  //   console.log(e);
+  // });
 }
 
 function getAvailability() {
@@ -101,11 +101,12 @@ async function buy(cashUpperBound) { // purchase tokens based on a cash upper bo
   // need to implment DAI handle
   // Dai handle then needs to approve the above amount to be withdrawn
   // here we assume that cashUpperBound has already been parsed to 18 decimals
-  await daiContractWSigner.approve(tokenAddress, cashUpperBound).then(async () => {
-    tokenWSigner.buy(cashUpperBound);
-  }).catch((e) => {
-    console.log(e);
-  });
+  // await daiContractWSigner.approve(tokenAddress, cashUpperBound).then(async () => {
+  //   tokenWSigner.buy(cashUpperBound);
+  // }).catch((e) => {
+  //   console.log(e);
+  // });
+  await tokenWSigner.buy(1, { value: cashUpperBound });
 }
 
 async function sell(tokenAmount) { // token must be a number that's smaller than 2^32 - 1

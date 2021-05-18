@@ -7,22 +7,6 @@ contract TokenFactory is Ownable { // is Initializable{
 
 	mapping(string => address) registry;
 
-	constructor() public {
-		// owner = msg.sender;
-	}
-
-	// modifier onlyOwner {
- //        require(
- //            msg.sender == owner,
- //            "Only owner can call this function."
- //        );
- //        _;
- //  }
-
-	// function initialize() public initializer {
-
-	// }
-
 	function createToken(string memory _productName, uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve) public onlyOwner {
 		require(registry[_productName]==address(0), "The product token already exist");
 		address newToken = address(new ProductToken(_reserveRatio, _maxTokenCount, _supplyOffset, _baseReserve));

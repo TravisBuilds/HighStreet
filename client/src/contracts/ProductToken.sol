@@ -1,6 +1,6 @@
 pragma solidity ^0.8.2;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+// import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 // import "@openzeppelin/contracts/access/Ownable.sol";
 import "./BancorBondingCurve.sol";
@@ -41,7 +41,6 @@ contract ProductToken is ERC20, BancorBondingCurve {
     reserveRatio = _reserveRatio;		// initialize the reserve ratio for this token in ppm. 
                                                                       // This is hardcoded right now because we are testing with 33%
     maxTokenCount = _maxTokenCount;
-    // _mint(msg.sender, 1);  
   }
 
   /**

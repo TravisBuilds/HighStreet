@@ -28,8 +28,6 @@ const privateKey = fs.readFileSync(".secret").toString().trim();
 const endpointUrl = fs.readFileSync(".endpoint").toString().trim();
 // Using Arbitrum chain on Kovan net.
 const mnemonic = fs.readFileSync(".mnemonic").toString().trim();
-const arbProviderUrl = "https://kovan4.arbitrum.io/rpc";
-
 module.exports = {
   /**
    * Networks define how you connect to your ethereum client and let you set the
@@ -74,12 +72,12 @@ module.exports = {
 
     arbitrum: {
       provider: function () {
-        // return wrapped provider:
         return wrapProvider(
-          new HDWalletProvider(mnemonic, arbProviderUrl)
+          new HDWalletProvider(mnemonic, 'https://kovan5.arbitrum.io/rpc')
         )
       },
-      network_id: '*',
+      network_id: '*', // Match any network id
+      gas: 450000000,
       gasPrice: 0,
     },
     
