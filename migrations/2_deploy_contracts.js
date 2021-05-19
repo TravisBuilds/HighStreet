@@ -22,7 +22,7 @@ module.exports = async function (deployer, network, accounts ) {
 	await deployer.deploy(Factory, {from: accounts[0]});
 	const factory = await Factory.deployed();
 	// Add a test token for the front end.
-	let token = await factory.createToken("Kalon Tea", 330000, 500, 3, web3.utils.toWei('9', 'ether'), {from: accounts[0]});
+	let token = await factory.createToken("Kalon Tea", 330000, 500, 2, web3.utils.toWei('0.064', 'ether'), {from: accounts[0]});
 	let address = await factory.retrieveToken("Kalon Tea");		// this is how you retrieve token.	
 
 };

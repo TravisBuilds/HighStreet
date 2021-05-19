@@ -62,7 +62,7 @@ const Market = () => {
                             </h3>
                           </Card.Text>
                           <Card.Footer style={{ padding: '0', border: '0' }}>
-                            {  product.available }
+                            { product.available }
                             {' '}
                             out of
                             { product.supply }
@@ -81,7 +81,7 @@ const Market = () => {
                       <Button
                         variant="primary"
                         style={{ width: '23rem', marginTop: '8px', marginBottom: '8px' }}
-                        onClick={() => tokenBuy(product)}
+                        onClick={() => tokenSell(product)}
                         disabled={buttonDisabled}
                       >
                         <strong>Buy</strong>

@@ -1,6 +1,7 @@
 import React, { createContext, useReducer } from 'react';
 // import { McdPlugin } from '@makerdao/dai'; // makerdao is a library that allows for interaction with the DAI coin.
 import { ethers } from 'ethers';
+import { Bridge } from 'arb-ts';
 import ProductReducer from './ProductReducer';
 import kalonCard from '../assets/product1.png';
 import loreal from '../assets/product2.png';
@@ -20,9 +21,9 @@ const provider = new ethers.providers.Web3Provider(window.ethereum);
 const signer = provider.getSigner(); // this is the account that user uses to make payment.
 let factoryContract; // this handle is used to call view functions from the smart contract.
 // let factoryContractWSigner;  // this handle is used to call state-changing functions from the smart contract.
-let daiAddress; // this is the address for Dai tokens, it is pre-defined based on which network user is connected to.
-let daiContract;
-let daiContractWSigner;
+// let daiAddress; // this is the address for Dai tokens, it is pre-defined based on which network user is connected to.
+// let daiContract;
+// let daiContractWSigner;
 // function that initialize the solidity smart contract handles
 // async fu nction initializeNetwork() {
 provider.getNetwork().then((result) => {
@@ -49,8 +50,8 @@ provider.getNetwork().then((result) => {
 
   const networkData = Factory.networks[networkId];
   if (networkData) {
-    console.log('Ready to connect to contract.');
-    console.log(`Dai Address is set to ${daiAddress}`);
+    // console.log('Ready to connect to contract.');
+    // console.log(`Dai Address is set to ${daiAddress}`);
     factoryContract = new ethers.Contract(networkData.address, Factory.abi, provider);
     // daiContract = new ethers.Contract(daiAddress, Dai.abi, provider);
     // daiContractWSigner = daiContract.connect(signer);
@@ -76,13 +77,13 @@ let tokenWSigner; // again, this is the token handle that is required to make an
 // This function retrieve the address of a token by its name.
 // then it creates a token handle with
 async function retrieveTokenByName(name) {
-  // await factoryContract.retrieveToken(name).then((result) => {
-  //   tokenAddress = result;
-  //   token = new ethers.Contract(tokenAddress, Token.abi, provider);
-  //   tokenWSigner = token.connect(signer);
-  // }).catch((e) => {
-  //   console.log(e);
-  // });
+  await factoryContract.retrieveToken(name).then((result) => {
+    tokenAddress = result;
+    token = new ethers.Contract(tokenAddress, Token.abi, provider);
+    tokenWSigner = token.connect(signer);
+  }).catch((e) => {
+    console.log(e);
+  });
 }
 
 function getAvailability() {
@@ -106,11 +107,24 @@ async function buy(cashUpperBound) { // purchase tokens based on a cash upper bo
   // }).catch((e) => {
   //   console.log(e);
   // });
-  await tokenWSigner.buy(1, { value: cashUpperBound });
+  const overrides = {
+    // To convert Ether to Wei:
+    value: ethers.utils.parseEther('1.0') // ether in this case MUST be a string
+
+    // Or you can use Wei directly if you have that:
+    // value: someBigNumber
+    // value: 1234   // Note that using JavaScript numbers requires they are less than Number.MAX_SAFE_INTEGER
+    // value: "1234567890"
+    // value: "0x1234"
+
+    // Or, promises are also supported:
+    // value: provider.getBalance(addr)
+  };
+  await tokenWSigner.buy('1', overrides);
 }
 
 async function sell(tokenAmount) { // token must be a number that's smaller than 2^32 - 1
-  await tokenWSigner.sell(tokenAmount);
+  await tokenWSigner.sell('1');
 }
 
 async function tradeIn(tokenAmount) { // token must be a number that's smaller than 2^32 - 1
@@ -124,7 +138,7 @@ const initialState = {
     {
       name: 'Kalon Tea',
       ticker: 'KLT',
-      price: 12,
+      price: 1,
       supply: 500, // tokenInstance.getSupply()
       available: 500, // tokenInstance.getAvailability()
       img: kalonCard,
@@ -179,12 +193,11 @@ const ProductProvider = ({ children }) => {
   async function tokenBuy(product) {
     const a = await retrieveTokenByName(product.name);
     await buy(a).then((result) => {
-      console.log(result);
-      dispatch({
-        type: 'TOKEN_BOUGHT',
-        product,
-        result
-      });
+      // dispatch({
+      //   type: 'TOKEN_BOUGHT',
+      //   product,
+      //   result
+      // });
     }).catch((e) => {
       console.log(e);
     });
@@ -194,11 +207,11 @@ const ProductProvider = ({ children }) => {
     const a = await retrieveTokenByName(product.name);
     await sell(a).then((result) => {
       console.log(result);
-      dispatch({
-        type: 'TOKEN_SOLD',
-        product,
-        result
-      });
+      // dispatch({
+      //   type: 'TOKEN_SOLD',
+      //   product,
+      //   result
+      // });
     }).catch((e) => {
       console.log(e);
     });
@@ -208,11 +221,11 @@ const ProductProvider = ({ children }) => {
     const a = await retrieveTokenByName(product.name);
     await tradeIn(a).then((result) => {
       console.log(result);
-      dispatch({
-        type: 'TOKEN_REDEEMED',
-        product,
-        result
-      });
+      // dispatch({
+      //   type: 'TOKEN_REDEEMED',
+      //   product,
+      //   result
+      // });
     }).catch((e) => {
       console.log(e);
     });
@@ -221,6 +234,7 @@ const ProductProvider = ({ children }) => {
   async function tokenAvailable(product) {
     const a = await retrieveTokenByName(product.name);
     await getAvailability(a).then((available) => {
+      console.log(`Tokens available:${available}`);
       dispatch({
         type: 'TOKEN_AVAILABLE',
         product,
@@ -234,10 +248,12 @@ const ProductProvider = ({ children }) => {
   async function tokenPrice(product) {
     const a = await retrieveTokenByName(product.name);
     await getPrice(a).then((price) => {
+      const etherPrice = ethers.utils.formatEther(price);
+      console.log(`Price retrieved:${etherPrice}`);
       dispatch({
         type: 'TOKEN_PRICE',
         product,
-        price
+        etherPrice
       });
     }).catch((e) => {
       console.log(e);
