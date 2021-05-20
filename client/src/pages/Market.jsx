@@ -81,7 +81,7 @@ const Market = () => {
                       <Button
                         variant="primary"
                         style={{ width: '23rem', marginTop: '8px', marginBottom: '8px' }}
-                        onClick={() => tokenSell(product)}
+                        onClick={() => tokenBuy(product)}
                         disabled={buttonDisabled}
                       >
                         <strong>Buy</strong>
