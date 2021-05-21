@@ -78,7 +78,8 @@ The market place's front end interface is a web application built on React. Buyi
 ## Virtual Reality 
 The VR Component is an extension to the marketplace built in Unity. The VR Market is fully accessible on PC and Stand Alone VR platforms. It acts as a completely interactive metaverse for user to buy, trade, and redeem tokens in a more social environment. Every brand and product along with their associated token can be bought at Virtual Shops. Bigger brands will have more custom user experiences built into their stores depending on their partnership with us. All user tokens will be represented as interactive 3D objects once logged into our Virtual Market. We are working to include support for external tokens as well, for example a user with cryptokitties in their metamask wallet will have their PNG file converted to a completely rigged and animated 3D model. 
 
-[![market](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/market.png?raw=true "market")](https://www.youtube.com/watch?v=vJ6_4pUFQu4&t=4s&ab_channel=LumiereVRLumiereVR)
+**Click on the image to play our in-engine trailer:**
+[![market](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/market.png?raw=true "market")](https://youtu.be/vJ6_4pUFQu4)
  
 ## Features
 We believe the future home of digital assets will most certainly be in Virtual Reality. We are building the shopping component of the shared metaverse. 
