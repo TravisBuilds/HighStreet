@@ -5,7 +5,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "./BancorBondingCurve.sol";
 import "@openzeppelin/contracts/proxy/beacon/IBeacon.sol";
 
-contract ProductToken is ERC20Upgradeable, BancorBondingCurve {
+contract ProductTokenV2 is ERC20Upgradeable, BancorBondingCurve {
 	using SafeMathUpgradeable for uint256;
 
 	event Buy(address indexed sender, uint32 amount, uint deposit);		// event to fire when a new token is minted
@@ -22,6 +22,7 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve {
   uint32 public maxTokenCount;
   uint32 public tradeinCount;
   uint32 public supplyOffset;
+  uint32 public newAttribute;
 
 	/**
    * @dev Constructor
@@ -98,6 +99,12 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve {
   {
     return uint32(totalSupply().add(uint256(tradeinCount)).add(uint256(supplyOffset)));
   }
+
+  function GetNewAttribute()
+      public view returns(uint32 newAttribute)
+    {
+     return newAttribute+1;
+    }
 
   // function getTradeinCount()                                         Don't need these, because public variable have getters by default
   //   public view returns (uint32 _amountTraded)
