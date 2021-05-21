@@ -3,6 +3,7 @@ pragma solidity ^0.8.2;
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 // import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "./BancorBondingCurve.sol";
+import "@openzeppelin/contracts/proxy/beacon/IBeacon.sol";
 
 contract ProductToken is ERC20Upgradeable, BancorBondingCurve {
 	using SafeMathUpgradeable for uint256;
@@ -205,4 +206,8 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve {
     tradeinCount = tradeinCount + _amount;			// Future: use safe math here.
     emit Tradein(msg.sender, _amount);
   }
+
+   function GetBeancon() public view returns (address){
+      return IBeacon(address(this)).implementation();
+   }
 }
