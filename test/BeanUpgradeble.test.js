@@ -3,8 +3,8 @@ const { deployProxy } = require('@openzeppelin/truffle-upgrades');
 
 const ProductToken = artifacts.require('ProductToken');
 const ProductTokenV2 = artifacts.require('ProductTokenV2');
-const ProductBeanconProxy = artifacts.require('ProductBeanconProxy');
-const ProductUpgradeableBeancon = artifacts.require('ProductUpgradeableBeancon');
+// const ProductBeanconProxy = artifacts.require('ProductBeaconProxy');
+const ProductUpgradeableBeancon = artifacts.require('ProductUpgradeableBeacon');
 const encodeCall = require('zos-lib/lib/helpers/encodeCall').default;
 
 contract('ProductBeanconProxy', function (accounts) {
@@ -14,6 +14,7 @@ contract('ProductBeanconProxy', function (accounts) {
 	const baseReserve = web3.utils.toWei('0.33', 'ether')
 	let imp
    let proxyFactory
+   let upgradeableBeancon
     beforeEach(async function () {
         let initializeData = encodeCall(
             'initialize', 
@@ -22,9 +23,9 @@ contract('ProductBeanconProxy', function (accounts) {
           );
         imp  = await deployProxy(ProductToken, [exp, max, offset, baseReserve], {initializer: 'initialize'});
         impUpgradeable = await deployProxy(ProductTokenV2, [exp, max, offset, baseReserve], {initializer: 'initialize'});
-        const beancon =  await ProductBeanconProxy.new(imp.address,initializeData)
-        const beanconAddress =  await beancon.GetImplementation()
-        proxyFactory = await TokenProxyFactory.new(beanconAddress,imp.address);
+       
+        proxyFactory = await TokenProxyFactory.new(imp.address,imp.address);
+        
     });
     it('beancon update',async function(){
       let initializeData = encodeCall(
@@ -37,8 +38,19 @@ contract('ProductBeanconProxy', function (accounts) {
         "HighGO",initializeData,
       );
       const impl = await ProductToken.deployed(proxyAddress);
-      const upgradeableBeancon = await ProductUpgradeableBeancon.new(imp.address,initializeData)
+
+      const reserveRatio = await impl.reserveRatio.call();
+      const maxTokenCount =await impl.maxTokenCount.call();
+      const supplyOffset =await impl.supplyOffset.call();
+      assert.equal(exp, reserveRatio);
+      assert.equal(max, maxTokenCount);
+      assert.equal(offset, supplyOffset);
+
+      upgradeableBeancon =  await ProductUpgradeableBeancon.new(impl.address)
       upgradeableBeancon.upgradeTo(impUpgradeable.address)
+      // const beanconAddress =  await upgradeableBeancon.implementation()
+
+      console.log(await  impl.newAttribute())
 
     })
   });

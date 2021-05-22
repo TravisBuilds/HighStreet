@@ -28,7 +28,7 @@ contract TokenProxyFactory {
 
 	// }
 
-	function createTokenProxy(string memory _productName, bytes32 _data) public onlyOwner returns (address) {
+	function createTokenProxy(string memory _productName, bytes memory _data) public onlyOwner returns (address) {
 		require(registry[_productName]==address(0), "The product token already exist");
 		address newProxyToken = ClonesUpgradeable.cloneDeterministic(impContract, _data);
 		registry[_productName] = newProxyToken;

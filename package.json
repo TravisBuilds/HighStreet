@@ -6,6 +6,7 @@
     "react-markdown": "^5.0.3"
   },
   "devDependencies": {
+    "@openzeppelin/test-helpers": "^0.5.11",
     "@openzeppelin/truffle-upgrades": "^1.5.2",
     "@openzeppelin/upgrades": "^2.8.0",
     "chai": "^4.3.4",
