@@ -101,9 +101,9 @@ contract ProductTokenV2 is ERC20Upgradeable, BancorBondingCurve {
   }
 
   function GetNewAttribute()
-      public view returns(uint32 newAttribute)
+      public view returns(uint32 _newAttribute)
     {
-     return newAttribute+1;
+     return _newAttribute+1;
     }
 
   // function getTradeinCount()                                         Don't need these, because public variable have getters by default
