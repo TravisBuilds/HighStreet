@@ -96,8 +96,20 @@ Owning platform tokens enable users to participate in the governance process thr
 ## Tokenomics 
 [![tokenomics](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/tokenomics.png?raw=true "allocation")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/tokenomics.png?raw=true "tokenomics")
 
+## Proof of Play Liquidity Mining through Viveport
+- Users unlock liquidity mining by enrolling in Viveport’s subscription service 
+- Users earn Street Tokens by completing certain tasks in the metaverse like buying and selling products in our marketplace
+- Street Tokens that are mined can be sold on centralized and decentralized exchanges, however we incentivize users to use it to buy products, as doing so will qualify them to share a portion of the purchasing transaction fees.
+- Street Tokens aim to be the ultimate utility token across the metaverse, so our goal for future releases is to include our Unity SDK inside Viveports development kit so a list of qualified actions from 3rd party games can also share in on our tokenomics framework.
+
+
 ## Staking Yield 
-Staking incentives are our way of creating monetary and governance incentives for our most committed members. Highstreet Market is introducing a new type of liquidity mining based on a proof of play system, where users can earn Street Tokens by completing certain tasks in the marketplace. At the start we will be joining forces with HTC and their Viveport platform to allow existing Viveport subscribers to turn on the mining option and start earning Street Tokens on day one. The tokens can be directly sold on centralized and decentralized exchanges, however as a further incentive for users to provide utility to the platform, users who purchase products through the marketplace using our Street Token will be rewarded with a portion of our transaction fees. Essentially, the more they buy the more they earn!
+- Every product pool provides new opportunities for Street Token Stakers 
+- By buying products with our Street Token, Highstreet Residents automatically turn on staking rewards generated from that product pool 
+- Every transaction comes with a fee, out of the 4% collected on every purchase, 1% is shared towards Street Token Stakers in the pool.
+- Although the bigger your stake the more you earn, we still incentivize smaller players by starting  staking reward accumulation based on timestamp  
+- Rewards are paid out in Street Tokens upon selling or redeeming product tokens
+
 
 [![allocation](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/whiteal.png?raw=true "allocation")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/whiteal.png?raw=true "allocation")
 
