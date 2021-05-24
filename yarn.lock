@@ -231,6 +231,14 @@
     "@babel/helper-validator-identifier" "^7.12.11"
     "to-fast-properties" "^2.0.0"
 
+"@chainlink/contracts@^0.1.7":
+  "integrity" "sha512-txVkGrwFYnyLUC/I5hTe7yZK7fjmB6YFULfBHqryRuREUmGd4bdpXfrcUUsZycmWibanp69QVyQBpsDrPhWsjw=="
+  "resolved" "https://registry.npmjs.org/@chainlink/contracts/-/contracts-0.1.7.tgz"
+  "version" "0.1.7"
+  optionalDependencies:
+    "@truffle/contract" "^4.3.8"
+    "ethers" "^4.0.45"
+
 "@ethersproject/abi@5.0.7":
   "integrity" "sha512-Cqktk+hSIckwP/W8O47Eef60VwmoSC/L3lY0+dIBhQPCNn9E4V7rwmm2aFrNRRDJfFlGuZ1khkQUOc3oBX+niw=="
   "resolved" "https://registry.npmjs.org/@ethersproject/abi/-/abi-5.0.7.tgz"
@@ -483,7 +491,7 @@
     "crypto-js" "^3.1.9-1"
     "debug" "^4.3.1"
 
-"@truffle/contract@^4.0.35":
+"@truffle/contract@^4.0.35", "@truffle/contract@^4.3.8":
   "integrity" "sha512-/GhDFu8pu1TMVev5WTxQj87Vo8Di5Uo0LXvdV7ESdUbEIzMlm9pjfkf2uWg8Jx2aSBGgfCeLXw8GVScBk9OjlA=="
   "resolved" "https://registry.npmjs.org/@truffle/contract/-/contract-4.3.16.tgz"
   "version" "4.3.16"
@@ -2150,7 +2158,7 @@
     "js-sha3" "0.5.7"
     "xmlhttprequest" "1.8.0"
 
-"ethers@^4.0.32":
+"ethers@^4.0.32", "ethers@^4.0.45":
   "integrity" "sha512-sZD5K8H28dOrcidzx9f8KYh8083n5BexIO3+SbE4jK83L85FxtpXZBCQdXb8gkg+7sBqomcLhhkU7UHL+F7I2g=="
   "resolved" "https://registry.npmjs.org/ethers/-/ethers-4.0.48.tgz"
   "version" "4.0.48"

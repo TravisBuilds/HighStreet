@@ -66,7 +66,7 @@ module.exports = {
     kovan: {
       provider: () => new HDWalletProvider([privateKey], endpointUrl),
       network_id: 42,
-      gas: 4500000,
+      gas: 5000000,
       gasPrice: 10000000000,
     },
 

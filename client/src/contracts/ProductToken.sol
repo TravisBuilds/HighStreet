@@ -1,6 +1,7 @@
 pragma solidity ^0.8.2;
 
-// import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 // import "@openzeppelin/contracts/access/Ownable.sol";
 import "./BancorBondingCurve.sol";
@@ -23,6 +24,9 @@ contract ProductToken is ERC20, BancorBondingCurve {
   uint32 public tradeinCount = 0;
   uint32 public supplyOffset;
 
+  IERC20 internal dai;
+  AggregatorV3Interface internal priceFeed;
+
 	/**
    * @dev Constructor
    *
@@ -32,15 +36,20 @@ contract ProductToken is ERC20, BancorBondingCurve {
    * @param _baseReserve              the base amount of reserve tokens, in accordance to _supplyOffset.
    *
   */
-  constructor(uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve) ERC20("ProductToken", "") public {		
+  constructor(uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve, address _daiAddress, address _chainlink) ERC20("ProductToken", "") public {		
     require(_maxTokenCount > 0, "Invalid max token count.");
     require(_reserveRatio > 0, "Invalid reserve ratio");
+    require(_daiAddress!=address(0), "Invalid dai contract address");
+    require(_chainlink!=address(0), "Invalid chainlink contract address");
 
     reserveBalance = _baseReserve;
     supplyOffset = _supplyOffset;
     reserveRatio = _reserveRatio;		// initialize the reserve ratio for this token in ppm. 
                                                                       // This is hardcoded right now because we are testing with 33%
     maxTokenCount = _maxTokenCount;
+
+    dai = IERC20(_daiAddress);
+    priceFeed = AggregatorV3Interface(_chainlink);
   }
 
   /**
@@ -51,18 +60,41 @@ contract ProductToken is ERC20, BancorBondingCurve {
   function buy(uint32 _amount) public payable {
     require(msg.value > 0, "Must send ether to buy tokens.");
 
-
+    int daieth = getLatestDaiEthPrice();
+    require(daieth > 0, "Exchange rate is equal or less than 0");
+    uint256 incomingEth = msg.value.mul(10**18).div(uint256(daieth));
     uint256 amount;
     uint256 change;    
-    (amount, change) = _buyForAmount(msg.value.mul(960000).div(1000000), _amount); // ppm of 96%. 4% is the platform transaction fee
+    (amount, change) = _buyForAmount(incomingEth.mul(960000).div(1000000), _amount); // ppm of 96%. 4% is the platform transaction fee
     // return change back to the sender.
     if (amount > 0) {                                               // If token transaction went through successfully
     
-      payable(msg.sender).transfer(change);
+      payable(msg.sender).transfer(change.mul(uint256(daieth)).div(10**18));
     }
     else {                                                          // If token transaction failed
     
       payable(msg.sender).transfer(msg.value);                                 
+    }
+  }
+
+  // support different payment functions 
+  function buyWithDai(uint256 _daiAmount, uint32 _amount) public {
+    require(_daiAmount > 0, "Value of dai must be greater than 0 to buy tokens.");
+    // Has to ask user for approval here.
+    // bool allowed = dai.approve(address(this), daiAmount);
+    // require(allowed, "Purchase failed because transfer approval was denied.");
+    
+    bool success = dai.transferFrom(msg.sender, address(this), _daiAmount);
+    require(success, "Purchase failed, amount to buy token was not successfully transferred.");
+    uint256 amount;
+    uint256 change;
+    (amount, change) = _buyForAmount(_daiAmount.mul(960000).div(1000000), _amount); // ppm of 96%. 4% is the platform transaction fee
+    // return change back to the sender.
+    if (amount > 0) {                                               // If token transaction went through successfully
+      dai.transfer(msg.sender, change);
+    }
+    else {                                                          // If token transaction failed
+      dai.transfer(msg.sender, _daiAmount);                               
     }
   }
 
@@ -73,7 +105,9 @@ contract ProductToken is ERC20, BancorBondingCurve {
   */
  	function sell(uint32 _amount) public {
     uint256 returnAmount = _sellForAmount(_amount);
-    payable(msg.sender).transfer(returnAmount.mul(980000).div(1000000));     // ppm of 98%. 2% is the platform transaction fee
+    // payable(msg.sender).transfer(returnAmount.mul(980000).div(1000000));     // ppm of 98%. 2% is the platform transaction fee
+    bool success = dai.transfer(msg.sender, returnAmount.mul(980000).div(1000000));        // ppm of 98%. 2% is the platform transaction fee
+    require(success, "selling token failed");
   }
 
 	/**
@@ -111,6 +145,22 @@ contract ProductToken is ERC20, BancorBondingCurve {
   // {
   //   return maxTokenCount;
   // }
+
+  /**
+     * Network: Kovan
+     * Aggregator: ETH/DAI
+     * Address: 0x22B58f1EbEDfCA50feF632bD73368b2FdA96D541
+  */
+  function getLatestDaiEthPrice() public view returns (int) {
+    (
+        uint80 roundID, 
+        int price,
+        uint startedAt,
+        uint timeStamp,
+        uint80 answeredInRound
+    ) = priceFeed.latestRoundData();
+    return price;
+  }
 
   function getCurrentPrice() 
   	public view returns	(uint256 price)

@@ -5,6 +5,7 @@
     "node": "15.x"
   },
   "dependencies": {
+    "@chainlink/contracts": "^0.1.7",
     "@openzeppelin/contracts": "^4.0.0",
     "@openzeppelin/contracts-upgradeable": "^4.0.0",
     "cookie-parser": "^1.4.5",
