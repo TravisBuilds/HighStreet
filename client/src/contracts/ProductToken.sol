@@ -206,8 +206,15 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve {
     tradeinCount = tradeinCount + _amount;			// Future: use safe math here.
     emit Tradein(msg.sender, _amount);
   }
-
-   function GetBeancon() public view returns (address){
-      return IBeacon(address(this)).implementation();
-   }
 }
+
+contract ProductTokenV2 is ProductToken {
+
+  uint256 public newAttribute;
+
+  function getNewAttribute()
+  public view returns (uint256 newAttribute)
+  {
+    return newAttribute + 1;
+  }
+} 

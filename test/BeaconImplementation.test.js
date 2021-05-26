@@ -2,8 +2,10 @@ const { expectRevert, expectEvent } = require('@openzeppelin/test-helpers');
 const { expect } = require('chai');
 
 const UpgradeableBeacon = artifacts.require('ProductUpgradeableBeacon');
-const Implementation1 = artifacts.require('ProductUpgradeableBeacon');
-const Implementation2 = artifacts.require('ProductUpgradeableBeaconV2');
+// const Implementation1 = artifacts.require('ProductUpgradeableBeacon');
+// const Implementation2 = artifacts.require('ProductUpgradeableBeaconV2');
+const Implementation1 = artifacts.require('ProductImplementation');
+const Implementation2 = artifacts.require('ProductImplementationV2');
 
 contract('UpgradeableBeacon', function (accounts) {
   const [owner, other] = accounts;
