@@ -21,11 +21,11 @@ contract TokenProxyFactory {
 	}
 
 	modifier onlyOwner {
-        require(
-            msg.sender == owner,
-            "Only owner can call this function."
-        );
-        _;
+    require(
+        msg.sender == owner,
+        "Only owner can call this function."
+    );
+    _;
   }
 
 	// function initialize() public initializer {
@@ -33,12 +33,12 @@ contract TokenProxyFactory {
 	// }
 
 	// function createTokenProxy(string memory _productName, bytes32 _data) public onlyOwner returns (address) {
-	function createTokenProxy(string memory _productName, bytes memory _data) public onlyOwner returns (address) {
+	function createTokenProxy(string memory _productName, bytes memory _data) public onlyOwner {
 		require(registry[_productName]==address(0), "The product token already exist");
 		// address newProxyToken = ClonesUpgradeable.cloneDeterministic(impContract, _data);
 		address newProxyToken = address(new BeaconProxy(beacon, _data));
 		registry[_productName] = newProxyToken;
-		return newProxyToken;
+		// return newProxyToken;
 	}
 
 	function retrieveToken(string memory _productName) public view returns(address) {

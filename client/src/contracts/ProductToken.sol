@@ -84,7 +84,7 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve {
   	_tradeinForAmount(_amount);
   }
 
-  fallback () external payable { buy(); }
+  // fallback () external payable { buy(); }
 
   // View Functions for outside.
   function getAvailability()
@@ -213,7 +213,7 @@ contract ProductTokenV2 is ProductToken {
   uint256 public newAttribute;
 
   function getNewAttribute()
-  public view returns (uint256 newAttribute)
+  public view returns (uint256)
   {
     return newAttribute + 1;
   }

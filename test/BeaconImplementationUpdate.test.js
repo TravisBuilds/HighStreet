@@ -31,6 +31,7 @@ contract('UpgradeableBeacon', function (accounts) {
       const v2 = await Implementation2.new();
       const receipt = await this.beacon.upgradeTo(v2.address, { from: owner });
       expectEvent(receipt, 'Upgraded', { implementation: v2.address });
+      console.log(await this.beacon.implementation());
       expect(await this.beacon.implementation()).to.equal(v2.address);
     });
 
