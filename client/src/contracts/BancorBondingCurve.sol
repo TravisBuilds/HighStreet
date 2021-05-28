@@ -129,7 +129,7 @@ contract BancorBondingCurve is Power {
     uint32 _supply,
     uint256 _reserveBalance,
     uint32 _reserveRatio,
-    uint32 _sellAmount) public view returns (uint256)
+    uint32 _sellAmount) public view virtual returns (uint256)
   {
     // validate input
     require(_supply > 0 && _reserveBalance > 0 && _reserveRatio > 0 && _reserveRatio <= MAX_RESERVE_RATIO && _sellAmount <= _supply);

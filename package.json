@@ -1,11 +1,14 @@
 {
   "dependencies": {
-    "@openzeppelin/contracts": "^3.1.0",
+    "@openzeppelin/contracts": "^4.1.0",
     "@openzeppelin/contracts-upgradeable": "^4.0.0",
     "chai-as-promised": "^7.1.1",
     "react-markdown": "^5.0.3"
   },
   "devDependencies": {
+    "@openzeppelin/contracts": "^3.4.1",
+    "@openzeppelin/contracts-upgradeable": "^4.1.0",
+    "@openzeppelin/test-helpers": "^0.5.11",
     "@openzeppelin/truffle-upgrades": "^1.5.2",
     "@openzeppelin/upgrades": "^2.8.0",
     "chai": "^4.3.4",

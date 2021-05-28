@@ -52,7 +52,7 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve {
    * @dev When user wants to buy tokens from the pool
    *
   */
-  function buy() public payable {
+  function buy() public payable  {
     require(msg.value > 0, "Must send ether to buy tokens.");
     uint256 amount;
     uint256 change;    
@@ -88,13 +88,13 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve {
 
   // View Functions for outside.
   function getAvailability()
-    public view returns (uint32 available)
+    public view virtual returns (uint32 available)
   {
     return maxTokenCount - uint32(totalSupply()) - tradeinCount;    // add safemath for uint32 later
   }
 
   function getTotalSupply()
-    internal view returns (uint32 supply)
+    internal view  returns (uint32 supply)
   {
     return uint32(totalSupply().add(uint256(tradeinCount)).add(uint256(supplyOffset)));
   }
@@ -118,7 +118,7 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve {
   }
 
   function getPriceForN(uint32 _amountProduct) 
-  	public view returns	(uint256 price)
+  	public view virtual returns	(uint256 price)
   {
   	return calculatePriceForNTokens(getTotalSupply(), reserveBalance, reserveRatio, _amountProduct);
   }
@@ -208,13 +208,4 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve {
   }
 }
 
-contract ProductTokenV2 is ProductToken {
 
-  uint256 public newAttribute;
-
-  function getNewAttribute()
-  public view returns (uint256)
-  {
-    return newAttribute + 1;
-  }
-} 
