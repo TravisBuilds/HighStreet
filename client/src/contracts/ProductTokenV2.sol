@@ -82,3 +82,34 @@ contract ProductTokenV3 is ProductTokenV2 {
     return oldBalance.sub(newBalance*3).div(result);
   }
 }
+
+contract ProductTokenDestroy {
+
+}
+
+contract ProductTokenV4 is ProductTokenV2 {
+
+}
+
+contract ProductTokenV5 is ProductTokenV3 {
+  uint256  public newInitValue;
+/**
+   * @dev Constructor
+   *
+   * @param _reserveRatio             the reserve ratio in the curve function
+   * @param _maxTokenCount						the amount of token that will exist for this type.
+   * @param _supplyOffset             a initial amount of offset that drive the price to a starting price
+   * @param _baseReserve              the reserve balance when supply is 0. This is calculated based on the balance function, and evaluated at s = _supplyOffset
+  */
+  function initializeV5(uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve,uint256 _newInitValue) public  initializer {		
+    __ERC20_init("ProductToken", "");
+    __BancorBondingCurve_init();
+    __ProductToken_init_unchained(_reserveRatio, _maxTokenCount, _supplyOffset, _baseReserve);
+    newInitValue= _newInitValue;
+  }
+  function getNewInitValue() public view returns(uint256 ){
+    return newInitValue;
+  }
+}
+
+	

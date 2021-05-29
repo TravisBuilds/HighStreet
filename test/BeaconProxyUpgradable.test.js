@@ -7,7 +7,9 @@ const TokenProxyFactory = artifacts.require('TokenProxyFactory');
 const ProductToken = artifacts.require('ProductToken');
 const ProductTokenV2 = artifacts.require('ProductTokenV2');
 const ProductTokenV3 = artifacts.require('ProductTokenV3');
-const BeaconProxy = artifacts.require('BeaconProxy');
+const ProductTokenV4 = artifacts.require('ProductTokenV4');
+const ProductTokenV5 = artifacts.require('ProductTokenV5');
+const ProductTokenDestroy = artifacts.require('ProductTokenDestroy');
 const UpgradeableBeacon = artifacts.require('ProductUpgradeableBeacon');
 
 require('chai')
@@ -27,6 +29,10 @@ contract('ProductBeaconProxy', function (accounts) {
     // console.log((await this.implementationV0.reserveRatio()).toString());
     this.implementationV1 = await ProductTokenV2.new();
     this.implementationV2 = await ProductTokenV3.new();
+    this.implementationV3 = await ProductTokenV4.new();
+    this.implementationV4 = await ProductTokenV5.new();
+    
+    this.implementationDestroy  =await ProductTokenDestroy.new();
   });
   
   beforeEach(async function () {
@@ -134,7 +140,7 @@ contract('ProductBeaconProxy', function (accounts) {
 		totalSupplyV1.should.be.a.bignumber.that.not.equals(totalSupplyV2)
   });
 
-  it('BancorBondingCurve calculateSaleReturn  Functions  update',async function(){
+  it('Skip V2 version  rollback calculateSaleReturn  Functions  update',async function(){
     const data = this.implementationV0.contract.methods.initialize(exp, max, offset, baseReserve).encodeABI();
       await this.tokenFactory.createTokenProxy(
         "HighGO", data,
@@ -146,9 +152,39 @@ contract('ProductBeaconProxy', function (accounts) {
 		// console.log(cost1.toString())
     this.beacon.upgradeTo(this.implementationV1.address);
     this.beacon.upgradeTo(this.implementationV2.address);
-    const highGoV3 = new ProductTokenV2(proxyAddress);
-    const V3 = await highGoV3.calculateSaleReturn(offset,baseReserve,exp,1)
-		V1.should.be.a.bignumber.that.not.equals(V3)
+    this.beacon.upgradeTo(this.implementationV3.address);
+    // const highGoV3 = new ProductTokenV2(proxyAddress);
+    const V3 = await highGoV1.calculateSaleReturn(offset,baseReserve,exp,1)
+		V1.should.be.a.bignumber.that.equals(V3)
   });
-
+  it('Destroy ProductToken is not   succeed',async function(){
+		// console.log(cost1.toString())
+    
+    // console.log(proxyAddress);
+    const data = this.implementationV0.contract.methods.initialize(exp, max, offset, baseReserve).encodeABI();
+      await this.tokenFactory.createTokenProxy(
+        "HighGO", data,
+      );
+    const proxyAddress = await this.tokenFactory.retrieveToken.call("HighGO");
+    const highGoV1 = new ProductToken(proxyAddress);   
+    
+    const costV1 = await highGoV1.getPriceForN("1")
+    this.beacon.upgradeTo(this.implementationDestroy.address);
+    const costV2 = await highGoV1.getPriceForN("1")
+		costV1.should.be.a.bignumber.that.equals(costV2)
+  });
+  it('update new initialize by implementationV4 ',async function(){   
+    this.beacon.upgradeTo(this.implementationV4.address);
+    // console.log(proxyAddress);
+    let newInitValue = '1000';
+    const dataV5 = this.implementationV4.contract.methods.initializeV5(exp, max, offset, baseReserve,newInitValue).encodeABI();
+      await this.tokenFactory.createTokenProxy(
+        "HighGO", dataV5,
+      );
+      const proxyAddress = await this.tokenFactory.retrieveToken.call("HighGO");
+    const highGoV5 = new ProductTokenV5(proxyAddress);  
+    const costV5 = await highGoV5.getNewInitValue()
+    // console.log(costV5)
+		costV5.should.be.a.bignumber.that.equals(newInitValue)
+  });
 });

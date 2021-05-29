@@ -31,7 +31,7 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve {
    * @param _supplyOffset             a initial amount of offset that drive the price to a starting price
    * @param _baseReserve              the reserve balance when supply is 0. This is calculated based on the balance function, and evaluated at s = _supplyOffset
   */
-  function initialize(uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve) public initializer {		
+  function initialize(uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve) public  initializer {		
     __ERC20_init("ProductToken", "");
     __BancorBondingCurve_init();
     __ProductToken_init_unchained(_reserveRatio, _maxTokenCount, _supplyOffset, _baseReserve);
