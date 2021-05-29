@@ -19,6 +19,11 @@ import "./Power.sol"; // Efficient power function.
 contract BancorBondingCurve is Power {
   using SafeMathUpgradeable for uint256;
   uint32 private constant MAX_RESERVE_RATIO = 1000000;
+
+  function __BancorBondingCurve_init() public initializer {  
+    __Power_init();
+  }
+
   /**
    * @dev Try to compute the price to purchage n token. This is the modified component in addition 
    * to the two original functions below.
@@ -124,7 +129,7 @@ contract BancorBondingCurve is Power {
     uint32 _supply,
     uint256 _reserveBalance,
     uint32 _reserveRatio,
-    uint32 _sellAmount) public view returns (uint256)
+    uint32 _sellAmount) public view virtual returns (uint256)
   {
     // validate input
     require(_supply > 0 && _reserveBalance > 0 && _reserveRatio > 0 && _reserveRatio <= MAX_RESERVE_RATIO && _sellAmount <= _supply);

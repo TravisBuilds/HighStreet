@@ -1,5 +1,6 @@
 
 const DaiMock = artifacts.require("DaiMock");
+// const { deployProxy } = require('@openzeppelin/truffle-upgrades');
 const Token = artifacts.require("ProductToken");
 const Factory = artifacts.require("TokenFactory");
 
@@ -26,8 +27,4 @@ module.exports = async function (deployer, network, accounts ) {
 	
 	await deployer.deploy(Factory, daiAdress, chainlinkAddress, {from: accounts[0]});
 	const factory = await Factory.deployed();
-	// Add a test token for the front end.
-	let token = await factory.createToken("Kalon Tea", 330000, 500, 3, web3.utils.toWei('12', 'ether'), {from: accounts[0]});
-	let address = await factory.retrieveToken("Kalon Tea");		// this is how you retrieve token.	
-
 };
