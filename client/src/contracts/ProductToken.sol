@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 
 import "./BancorBondingCurve.sol";
+import "@openzeppelin/contracts/proxy/beacon/IBeacon.sol";
 
 contract ProductToken is ERC20Upgradeable, BancorBondingCurve {
 	using SafeMathUpgradeable for uint256;
@@ -21,7 +22,7 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve {
 
 
   uint32 public maxTokenCount;
-  uint32 public tradeinCount = 0;
+  uint32 public tradeinCount;
   uint32 public supplyOffset;
 
   IERC20 internal dai;
@@ -74,11 +75,9 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve {
     (amount, change) = _buyForAmount(incomingEth.mul(960000).div(1000000), _amount); // ppm of 96%. 4% is the platform transaction fee
     // return change back to the sender.
     if (amount > 0) {                                               // If token transaction went through successfully
-    
       payable(msg.sender).transfer(change.mul(uint256(daieth)).div(10**18));
     }
     else {                                                          // If token transaction failed
-    
       payable(msg.sender).transfer(msg.value);                                 
     }
   }
@@ -86,10 +85,6 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve {
   // support different payment functions 
   function buyWithDai(uint256 _daiAmount, uint32 _amount) public virtual {
     require(_daiAmount > 0, "Value of dai must be greater than 0 to buy tokens.");
-    // Has to ask user for approval here.
-    // bool allowed = dai.approve(address(this), daiAmount);
-    // require(allowed, "Purchase failed because transfer approval was denied.");
-    
     bool success = dai.transferFrom(msg.sender, address(this), _daiAmount);
     require(success, "Purchase failed, amount to buy token was not successfully transferred.");
     uint256 amount;
@@ -111,7 +106,6 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve {
   */
  	function sell(uint32 _amount) public virtual {
     uint256 returnAmount = _sellForAmount(_amount);
-    // payable(msg.sender).transfer(returnAmount.mul(980000).div(1000000));     // ppm of 98%. 2% is the platform transaction fee
     bool success = dai.transfer(msg.sender, returnAmount.mul(980000).div(1000000));        // ppm of 98%. 2% is the platform transaction fee
     require(success, "selling token failed");
   }
@@ -302,3 +296,5 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve {
   //    }
   // Tradein to a pending process that does not burn the token until shipment verification is confirmed.
 }
+
+
