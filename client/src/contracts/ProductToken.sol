@@ -2,12 +2,12 @@ pragma solidity ^0.8.2;
 
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-// import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+
 import "./BancorBondingCurve.sol";
 
-contract ProductToken is ERC20, BancorBondingCurve {
-	using SafeMath for uint256;
+contract ProductToken is ERC20Upgradeable, BancorBondingCurve {
+	using SafeMathUpgradeable for uint256;
 
 	event Buy(address indexed sender, uint32 amount, uint deposit);		// event to fire when a new token is minted
   event Sell(address indexed sender, uint32 amount, uint refund);			// event to fire when a token has been sold back
@@ -25,7 +25,7 @@ contract ProductToken is ERC20, BancorBondingCurve {
   uint32 public supplyOffset;
 
   IERC20 internal dai;
-  AggregatorV3Interface internal priceFeed;
+  AggregatorV3Interface internal daiEthFeed;
 
 	/**
    * @dev Constructor
@@ -36,7 +36,13 @@ contract ProductToken is ERC20, BancorBondingCurve {
    * @param _baseReserve              the base amount of reserve tokens, in accordance to _supplyOffset.
    *
   */
-  constructor(uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve, address _daiAddress, address _chainlink) ERC20("ProductToken", "") public {		
+  function initialize(string memory name, string memory symbol, uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve, address _daiAddress, address _chainlink) public initializer {   
+    __ERC20_init(name, symbol);
+    // __BancorBondingCurve_init();
+    __ProductToken_init_unchained(_reserveRatio, _maxTokenCount, _supplyOffset, _baseReserve, _daiAddress, _chainlink);
+  }
+
+  function __ProductToken_init_unchained(uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve, address _daiAddress, address _chainlink) public initializer {
     require(_maxTokenCount > 0, "Invalid max token count.");
     require(_reserveRatio > 0, "Invalid reserve ratio");
     require(_daiAddress!=address(0), "Invalid dai contract address");
@@ -44,12 +50,12 @@ contract ProductToken is ERC20, BancorBondingCurve {
 
     reserveBalance = _baseReserve;
     supplyOffset = _supplyOffset;
-    reserveRatio = _reserveRatio;		// initialize the reserve ratio for this token in ppm. 
+    reserveRatio = _reserveRatio;   // initialize the reserve ratio for this token in ppm. 
                                                                       // This is hardcoded right now because we are testing with 33%
     maxTokenCount = _maxTokenCount;
 
     dai = IERC20(_daiAddress);
-    priceFeed = AggregatorV3Interface(_chainlink);
+    daiEthFeed = AggregatorV3Interface(_chainlink);
   }
 
   /**
@@ -57,7 +63,7 @@ contract ProductToken is ERC20, BancorBondingCurve {
    *
    * @param _amount             the amount of tokens to be bought.
   */
-  function buy(uint32 _amount) public payable {
+  function buy(uint32 _amount) public virtual payable {
     require(msg.value > 0, "Must send ether to buy tokens.");
 
     int daieth = getLatestDaiEthPrice();
@@ -78,7 +84,7 @@ contract ProductToken is ERC20, BancorBondingCurve {
   }
 
   // support different payment functions 
-  function buyWithDai(uint256 _daiAmount, uint32 _amount) public {
+  function buyWithDai(uint256 _daiAmount, uint32 _amount) public virtual {
     require(_daiAmount > 0, "Value of dai must be greater than 0 to buy tokens.");
     // Has to ask user for approval here.
     // bool allowed = dai.approve(address(this), daiAmount);
@@ -103,7 +109,7 @@ contract ProductToken is ERC20, BancorBondingCurve {
    *
    * @param _amount             the amount of tokens to be sold.
   */
- 	function sell(uint32 _amount) public {
+ 	function sell(uint32 _amount) public virtual {
     uint256 returnAmount = _sellForAmount(_amount);
     // payable(msg.sender).transfer(returnAmount.mul(980000).div(1000000));     // ppm of 98%. 2% is the platform transaction fee
     bool success = dai.transfer(msg.sender, returnAmount.mul(980000).div(1000000));        // ppm of 98%. 2% is the platform transaction fee
@@ -115,7 +121,7 @@ contract ProductToken is ERC20, BancorBondingCurve {
    * the logistics for transfering product should be handled elsewhere
    *
   */
-  function tradein(uint32 _amount) public {
+  function tradein(uint32 _amount) public virtual {
   	_tradeinForAmount(_amount);
   }
 
@@ -123,13 +129,13 @@ contract ProductToken is ERC20, BancorBondingCurve {
 
   // View Functions for outside.
   function getAvailability()
-    public view returns (uint32 available)
+    public view virtual returns (uint32 available)
   {
     return maxTokenCount - uint32(totalSupply()) - tradeinCount;    // add safemath for uint32 later
   }
 
   function getTotalSupply()
-    internal view returns (uint32 supply)
+    internal view virtual returns (uint32 supply)
   {
     return uint32(totalSupply().add(uint256(tradeinCount)).add(uint256(supplyOffset)));
   }
@@ -151,37 +157,37 @@ contract ProductToken is ERC20, BancorBondingCurve {
      * Aggregator: ETH/DAI
      * Address: 0x22B58f1EbEDfCA50feF632bD73368b2FdA96D541
   */
-  function getLatestDaiEthPrice() public view returns (int) {
+  function getLatestDaiEthPrice() public view virtual returns (int) {
     (
         uint80 roundID, 
         int price,
         uint startedAt,
         uint timeStamp,
         uint80 answeredInRound
-    ) = priceFeed.latestRoundData();
+    ) = daiEthFeed.latestRoundData();
     return price;
   }
 
   function getCurrentPrice() 
-  	public view returns	(uint256 price)
+  	public view virtual returns	(uint256 price)
   {
   	return calculatePriceForNTokens(getTotalSupply(), reserveBalance, reserveRatio, 1);
   }
 
   function getPriceForN(uint32 _amountProduct) 
-  	public view returns	(uint256 price)
+  	public view virtual returns	(uint256 price)
   {
   	return calculatePriceForNTokens(getTotalSupply(), reserveBalance, reserveRatio, _amountProduct);
   }
 
   function calculateBuyReturn(uint256 _amountReserve)
-    public view returns (uint32 mintAmount)
+    public view virtual returns (uint32 mintAmount)
   {
     return calculatePurchaseReturn(getTotalSupply(), reserveBalance, reserveRatio, _amountReserve);
   }
 
   function calculateSellReturn(uint32 _amountProduct)
-    public view returns (uint256 soldAmount)
+    public view virtual returns (uint256 soldAmount)
   {
     return calculateSaleReturn(getTotalSupply(), reserveBalance, reserveRatio, _amountProduct);
   }
@@ -199,7 +205,7 @@ contract ProductToken is ERC20, BancorBondingCurve {
    * @return token                amount bought in product token
   */
   function _buyForAmount(uint256 _deposit, uint32 _amount)
-    internal returns (uint32, uint256)
+    internal virtual returns (uint32, uint256)
   {
   	require(getAvailability() > 0, "Sorry, this token is sold out.");
     require(_deposit > 0, "Deposit must be non-zero.");
@@ -243,7 +249,7 @@ contract ProductToken is ERC20, BancorBondingCurve {
    * @return token               amount sold in reserved token
   */
   function _sellForAmount(uint32 _amount)
-    internal returns (uint256)
+    internal virtual returns (uint256)
   {
   	require(_amount > 0, "Amount must be non-zero.");
     require(balanceOf(msg.sender) >= _amount, "Insufficient tokens to sell.");
@@ -263,7 +269,7 @@ contract ProductToken is ERC20, BancorBondingCurve {
    * @param _amount              product token wishes to be traded-in
   */
   function _tradeinForAmount(uint32 _amount)
-    internal 
+    internal virtual
   {
     require(_amount > 0, "Amount must be non-zero.");
     require(balanceOf(msg.sender) >= _amount, "Insufficient tokens to burn.");

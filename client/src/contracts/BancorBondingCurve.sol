@@ -1,6 +1,6 @@
 pragma solidity ^0.8.2;
 
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "./Power.sol"; // Efficient power function.
 
 /**
@@ -17,7 +17,7 @@ import "./Power.sol"; // Efficient power function.
 * if a uint32 variable needs to be returned, it will be computed as uint256 value, then casted explicitly 
 */
 contract BancorBondingCurve is Power {
-  using SafeMath for uint256;
+  using SafeMathUpgradeable for uint256;
   uint32 private constant MAX_RESERVE_RATIO = 1000000;
   /**
    * @dev Try to compute the price to purchage n token. This is the modified component in addition 
