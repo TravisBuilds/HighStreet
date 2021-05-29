@@ -6,7 +6,7 @@
   },
   "dependencies": {
     "@chainlink/contracts": "^0.1.7",
-    "@openzeppelin/contracts": "^4.0.0",
+    "@openzeppelin/contracts": "^4.1.0",
     "@openzeppelin/contracts-upgradeable": "^4.0.0",
     "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
@@ -19,6 +19,8 @@
   },
   "devDependencies": {
     "@openzeppelin/test-helpers": "^0.5.11",
+    "@openzeppelin/truffle-upgrades": "^1.5.2",
+    "@openzeppelin/upgrades": "^2.8.0",
     "@truffle/hdwallet-provider": "^1.2.2",
     "arb-ethers-web3-bridge": "^0.7.3",
     "chai": "^4.3.4",
