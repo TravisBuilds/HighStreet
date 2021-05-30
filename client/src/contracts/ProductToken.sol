@@ -1,11 +1,11 @@
 pragma solidity ^0.8.2;
 
-import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+// import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 
 import "./BancorBondingCurve.sol";
-import "@openzeppelin/contracts/proxy/beacon/IBeacon.sol";
+// import "@openzeppelin/contracts/proxy/beacon/IBeacon.sol";
 
 contract ProductToken is ERC20Upgradeable, BancorBondingCurve {
 	using SafeMathUpgradeable for uint256;
@@ -23,91 +23,33 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve {
 
   uint32 public maxTokenCount;
   uint32 public tradeinCount;
-  uint32 public supplyOffset;
-
-  IERC20 internal dai;
-  AggregatorV3Interface internal daiEthFeed;
+  uint32 internal supplyOffset;
 
 	/**
    * @dev Constructor
    *
+   * @param _name                     the name of this token
+   * @param _symbol                   the symbol of this token
    * @param _reserveRatio             the reserve ratio in the curve function.
    * @param _maxTokenCount						the amount of token that will exist for this type.
    * @param _supplyOffset             this amount is used to determine initial price.
    * @param _baseReserve              the base amount of reserve tokens, in accordance to _supplyOffset.
    *
   */
-  function initialize(string memory name, string memory symbol, uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve, address _daiAddress, address _chainlink) public initializer {   
-    __ERC20_init(name, symbol);
-    // __BancorBondingCurve_init();
-    __ProductToken_init_unchained(_reserveRatio, _maxTokenCount, _supplyOffset, _baseReserve, _daiAddress, _chainlink);
+  function initialize(string memory _name, string memory _symbol, uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve) public initializer { //, address _daiAddress, address _chainlink) public initializer {   
+    __ERC20_init(_name, _symbol);
+    __BancorBondingCurve_init();
+    __ProductToken_init_unchained(_reserveRatio, _maxTokenCount, _supplyOffset, _baseReserve);
   }
 
-  function __ProductToken_init_unchained(uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve, address _daiAddress, address _chainlink) public initializer {
+  function __ProductToken_init_unchained(uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve) internal initializer { //, address _daiAddress, address _chainlink) public initializer {
     require(_maxTokenCount > 0, "Invalid max token count.");
     require(_reserveRatio > 0, "Invalid reserve ratio");
-    require(_daiAddress!=address(0), "Invalid dai contract address");
-    require(_chainlink!=address(0), "Invalid chainlink contract address");
 
     reserveBalance = _baseReserve;
     supplyOffset = _supplyOffset;
-    reserveRatio = _reserveRatio;   // initialize the reserve ratio for this token in ppm. 
-                                                                      // This is hardcoded right now because we are testing with 33%
+    reserveRatio = _reserveRatio;   // initialize the reserve ratio for this token in ppm.                                                                   
     maxTokenCount = _maxTokenCount;
-
-    dai = IERC20(_daiAddress);
-    daiEthFeed = AggregatorV3Interface(_chainlink);
-  }
-
-  /**
-   * @dev When user wants to buy tokens from the pool
-   *
-   * @param _amount             the amount of tokens to be bought.
-  */
-  function buy(uint32 _amount) public virtual payable {
-    require(msg.value > 0, "Must send ether to buy tokens.");
-
-    int daieth = getLatestDaiEthPrice();
-    require(daieth > 0, "Exchange rate is equal or less than 0");
-    uint256 incomingEth = msg.value.mul(10**18).div(uint256(daieth));
-    uint256 amount;
-    uint256 change;    
-    (amount, change) = _buyForAmount(incomingEth.mul(960000).div(1000000), _amount); // ppm of 96%. 4% is the platform transaction fee
-    // return change back to the sender.
-    if (amount > 0) {                                               // If token transaction went through successfully
-      payable(msg.sender).transfer(change.mul(uint256(daieth)).div(10**18));
-    }
-    else {                                                          // If token transaction failed
-      payable(msg.sender).transfer(msg.value);                                 
-    }
-  }
-
-  // support different payment functions 
-  function buyWithDai(uint256 _daiAmount, uint32 _amount) public virtual {
-    require(_daiAmount > 0, "Value of dai must be greater than 0 to buy tokens.");
-    bool success = dai.transferFrom(msg.sender, address(this), _daiAmount);
-    require(success, "Purchase failed, amount to buy token was not successfully transferred.");
-    uint256 amount;
-    uint256 change;
-    (amount, change) = _buyForAmount(_daiAmount.mul(960000).div(1000000), _amount); // ppm of 96%. 4% is the platform transaction fee
-    // return change back to the sender.
-    if (amount > 0) {                                               // If token transaction went through successfully
-      dai.transfer(msg.sender, change);
-    }
-    else {                                                          // If token transaction failed
-      dai.transfer(msg.sender, _daiAmount);                               
-    }
-  }
-
-	/**
-   * @dev When user wants to sell their tokens back to the pool
-   *
-   * @param _amount             the amount of tokens to be sold.
-  */
- 	function sell(uint32 _amount) public virtual {
-    uint256 returnAmount = _sellForAmount(_amount);
-    bool success = dai.transfer(msg.sender, returnAmount.mul(980000).div(1000000));        // ppm of 98%. 2% is the platform transaction fee
-    require(success, "selling token failed");
   }
 
 	/**
@@ -134,34 +76,6 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve {
     return uint32(totalSupply().add(uint256(tradeinCount)).add(uint256(supplyOffset)));
   }
 
-  // function getTradeinCount()                                         Don't need these, because public variable have getters by default
-  //   public view returns (uint32 _amountTraded)
-  // {
-  //   return tradeinCount;
-  // }
-
-  // function getSupply()
-  //   public view returns (uint32 maxToken)
-  // {
-  //   return maxTokenCount;
-  // }
-
-  /**
-     * Network: Kovan
-     * Aggregator: ETH/DAI
-     * Address: 0x22B58f1EbEDfCA50feF632bD73368b2FdA96D541
-  */
-  function getLatestDaiEthPrice() public view virtual returns (int) {
-    (
-        uint80 roundID, 
-        int price,
-        uint startedAt,
-        uint timeStamp,
-        uint80 answeredInRound
-    ) = daiEthFeed.latestRoundData();
-    return price;
-  }
-
   function getCurrentPrice() 
   	public view virtual returns	(uint256 price)
   {
@@ -186,7 +100,6 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve {
     return calculateSaleReturn(getTotalSupply(), reserveBalance, reserveRatio, _amountProduct);
   }
 
-  // specific implementations of transaction logics.
    /**
    * @dev calculates the return for a given conversion (in product token) 
    * This function will try to compute the amount of tokens one can buy first, 

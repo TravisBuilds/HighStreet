@@ -3,6 +3,7 @@ const DaiMock = artifacts.require("DaiMock");
 // const { deployProxy } = require('@openzeppelin/truffle-upgrades');
 const Token = artifacts.require("ProductToken");
 const Factory = artifacts.require("TokenFactory");
+const UpgradeableBeacon = artifacts.require('ProductUpgradeableBeacon');
 
 module.exports = async function (deployer, network, accounts ) {
 	let daiAdress;
@@ -21,10 +22,11 @@ module.exports = async function (deployer, network, accounts ) {
 		daiAdress = dai.address;
 		chainlinkAddress = accounts[1];		// this is placeholder. Chainlink does not have a local network.
 	}
-
+	const implementationV0 = await Token.new();
+	const beacon = await UpgradeableBeacon.new(implementationV0.address);
 	// await deployer.deploy(Token, 330000, 500, 3, web3.utils.toWei('9', 'ether'));			// initialize reserve ratio for the token in ppm, stand in for testing.
 	// const token = await Token.deployed();
 	
-	await deployer.deploy(Factory, daiAdress, chainlinkAddress, {from: accounts[0]});
+	await deployer.deploy(Factory, beacon.address, {from: accounts[0]});
 	const factory = await Factory.deployed();
 };

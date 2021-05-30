@@ -2,12 +2,11 @@ pragma solidity ^0.8.2;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 // import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "./ProductToken.sol";
+import "../ProductTokenV1.sol";
 import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 
-contract ProductTokenV2 is ProductToken {
+contract ProductTokenV2 is ProductTokenV1 {
   uint256 public newAttribute;
-
 
   function getNewAttribute()
   public view returns (uint256)
@@ -32,6 +31,8 @@ contract ProductTokenV2 is ProductToken {
 contract ProductTokenV3 is ProductTokenV2 {
     using SafeMathUpgradeable for uint256;
     uint32 private constant MAX_RESERVE_RATIO = 2000000;
+
+
 /**
    * @dev given a continuous token supply, reserve token balance, reserve ratio and a sell amount (in the continuous token),
    * calculates the return for a given conversion (in the reserve token)
@@ -101,10 +102,11 @@ contract ProductTokenV5 is ProductTokenV3 {
    * @param _supplyOffset             a initial amount of offset that drive the price to a starting price
    * @param _baseReserve              the reserve balance when supply is 0. This is calculated based on the balance function, and evaluated at s = _supplyOffset
   */
-  function initializeV5(uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve,uint256 _newInitValue) public  initializer {		
+  function initializeV5(uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve,uint256 _newInitValue, address _daiAddress, address _chainlink) public  initializer {		
     __ERC20_init("ProductToken", "");
     __BancorBondingCurve_init();
-    __ProductToken_init_unchained(_reserveRatio, _maxTokenCount, _supplyOffset, _baseReserve);
+    ProductToken.__ProductToken_init_unchained(_reserveRatio, _maxTokenCount, _supplyOffset, _baseReserve);
+    ProductTokenV1.__ProductToken_init_unchained(_daiAddress, _chainlink);
     newInitValue= _newInitValue;
   }
   function getNewInitValue() public view returns(uint256 ){

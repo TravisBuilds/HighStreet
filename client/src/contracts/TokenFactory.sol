@@ -17,17 +17,14 @@ contract TokenFactory is Ownable { // is Initializable{
   	// require(_chainlinkAddress!=address(0), "Invalid chainlink contract address");
   	require(_beacon !=address(0), "Invalid Beacon address");
 		// has to check if _beacon implements IBeacon
-
-		// daiAddress = _daiAddress;
-		// chainlinkAddress = _chainlinkAddress;
 		beacon=_beacon;
 	}
 
-	function updateBeacon(address _newBeacon) public onlyOwner {
-		require(_newBeacon!=address(0), "Invalid Beacon address");
-		// has to check if _beacon implements IBeacon
-		beacon=_newBeacon;
-	}
+	// function updateBeacon(address _newBeacon) public onlyOwner {
+	// 	require(_newBeacon!=address(0), "Invalid Beacon address");
+	// 	// has to check if _beacon implements IBeacon
+	// 	beacon=_newBeacon;
+	// }
 
 	function createToken(string memory _productName, bytes memory _data) public onlyOwner {
 		require(registry[_productName]==address(0), "The product token already exist");
