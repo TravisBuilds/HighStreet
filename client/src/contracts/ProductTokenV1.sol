@@ -4,8 +4,9 @@ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "./ProductToken.sol";
 
 contract ProductTokenV1 is ProductToken {
+	bool private hasUpdated;
 	using SafeMathUpgradeable for uint256;
-  IERC20 internal dai;
+  IERC20 public dai;
   AggregatorV3Interface internal daiEthFeed;
 
 	/**
@@ -21,8 +22,19 @@ contract ProductTokenV1 is ProductToken {
    * @param _chainlink								the address needed to create a aggregator for Chainlink.
   */
   function initialize(string memory _name, string memory _symbol, uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve, address _daiAddress, address _chainlink) public initializer {   
- 			ProductToken.initialize(_name, _symbol, _reserveRatio, _maxTokenCount, _supplyOffset, _baseReserve);
- 			__ProductToken_init_unchained(_daiAddress, _chainlink);
+		ProductToken.initialize(_name, _symbol, _reserveRatio, _maxTokenCount, _supplyOffset, _baseReserve);
+		__ProductToken_init_unchained(_daiAddress, _chainlink);
+  }
+
+  function update(address _daiAddress, address _chainlink) public {
+  	require(!hasUpdated, "contract is already updated");
+  	// Duplicate logic here.
+    require(_daiAddress!=address(0), "Invalid dai contract address");
+    require(_chainlink!=address(0), "Invalid chainlink contract address");
+    dai = IERC20(_daiAddress);
+    daiEthFeed = AggregatorV3Interface(_chainlink);
+
+  	hasUpdated = true;
   }
 
   function __ProductToken_init_unchained(address _daiAddress, address _chainlink) internal initializer { //, address _daiAddress, address _chainlink) public initializer {
@@ -31,6 +43,7 @@ contract ProductTokenV1 is ProductToken {
 
     dai = IERC20(_daiAddress);
     daiEthFeed = AggregatorV3Interface(_chainlink);
+    hasUpdated = true;
   }
 
   /**
