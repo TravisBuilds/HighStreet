@@ -80,7 +80,7 @@ contract('ProductBeaconProxy', function (accounts) {
     // console.log(proxyAddress);
     const dummy = new ProductToken(proxyAddress);
 
-    this.beacon.upgradeTo(this.implementationV1.address);
+    await this.beacon.upgradeTo(this.implementationV1.address);
     const dummy2 = new ProductTokenV1(proxyAddress);
     await expectRevert.unspecified(
       dummy2.initialize('HighGO', 'HG', exp, '100', offset, baseReserve, daiMock.address, chainlinkAddress),
@@ -96,7 +96,7 @@ contract('ProductBeaconProxy', function (accounts) {
   });
 
   it("Proxy with newer implemnetation should be able to call initialize function from older implementations", async function(){
-    this.beacon.upgradeTo(this.implementationV1.address);
+    await this.beacon.upgradeTo(this.implementationV1.address);
     console.log(daiMock.address);
     const data = this.implementationV1.contract.methods.initialize('HighGO', 'HG', exp, max, offset, baseReserve,  daiMock.address, chainlinkAddress).encodeABI();
       await this.tokenFactory.createToken(
@@ -104,9 +104,7 @@ contract('ProductBeaconProxy', function (accounts) {
       );
     const proxyAddress = await this.tokenFactory.retrieveToken.call("HighGO");
     const dummy2 = new ProductTokenV1(proxyAddress);
-
-    console.log(await dummy2.maxTokenCount.call());
-    console.log(await dummy2.reserveRatio.call());
+    
     // assert.equal(max2, max);
     assert.equal(await dummy2.dai.call(), daiMock.address);
 
@@ -126,8 +124,8 @@ contract('ProductBeaconProxy', function (accounts) {
     const highGoV1 = new ProductToken(proxyAddress);
     const costV1 = await highGoV1.getPriceForN.call("1")
 		// console.log(cost1.toString())
-    this.beacon.upgradeTo(this.implementationV1.address);
-    this.beacon.upgradeTo(this.implementationV2.address);
+    await this.beacon.upgradeTo(this.implementationV1.address);
+    await this.beacon.upgradeTo(this.implementationV2.address);
     const highGoV2 = new ProductTokenV2(proxyAddress);
     const costV2 = await highGoV2.getPriceForN.call("1")
 		costV1.should.be.a.bignumber.that.not.equals(costV2);
