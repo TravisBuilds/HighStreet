@@ -26,7 +26,7 @@ contract ProductTokenV1 is ProductToken {
 		__ProductToken_init_unchained(_daiAddress, _chainlink);
   }
 
-  function update(address _daiAddress, address _chainlink) public {
+  function update(address _daiAddress, address _chainlink) public{
   	require(!hasUpdated, "contract is already updated");
   	// Duplicate logic here.
     require(_daiAddress!=address(0), "Invalid dai contract address");

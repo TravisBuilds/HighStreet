@@ -3,11 +3,12 @@ pragma solidity ^0.8.2;
 // import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import "./BancorBondingCurve.sol";
 // import "@openzeppelin/contracts/proxy/beacon/IBeacon.sol";
 
-contract ProductToken is ERC20Upgradeable, BancorBondingCurve {
+contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeable {
 	using SafeMathUpgradeable for uint256;
 
 	event Buy(address indexed sender, uint32 amount, uint deposit);		// event to fire when a new token is minted

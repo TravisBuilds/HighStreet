@@ -1,34 +1,33 @@
 pragma solidity ^0.8.2;
 
 // import "./ProductToken.sol";
+import "@openzeppelin/contracts/proxy/beacon/IBeacon.sol";
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-contract TokenFactory is Ownable { // is Initializable{
+contract TokenFactory is Initializable, UUPSUpgradeable, OwnableUpgradeable { // is Initializable{
 
 	// address daiAddress;
 	// address chainlinkAddress;
-	address public beacon;
+	IBeacon public beacon;
 	mapping(string => address) registry;
 
-	// constructor(address _daiAddress, address _chainlinkAddress, address _beacon) public {
-	constructor(address _beacon) public {
-		// require(_daiAddress!=address(0), "Invalid dai contract address");
-  	// require(_chainlinkAddress!=address(0), "Invalid chainlink contract address");
-  	require(_beacon !=address(0), "Invalid Beacon address");
-		// has to check if _beacon implements IBeacon
-		beacon=_beacon;
+	function initialize(address _beacon) public initializer {
+		UpdateBeacon(_beacon);
 	}
 
-	// function updateBeacon(address _newBeacon) public onlyOwner {
-	// 	require(_newBeacon!=address(0), "Invalid Beacon address");
-	// 	// has to check if _beacon implements IBeacon
-	// 	beacon=_newBeacon;
-	// }
+	function UpdateBeacon(address _beacon) internal {
+		require( Address.isContract(_beacon), "Invalid Beacon address");
+		beacon = IBeacon(_beacon);
+	}
 
-	function createToken(string memory _productName, bytes memory _data) public onlyOwner {
+	function createToken(string memory _productName, bytes memory _data) public {
 		require(registry[_productName]==address(0), "The product token already exist");
-		address newProxyToken = address(new BeaconProxy(beacon, _data));
+		address newProxyToken = address(new BeaconProxy(address(beacon), _data));
 		registry[_productName] = newProxyToken;
 	}
 
@@ -37,5 +36,6 @@ contract TokenFactory is Ownable { // is Initializable{
 		return registry[_productName];
 	}
 
+	function _authorizeUpgrade(address) internal override onlyOwner {}
 
 }
