@@ -12,16 +12,14 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeabl
 	using SafeMathUpgradeable for uint256;
 
 	event Buy(address indexed sender, uint32 amount, uint deposit);		// event to fire when a new token is minted
-  event Sell(address indexed sender, uint32 amount, uint refund);			// event to fire when a token has been sold back
-  event Tradein(address indexed sender, uint32 amount);									// event to fire when a token is redeemed in the real world
+  event Sell(address indexed sender, uint32 amount, uint refund);		// event to fire when a token has been sold back
+  event Tradein(address indexed sender, uint32 amount);							// event to fire when a token is redeemed in the real world
 
   // uint256 public basePrice;
   uint256 public reserveBalance;		// amount in ether, about 1/3 of a ether. This is initialized for testing, according to
-                                                        // a pricing function of y = x ^ 2, at a token supply (x) of 1
+                                    // a pricing function of y = x ^ 2, at a token supply (x) of 1
   // uint32 public exponent;
   uint32 public reserveRatio;
-
-
   uint32 public maxTokenCount;
   uint32 public tradeinCount;
   uint32 internal supplyOffset;
@@ -37,7 +35,8 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeabl
    * @param _baseReserve              the base amount of reserve tokens, in accordance to _supplyOffset.
    *
   */
-  function initialize(string memory _name, string memory _symbol, uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve) public initializer { //, address _daiAddress, address _chainlink) public initializer {   
+  function initialize(string memory _name, string memory _symbol, uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve) public initializer { //, address _daiAddress, address _chainlink) public initializer {
+    __Ownable_init();
     __ERC20_init(_name, _symbol);
     __BancorBondingCurve_init();
     __ProductToken_init_unchained(_reserveRatio, _maxTokenCount, _supplyOffset, _baseReserve);
@@ -49,7 +48,7 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeabl
 
     reserveBalance = _baseReserve;
     supplyOffset = _supplyOffset;
-    reserveRatio = _reserveRatio;   // initialize the reserve ratio for this token in ppm.                                                                   
+    reserveRatio = _reserveRatio;   // initialize the reserve ratio for this token in ppm.
     maxTokenCount = _maxTokenCount;
   }
 
@@ -187,6 +186,10 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeabl
     // To-do: provide revenue to vendor
 
     emit Tradein(msg.sender, _amount);
+  }
+
+  function getOwner() public virtual returns (address) {
+    return owner();
   }
 
   // To-do:

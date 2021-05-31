@@ -1,7 +1,7 @@
 const TokenProxyFactory = artifacts.require('TokenProxyFactory');
 const { deployProxy } = require('@openzeppelin/truffle-upgrades');
 const ProductToken = artifacts.require('ProductToken');
-const encodeCall = require('zos-lib/lib/helpers/encodeCall').default;
+const encodeCall = require('@openzeppelin/upgrades');
 
 contract('TokenProxyFactory', function (accounts) {
 	const exp = 330000				// assuming price function exponential factor of 2, input reserve ratio in ppm

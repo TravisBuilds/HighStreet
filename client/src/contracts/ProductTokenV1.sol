@@ -1,13 +1,14 @@
 pragma solidity ^0.8.2;
 
-import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import {AggregatorV3Interface as AggregatorV3Interface_v08 } from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import {AggregatorV3Interface as AggregatorV3Interface_v07 } from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "./ProductToken.sol";
 
 contract ProductTokenV1 is ProductToken {
 	bool private hasUpdated;
 	using SafeMathUpgradeable for uint256;
   IERC20 public dai;
-  AggregatorV3Interface internal daiEthFeed;
+  AggregatorV3Interface_v08 internal daiEthFeed;
 
 	/**
    * @dev Constructor
@@ -32,7 +33,7 @@ contract ProductTokenV1 is ProductToken {
     require(_daiAddress!=address(0), "Invalid dai contract address");
     require(_chainlink!=address(0), "Invalid chainlink contract address");
     dai = IERC20(_daiAddress);
-    daiEthFeed = AggregatorV3Interface(_chainlink);
+    daiEthFeed = AggregatorV3Interface_v08(_chainlink);
 
   	hasUpdated = true;
   }
@@ -42,7 +43,7 @@ contract ProductTokenV1 is ProductToken {
     require(_chainlink!=address(0), "Invalid chainlink contract address");
 
     dai = IERC20(_daiAddress);
-    daiEthFeed = AggregatorV3Interface(_chainlink);
+    daiEthFeed = AggregatorV3Interface_v08(_chainlink);
     hasUpdated = true;
   }
 
@@ -112,4 +113,9 @@ contract ProductTokenV1 is ProductToken {
     ) = daiEthFeed.latestRoundData();
     return price;
   }
+
+  function getOwner() public override returns (address) {
+    return owner();
+  }
+
 }
