@@ -6,7 +6,7 @@ const { expect } = require('chai');
 const ERC1967Proxy = artifacts.require('ERC1967Proxy');
 const TokenFactory = artifacts.require('TokenFactory');
 const ProductToken = artifacts.require('ProductToken');
-const ProductTokenV1 = artifacts.require('ProductTokenV1'); 
+const ProductTokenV1 = artifacts.require('ProductTokenV1');
 const ProductTokenV2 = artifacts.require('ProductTokenV2');
 const ProductTokenV3 = artifacts.require('ProductTokenV3');
 const ProductTokenV4 = artifacts.require('ProductTokenV4');
@@ -14,6 +14,7 @@ const ProductTokenV5 = artifacts.require('ProductTokenV5');
 const DaiMock = artifacts.require('DaiMock');
 const ProductTokenDestroy = artifacts.require('ProductTokenDestroy');
 const UpgradeableBeacon = artifacts.require('ProductUpgradeableBeacon');
+const BeaconProxy = artifacts.require('BeaconProxy');
 
 
 require('chai')
@@ -31,7 +32,7 @@ contract('ProductBeaconProxy', function (accounts) {
   let chainlinkAddress; 
 
   before('deploy implementation', async function () {
-    this.factoryImp = await TokenFactory.new();
+    this.factoryImp = await TokenFactory.new({from: accounts[0]});
     this.implementationV0 = await ProductToken.new();
     this.implementationV1 = await ProductTokenV1.new();
     this.implementationV2 = await ProductTokenV2.new();
@@ -42,26 +43,26 @@ contract('ProductBeaconProxy', function (accounts) {
     daiMock = await DaiMock.new();      // dummy
     chainlinkAddress = accounts[4];     // dummy
   });
-  
+
   beforeEach(async function () {
     // Initialize a beacon
-    this.beacon = await UpgradeableBeacon.new(this.implementationV0.address);
-
+    this.beacon = await UpgradeableBeacon.new(this.implementationV0.address, {from: accounts[0]});
     // this.tokenFactory = await TokenFactory.new(this.beacon.address);
-    const data = this.factoryImp.contract.methods.initialize(this.beacon.address).encodeABI();
+    const data = await this.factoryImp.contract.methods.initialize(this.beacon.address).encodeABI();
     const { address } = await ERC1967Proxy.new(this.factoryImp.address, data, {from: accounts[0]});
     this.tokenFactory = await TokenFactory.at(address);
   });
 
-  xit ('Token factory should point the right beacon address', async function () {
-    const beaconAddress = await this.tokenFactory.beacon();
-    expect(beaconAddress.address).to.equal(this.beacon.address);
+  it ('Token factory should point the right beacon address', async function () {
+    const beaconAddress = await this.tokenFactory.beacon.call();
+    expect(beaconAddress).to.equal(this.beacon.address);
   });
 
   it('Initialize product token', async function () {
       const data = this.implementationV0.contract.methods.initialize('HighGO', 'HG', exp, max, offset, baseReserve).encodeABI();
-      await this.tokenFactory.createToken(
-        "HighGO", data,
+      const newProxyToken = await BeaconProxy.new(this.beacon.address, data, {from: accounts[0]});
+      await this.tokenFactory.addToken(
+        "HighGO", newProxyToken.address,
       );
       const proxyAddress = await this.tokenFactory.retrieveToken.call("HighGO");
       const dummy = new ProductToken(proxyAddress);
@@ -79,9 +80,10 @@ contract('ProductBeaconProxy', function (accounts) {
 
   it("Beacon Update With New Variables, existing variables shouldn't be overridden", async function(){
     const data = this.implementationV0.contract.methods.initialize('HighGO', 'HG', exp, max, offset, baseReserve).encodeABI();
-      await this.tokenFactory.createToken(
-        "HighGO", data,
-      );
+    const newProxyToken = await BeaconProxy.new(this.beacon.address, data, {from: accounts[0]});
+    await this.tokenFactory.addToken(
+      "HighGO", newProxyToken.address,
+    );
     const proxyAddress = await this.tokenFactory.retrieveToken.call("HighGO");
     // console.log(proxyAddress);
     const dummy = new ProductToken(proxyAddress);
@@ -99,6 +101,12 @@ contract('ProductBeaconProxy', function (accounts) {
     // console.log(max2.toString());
     assert.equal(max2, max);
     assert.equal(await dummy2.dai.call(), daiMock.address);
+
+    //owner of contract should be account
+    assert.equal(await this.tokenFactory.getOwner.call(), accounts[0]);
+    assert.equal(await dummy.getOwner.call(), accounts[0]);
+    assert.equal(await dummy2.getOwner.call(), accounts[0]);
+
   });
 
   it("Proxy with newer implemnetation should be able to call initialize function from older implementations", async function(){
@@ -117,7 +125,7 @@ contract('ProductBeaconProxy', function (accounts) {
     await expectRevert.unspecified(
       dummy2.update(daiMock.address, chainlinkAddress),
     );
-  
+
   });
 
   it('Pricing Functions  update',async function(){
