@@ -150,7 +150,6 @@ contract('ProductBeaconProxy', function (accounts) {
 
     const highGoV2 = new ProductTokenV2(proxyAddress);
 
-
     // 1.the tokenFactory owner should be account[0]
     assert.equal(await this.tokenFactory.getOwner.call(), accounts[0]);
     // 2.the productToken owner should be tokenFactory

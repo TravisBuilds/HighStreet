@@ -23,7 +23,15 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeabl
   uint32 public maxTokenCount;
   uint32 public tradeinCount;
   uint32 internal supplyOffset;
-  address public creator;
+  address payable public creator;
+
+  modifier onlyCreator {
+      require(
+          msg.sender == creator,
+          "Only owner can call this function."
+      );
+      _;
+  }
 
 	/**
    * @dev Constructor
@@ -193,7 +201,7 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeabl
     return owner();
   }
 
-  function setCreator(address _creator) public virtual onlyOwner {
+  function setCreator(address payable _creator) public virtual onlyOwner {
     creator = _creator ;
   }
 

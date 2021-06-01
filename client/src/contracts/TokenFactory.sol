@@ -16,7 +16,7 @@ contract TokenFactory is Initializable, UUPSUpgradeable, OwnableUpgradeable { //
 	IBeacon public beacon;
 	mapping(string => address) registry;
 
-	event create(string name);
+	event create(string name, bool state);
 
 	function initialize(address _beacon) public initializer {
 		__Ownable_init();
@@ -36,10 +36,14 @@ contract TokenFactory is Initializable, UUPSUpgradeable, OwnableUpgradeable { //
 
 	function createTokenV2(string memory _productName, bytes memory _data)  public {
 		require(registry[_productName]==address(0), "The product token already exist");
+
 		address newProxyToken = address(new BeaconProxy(address(beacon), _data));
-		(bool success, bytes memory result) = newProxyToken.call(abi.encodeWithSignature("setCreator(address)",msg.sender));
-		create(_productName);
-		registry[_productName] = newProxyToken;
+		(bool success, ) = newProxyToken.call(abi.encodeWithSignature("setCreator(address)",msg.sender));
+
+		if(success){
+			registry[_productName] = newProxyToken;
+		}
+		create(_productName, success);
 	}
 
 	function retrieveToken(string memory _productName) public view returns(address) {
