@@ -23,6 +23,7 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeabl
   uint32 public maxTokenCount;
   uint32 public tradeinCount;
   uint32 internal supplyOffset;
+  address public creator;
 
 	/**
    * @dev Constructor
@@ -190,6 +191,10 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeabl
 
   function getOwner() public virtual returns (address) {
     return owner();
+  }
+
+  function setCreator(address _creator) public virtual onlyOwner {
+    creator = _creator ;
   }
 
   // To-do:

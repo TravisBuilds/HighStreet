@@ -1,6 +1,6 @@
 const { deployProxy } = require('@openzeppelin/truffle-upgrades');
 const { BN, expectRevert, expectEvent } = require('@openzeppelin/test-helpers');
-const { expect } = require('chai');
+const { expect, assert } = require('chai');
 // const Web3EthAbi = require('web3-eth-abi');
 
 const ERC1967Proxy = artifacts.require('ERC1967Proxy');
@@ -60,9 +60,8 @@ contract('ProductBeaconProxy', function (accounts) {
 
   it('Initialize product token', async function () {
       const data = this.implementationV0.contract.methods.initialize('HighGO', 'HG', exp, max, offset, baseReserve).encodeABI();
-      const newProxyToken = await BeaconProxy.new(this.beacon.address, data, {from: accounts[0]});
-      await this.tokenFactory.addToken(
-        "HighGO", newProxyToken.address,
+      await this.tokenFactory.createToken(
+        "HighGO", data,
       );
       const proxyAddress = await this.tokenFactory.retrieveToken.call("HighGO");
       const dummy = new ProductToken(proxyAddress);
@@ -80,9 +79,8 @@ contract('ProductBeaconProxy', function (accounts) {
 
   it("Beacon Update With New Variables, existing variables shouldn't be overridden", async function(){
     const data = this.implementationV0.contract.methods.initialize('HighGO', 'HG', exp, max, offset, baseReserve).encodeABI();
-    const newProxyToken = await BeaconProxy.new(this.beacon.address, data, {from: accounts[0]});
-    await this.tokenFactory.addToken(
-      "HighGO", newProxyToken.address,
+    await this.tokenFactory.createToken(
+      "HighGO", data,
     );
     const proxyAddress = await this.tokenFactory.retrieveToken.call("HighGO");
     // console.log(proxyAddress);
@@ -101,11 +99,6 @@ contract('ProductBeaconProxy', function (accounts) {
     // console.log(max2.toString());
     assert.equal(max2, max);
     assert.equal(await dummy2.dai.call(), daiMock.address);
-
-    //owner of contract should be account
-    assert.equal(await this.tokenFactory.getOwner.call(), accounts[0]);
-    assert.equal(await dummy.getOwner.call(), accounts[0]);
-    assert.equal(await dummy2.getOwner.call(), accounts[0]);
 
   });
 
@@ -144,6 +137,39 @@ contract('ProductBeaconProxy', function (accounts) {
     const costV2 = await highGoV2.getPriceForN.call("1")
 		costV1.should.be.a.bignumber.that.not.equals(costV2);
   });
+
+  it('Security check', async function (){
+    const data = this.implementationV0.contract.methods.initialize('HighGO', 'HG', exp, max, offset, baseReserve).encodeABI();
+    await this.tokenFactory.createTokenV2(
+      "HighGO", data, {from: accounts[1]}
+    );
+    const proxyAddress = await this.tokenFactory.retrieveToken.call("HighGO");
+    const highGoV1 = new ProductToken(proxyAddress);
+
+    await this.beacon.upgradeTo(this.implementationV2.address);
+
+    const highGoV2 = new ProductTokenV2(proxyAddress);
+
+
+    // 1.the tokenFactory owner should be account[0]
+    assert.equal(await this.tokenFactory.getOwner.call(), accounts[0]);
+    // 2.the productToken owner should be tokenFactory
+    assert.equal(await highGoV1.getOwner.call(), this.tokenFactory.address);
+    // 3.the creator in productToken should be account[1]
+    assert.equal(await highGoV1.creator.call(), accounts[1])
+    // 4. the creator of productToken should not be changed after upgrading
+    assert.equal(await highGoV2.creator.call(), accounts[1])
+
+    // console.log("account[0]:",accounts[0]);
+    // console.log("account[1]:",accounts[1]);
+    // console.log("tokenFactory.address:",this.tokenFactory.address);
+    // console.log("tokenFactory.getOwner:",await this.tokenFactory.getOwner.call());
+    // console.log("highGoV1.getOwner:",await highGoV1.getOwner.call());
+    // console.log("highGoV1.creator:",await highGoV1.creator.call());
+    // console.log("highGoV2.getOwner:",await highGoV2.getOwner.call());
+    // console.log("highGoV2.creator:",await highGoV2.creator.call());
+  })
+
 
   // it('mulit Token Pricing Functions  update',async function(){
   //   const data = this.implementationV0.contract.methods.initialize('HighGO', 'HG', exp, max, offset, baseReserve).encodeABI();
