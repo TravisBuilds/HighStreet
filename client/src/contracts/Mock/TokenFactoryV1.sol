@@ -3,7 +3,12 @@ pragma solidity ^0.8.2;
 import "../TokenFactory.sol";
 
 contract TokenFactoryV1 is TokenFactory { 
-	function newFunction() public returns(uint256) {
-		return 100;
-	}
+	uint256 public newAttribute;
+
+  function getNewAttribute()
+  public view returns (uint256)
+  {
+    return newAttribute + 1;
+  }
+
 }

@@ -18,26 +18,29 @@ contract TokenFactory is Initializable, UUPSUpgradeable, OwnableUpgradeable { //
 
 	event create(string name, bool state);
 
-	function initialize(address _beacon) public initializer {
+	function initialize(address _beacon) public initializer{
 		__Ownable_init();
 		UpdateBeacon(_beacon);
 	}
 
-	function UpdateBeacon(address _beacon) internal {
+	function UpdateBeacon(address _beacon) public onlyOwner {
 		require( Address.isContract(_beacon), "Invalid Beacon address");
 		beacon = IBeacon(_beacon);
 	}
 
-	function createToken(string memory _productName, bytes memory _data)  public {
+	function createToken(string memory _productName, bytes memory _data) public onlyOwner{
 		require(registry[_productName]==address(0), "The product token already exist");
-		address newProxyToken = address(new BeaconProxy(address(beacon), _data));
+		address newProxyToken = address(new BeaconProxy(address(beacon), '0x'));
+		newProxyToken.delegatecall(_data);
+
 		registry[_productName] = newProxyToken;
 	}
 
-	function createTokenV2(string memory _productName, bytes memory _data)  public {
+	function createTokenV2(string memory _productName, bytes memory _data) public onlyOwner{
 		require(registry[_productName]==address(0), "The product token already exist");
 
-		address newProxyToken = address(new BeaconProxy(address(beacon), _data));
+		address newProxyToken = address(new BeaconProxy(address(beacon), '0x'));
+		newProxyToken.delegatecall(_data);
 		(bool success, ) = newProxyToken.call(abi.encodeWithSignature("setCreator(address)",msg.sender));
 
 		if(success){

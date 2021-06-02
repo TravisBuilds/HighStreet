@@ -75,6 +75,7 @@ contract('ProductBeaconProxy', function (accounts) {
       assert.equal(exp, reserveRatio);
       assert.equal(max, maxTokenCount);
       // assert.equal(offset, supplyOffset);
+      dummy.setCreator(accounts[1]);
   });
 
   it("Beacon Update With New Variables, existing variables shouldn't be overridden", async function(){
@@ -141,7 +142,7 @@ contract('ProductBeaconProxy', function (accounts) {
   it('Security check', async function (){
     const data = this.implementationV0.contract.methods.initialize('HighGO', 'HG', exp, max, offset, baseReserve).encodeABI();
     await this.tokenFactory.createTokenV2(
-      "HighGO", data, {from: accounts[1]}
+      "HighGO", data, {from: accounts[0]}
     );
     const proxyAddress = await this.tokenFactory.retrieveToken.call("HighGO");
     const highGoV1 = new ProductToken(proxyAddress);

@@ -31,8 +31,8 @@ module.exports = async function (deployer, network, accounts ) {
 	
 	// await deployer.deploy(Factory, beacon.address, {from: accounts[0]});
 	// const factory = await Factory.deployed();
-	this.implInitial = await Factory.new({from: accounts[0]});
-	const data = this.implInitial.contract.methods.initialize(beacon.address).encodeABI();
-	const { address } = await ERC1967Proxy.new(this.implInitial.address, data, {from: accounts[0]});
-  const factory = await Factory.at(address);
+	// this.implInitial = await Factory.new({from: accounts[0]});
+	// const data = this.implInitial.contract.methods.initialize(beacon.address).encodeABI();
+	// const { address } = await ERC1967Proxy.new(this.implInitial.address, data, {from: accounts[0]});
+ //  const factory = await Factory.at(address);
 };

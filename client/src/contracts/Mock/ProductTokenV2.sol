@@ -2,6 +2,7 @@ pragma solidity ^0.8.2;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 // import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "../ProductToken.sol";
 import "../ProductTokenV1.sol";
 import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 
@@ -102,14 +103,14 @@ contract ProductTokenV5 is ProductTokenV3 {
    * @param _supplyOffset             a initial amount of offset that drive the price to a starting price
    * @param _baseReserve              the reserve balance when supply is 0. This is calculated based on the balance function, and evaluated at s = _supplyOffset
   */
-  function initializeV5(uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve,uint256 _newInitValue, address _daiAddress, address _chainlink) public  initializer {		
-    __ERC20_init("ProductToken", "");
+  function initializeV5(string memory _name, string memory _symbol, uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve, uint256 _newInitValue, address _daiAddress, address _chainlink) public  initializer {		
+    __ERC20_init(_name, _symbol);
     __BancorBondingCurve_init();
     ProductToken.__ProductToken_init_unchained(_reserveRatio, _maxTokenCount, _supplyOffset, _baseReserve);
     ProductTokenV1.__ProductToken_init_unchained(_daiAddress, _chainlink);
     newInitValue= _newInitValue;
   }
-  function getNewInitValue() public view returns(uint256 ){
+  function getNewInitValue() public view returns(uint256){
     return newInitValue;
   }
 }

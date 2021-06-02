@@ -34,7 +34,10 @@ contract('ProductBeaconProxy', function (accounts) {
    	const { receipt } = await this.tokenFactory.upgradeTo(this.factoryImp2.address);
     expect(receipt.logs.filter(({ event }) => event === 'Upgraded').length).to.be.equal(1);
     expectEvent(receipt, 'Upgraded', { implementation: this.factoryImp2.address });
-    const tokenFactoryV1 = await TokenFactoryV1.at(address);
-    (await tokenFactoryV1.newFunction()).should.be.a.bignumber.that.equals('100');
+    
+    const tokenFactoryV1 = await TokenFactoryV1.at(this.tokenFactory.address);
+    // (await tokenFactoryV1.newFunction()).should.be.a.bignumber.that.equals('100');
+   	const ret = await tokenFactoryV1.getNewAttribute();
+   	console.log(ret.toString());
   });
 });
