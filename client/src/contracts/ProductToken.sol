@@ -1,13 +1,16 @@
 pragma solidity ^0.8.2;
 
-// import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import "./BancorBondingCurve.sol";
-// import "@openzeppelin/contracts/proxy/beacon/IBeacon.sol";
 
+/// @title ProductToken
+/// @notice This is version 0 of the product token implementation.
+/// @dev This contract lays the foundation for transaction computations, including
+///   bonding curve calculations and variable management. Version 0 of this contract
+///   does not implement any transaction logic.
 contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeable {
 	using SafeMathUpgradeable for uint256;
 
@@ -15,16 +18,17 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeabl
   event Sell(address indexed sender, uint32 amount, uint refund);		// event to fire when a token has been sold back
   event Tradein(address indexed sender, uint32 amount);							// event to fire when a token is redeemed in the real world
 
-  // uint256 public basePrice;
-  uint256 public reserveBalance;		// amount in ether, about 1/3 of a ether. This is initialized for testing, according to
-                                    // a pricing function of y = x ^ 2, at a token supply (x) of 1
-  // uint32 public exponent;
-  uint32 public reserveRatio;
-  uint32 public maxTokenCount;
-  uint32 public tradeinCount;
-  uint32 internal supplyOffset;
-  address payable public creator;
+  uint256 public reserveBalance;      // amount of liquidity in the pool
+  uint32 public reserveRatio;         // computed from the exponential factor in the 
+  uint32 public maxTokenCount;        // max token count, determined by the supply of our physical product
+  uint32 public tradeinCount;         // number of tokens burned through redeeming procedure. This will drive price up permanently
+  uint32 internal supplyOffset;       // an initial value used to set an initial price. This is not included in the total supply.
+  address payable public creator;     // address that points to our corporate account address. This is 'public' for testing only and will be switched to internal before release.
 
+  /**
+   * @dev modifier used to check whether msg.sender is our corporate account
+   *
+  */
   modifier onlyCreator {
       require(
           msg.sender == creator,
@@ -34,75 +38,121 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeabl
   }
 
 	/**
-   * @dev Constructor
+   * @dev initializer function.
    *
    * @param _name                     the name of this token
    * @param _symbol                   the symbol of this token
-   * @param _reserveRatio             the reserve ratio in the curve function.
+   * @param _reserveRatio             the reserve ratio in the curve function. Number in parts per million
    * @param _maxTokenCount						the amount of token that will exist for this type.
    * @param _supplyOffset             this amount is used to determine initial price.
    * @param _baseReserve              the base amount of reserve tokens, in accordance to _supplyOffset.
    *
   */
-  function initialize(string memory _name, string memory _symbol, uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve) public initializer{ //, address _daiAddress, address _chainlink) public initializer {
+  function initialize(string memory _name, string memory _symbol, uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve) public initializer{
     __Ownable_init();
     __ERC20_init(_name, _symbol);
     __BancorBondingCurve_init();
     __ProductToken_init_unchained(_reserveRatio, _maxTokenCount, _supplyOffset, _baseReserve);
   }
 
-  function __ProductToken_init_unchained(uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve) internal initializer{ //, address _daiAddress, address _chainlink) public initializer {
+  /**
+   * @dev unchained initializer function.
+   *
+   * @param _reserveRatio             the reserve ratio in the curve function. Number in parts per million
+   * @param _maxTokenCount            the amount of token that will exist for this type.
+   * @param _supplyOffset             this amount is used to determine initial price.
+   * @param _baseReserve              the base amount of reserve tokens, in accordance to _supplyOffset.
+   *
+  */
+  function __ProductToken_init_unchained(uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve) internal initializer{
     require(_maxTokenCount > 0, "Invalid max token count.");
     require(_reserveRatio > 0, "Invalid reserve ratio");
 
     reserveBalance = _baseReserve;
     supplyOffset = _supplyOffset;
-    reserveRatio = _reserveRatio;   // initialize the reserve ratio for this token in ppm.
+    reserveRatio = _reserveRatio;
     maxTokenCount = _maxTokenCount;
   }
 
 	/**
    * @dev When user wants to trade in their token for retail product
-   * the logistics for transfering product should be handled elsewhere
+   * the logistics for transfering product should be handled in the web application through centralized service.
    *
+   * @param _amount                   amount of tokens that user wants to trade in.
   */
-  function tradein(uint32 _amount) public virtual {
+  function tradein(uint32 _amount) external virtual {
   	_tradeinForAmount(_amount);
   }
 
-  fallback () external { }      // should reject any ether transfer since we don't take ether.
+  fallback () external { } 
 
-  // View Functions for outside.
+  /**
+   * @dev Function to check how many tokens of this product are currently available for purchase,
+   * by taking the difference between max cap count and current token in circulation or burned.
+   *
+   * @return available                the number of tokens available
+  */
   function getAvailability()
     public view virtual returns (uint32 available)
   {
     return maxTokenCount - uint32(totalSupply()) - tradeinCount;    // add safemath for uint32 later
   }
 
+  /**
+   * @dev Function that computes supply value for the bonding curve 
+   * based on current token in circulation, token offset initialized, and tokens already redeemed.
+   *
+   * @return supply                   supply value for bonding curve calculation.                 
+  */
   function getTotalSupply()
     internal view virtual returns (uint32 supply)
   {
     return uint32(totalSupply().add(uint256(tradeinCount)).add(uint256(supplyOffset)));
   }
 
+  /**
+   * @dev Function that computes current price for a token through bonding curve calculation
+   * based on parameters such as total supply, reserve balance, and reserve ratio.
+   *
+   * @return price                   current price in reserve token (in our case, this is dai).                 
+  */
   function getCurrentPrice() 
   	public view virtual returns	(uint256 price)
   {
   	return calculatePriceForNTokens(getTotalSupply(), reserveBalance, reserveRatio, 1);
   }
 
+  /**
+   * @dev Function that computes price total for buying n token through bonding curve calculation
+   * based on parameters such as total supply, reserve balance, and reserve ratio.
+   *
+   * @param  _amountProduct          token amount in traded token
+   * @return price                   total price in reserve token (in our case, this is dai).                 
+  */
   function getPriceForN(uint32 _amountProduct) 
   	public view virtual returns	(uint256 price)
   {
   	return calculatePriceForNTokens(getTotalSupply(), reserveBalance, reserveRatio, _amountProduct);
   }
 
+  /**
+   * @dev Function that computes number of product tokens one can buy given an amount in reserve token.
+   *
+   * @param  _amountReserve          purchaing amount in reserve token (dai)
+   * @return mintAmount              number of tokens in traded token that can be purchased by given amount.                  
+  */
   function calculateBuyReturn(uint256 _amountReserve)
     public view virtual returns (uint32 mintAmount)
   {
     return calculatePurchaseReturn(getTotalSupply(), reserveBalance, reserveRatio, _amountReserve);
   }
 
+  /**
+   * @dev Function that computes selling price in reserve tokens given an amount in traded token.
+   *
+   * @param  _amountProduct          selling amount in product token
+   * @return soldAmount              total amount that will be transferred to the seller.                
+  */
   function calculateSellReturn(uint32 _amountProduct)
     public view virtual returns (uint256 soldAmount)
   {
@@ -111,14 +161,16 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeabl
 
    /**
    * @dev calculates the return for a given conversion (in product token) 
-   * This function will try to compute the amount of tokens one can buy first, 
-   * then it will initiate a transfer and for any extras, return as change.
-   * if any tokens purchases are confirmed, it will update ownerTokenCount mappin. 
+   * This function validate whether amount of deposit is enough to purchase _amount tokens.
+   * If enough, the function will deduct, and then mint specific amount for the user. Any extras are return as change.
+   * If not enough, the function will then trying to compute an actual amount that user can buy with _deposit,
+   * then replace the _amount with the actual amount and proceed with the above logic.
    *
-   * @param _deposit              reserve total deposited
+   * @param _deposit              reserve token deposited
    * @param _amount               the amount of tokens to be bought.
    *
    * @return token                amount bought in product token
+   * @return change               amount of change in reserve tokens.
   */
   function _buyForAmount(uint256 _deposit, uint32 _amount)
     internal virtual returns (uint32, uint256)
@@ -133,14 +185,12 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeabl
     uint32 amount;
     uint256 actualDeposit;
 
-    // uint32 amount = calculateBuyReturn(_deposit);	    // have to make it discrete here. Replace amount with uint32
-
     // If the amount in _deposit is more than enough to buy out the rest of the token in the pool
-    if (amount > getAvailability()) {   // this logic can be refactored.
+    if (amount > getAvailability()) {
       amount = getAvailability();
     }
 
-    actualDeposit = getPriceForN(_amount);     // this currently does not account any transaction fee
+    actualDeposit = getPriceForN(_amount);    
     if (actualDeposit > _deposit) {   // if user deposited token is not enough to buy ideal amount. This is a fallback option.
       amount = calculateBuyReturn(_deposit);
       actualDeposit = getPriceForN(amount);
@@ -150,17 +200,16 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeabl
 
     _mint(msg.sender, amount);
     reserveBalance = reserveBalance.add(actualDeposit);
-    emit Buy(msg.sender, amount, actualDeposit);		// probably needs to be redesigned for ease of read and understanding.
+    emit Buy(msg.sender, amount, actualDeposit);
     return (amount, _deposit.sub(actualDeposit));    // return amount of token bought and change
   }
 
    /**
    * @dev calculates the return for a given conversion (in the reserve token) 
-   * This function will try to compute the amount of liquidity one gets by selling one token, 
+   * This function will try to compute the amount of liquidity one gets by selling _amount token, 
    * then it will initiate a transfer.
-   * said token then will be burned to reduce total supply, but won't be added to the tradeinCount variable 
    *
-   * @param _amount              product token wishes to be sold
+   * @param _amount              amount of product token wishes to be sold
    *
    * @return token               amount sold in reserved token
   */
@@ -180,7 +229,7 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeabl
 
    /**
    * @dev initiate token logics after a token is traded in. 
-   * This function only handles logics corresponding to 
+   * This function only handles logics corresponding to token management in the smart contract side.
    *
    * @param _amount              product token wishes to be traded-in
   */
@@ -192,39 +241,28 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeabl
 
     _burn(msg.sender, _amount);
     tradeinCount = tradeinCount + _amount;			// Future: use safe math here.
-    // To-do: provide revenue to vendor
 
     emit Tradein(msg.sender, _amount);
   }
 
+  /**
+   * @dev Return address of the current owner. This is used in testing only.
+   *
+   * @return address              address of the owner.
+  */
   function getOwner() public virtual returns (address) {
     return owner();
   }
 
+  /**
+   * @dev Sets the creator of the product to the parameter
+   * Can only be set by the owner, which is the Token Factory contract.
+   *
+   * @param _creator             thea address of the creator.
+  */
   function setCreator(address payable _creator) public virtual onlyOwner {
     creator = _creator ;
   }
-
-  // To-do:
-  // Need to design function to withdraw liquidity and return it to the owner.
-  // All transfer functions here are vulnerable to the DDOS attack. Should implement “balance withdrawal” design pattern
-      // On second thought, this should be ok.
-  // Set gas price limit for front-running attack
-  // Implement Ownable for Factory and Token logics
-  // Implement Circuit breaker function
-  // Consider gas cost in the refund logic.
-  // Safemath 32
-  // Split platform fees into bucket: 
-  //    Buy 4%{ 
-  //      1% merchant,
-  //      1% Insurance,
-  //      2% Platform staking
-  //    }
-  //    Sell 2%{
-  //      1% insurance,
-  //      1% Merchant
-  //    }
-  // Tradein to a pending process that does not burn the token until shipment verification is confirmed.
 }
 
 

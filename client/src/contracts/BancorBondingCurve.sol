@@ -4,22 +4,21 @@ import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "./Power.sol"; // Efficient power function.
 
 /**
-* @title Bancor formula by Bancor with slight modifications from LumiereVR
-*
-* Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements;
-* and to You under the Apache License, Version 2.0. "
-*/
-
-/**
-* General rule of computation we will use here:
+* @title BancorBondingCurve
+* @notice General rule of computation we will use here:
 * token amount will be passed in as uint32, since tokens we have are indivisible
 * they will be converted to uint256 in function for safemath computation
 * if a uint32 variable needs to be returned, it will be computed as uint256 value, then casted explicitly 
+* @dev This is an implementation of the Bancor formula with slight modifications.
 */
 contract BancorBondingCurve is Power {
   using SafeMathUpgradeable for uint256;
   uint32 private constant MAX_RESERVE_RATIO = 1000000;
 
+  /**
+   * @dev initializer function.
+   *
+  */
   function __BancorBondingCurve_init() public initializer {  
     __Power_init();
   }

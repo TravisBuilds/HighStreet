@@ -75,7 +75,7 @@ contract('ProductBeaconProxy', function (accounts) {
       assert.equal(exp, reserveRatio);
       assert.equal(max, maxTokenCount);
       // assert.equal(offset, supplyOffset);
-      dummy.setCreator(accounts[1]);
+      // dummy.setCreator(accounts[1]);
   });
 
   it("Beacon Update With New Variables, existing variables shouldn't be overridden", async function(){
@@ -141,7 +141,7 @@ contract('ProductBeaconProxy', function (accounts) {
 
   it('Security check', async function (){
     const data = this.implementationV0.contract.methods.initialize('HighGO', 'HG', exp, max, offset, baseReserve).encodeABI();
-    await this.tokenFactory.createTokenV2(
+    await this.tokenFactory.createToken(
       "HighGO", data, {from: accounts[0]}
     );
     const proxyAddress = await this.tokenFactory.retrieveToken.call("HighGO");
@@ -155,10 +155,10 @@ contract('ProductBeaconProxy', function (accounts) {
     assert.equal(await this.tokenFactory.getOwner.call(), accounts[0]);
     // 2.the productToken owner should be tokenFactory
     assert.equal(await highGoV1.getOwner.call(), this.tokenFactory.address);
-    // 3.the creator in productToken should be account[1]
-    assert.equal(await highGoV1.creator.call(), accounts[1])
+    // 3.the creator in productToken should be account[0]
+    assert.equal(await highGoV1.creator.call(), accounts[0])
     // 4. the creator of productToken should not be changed after upgrading
-    assert.equal(await highGoV2.creator.call(), accounts[1])
+    assert.equal(await highGoV2.creator.call(), accounts[0])
 
     // console.log("account[0]:",accounts[0]);
     // console.log("account[1]:",accounts[1]);

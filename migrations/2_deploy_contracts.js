@@ -5,7 +5,7 @@ const Token = artifacts.require("ProductToken");
 const Factory = artifacts.require("TokenFactory");
 const ERC1967Proxy = artifacts.require('ERC1967Proxy');
 // const UUPSUpgradeable = artifacts.require('UUPSUpgradeable');
-const UpgradeableBeacon = artifacts.require('ProductUpgradeableBeacon');
+const UpgradeableBeacon = artifacts.require('UpgradeableBeacon');
 
 module.exports = async function (deployer, network, accounts ) {
 	let daiAdress;
@@ -31,8 +31,8 @@ module.exports = async function (deployer, network, accounts ) {
 	
 	// await deployer.deploy(Factory, beacon.address, {from: accounts[0]});
 	// const factory = await Factory.deployed();
-	// this.implInitial = await Factory.new({from: accounts[0]});
-	// const data = this.implInitial.contract.methods.initialize(beacon.address).encodeABI();
-	// const { address } = await ERC1967Proxy.new(this.implInitial.address, data, {from: accounts[0]});
- //  const factory = await Factory.at(address);
+	this.implInitial = await Factory.new({from: accounts[0]});
+	const data = this.implInitial.contract.methods.initialize(beacon.address).encodeABI();
+	const { address } = await ERC1967Proxy.new(this.implInitial.address, data, {from: accounts[0]});
+  const factory = await Factory.at(address);
 };
