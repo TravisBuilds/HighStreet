@@ -19,7 +19,7 @@ contract BancorBondingCurve is Power {
    * @dev initializer function.
    *
   */
-  function __BancorBondingCurve_init() public initializer {  
+  function __BancorBondingCurve_init() external initializer {  
     __Power_init();
   }
 
@@ -41,7 +41,7 @@ contract BancorBondingCurve is Power {
     uint32 _supply,
     uint256 _reserveBalance,
     uint32 _reserveRatio,
-    uint32 _amount) public view returns (uint256)
+    uint32 _amount) external view returns (uint256)
   {
     require(_supply > 0 && _reserveBalance > 0 && _reserveRatio > 0 && _reserveRatio <= MAX_RESERVE_RATIO);
     // special case for 0 tokens
@@ -84,7 +84,7 @@ contract BancorBondingCurve is Power {
     uint32 _supply,
     uint256 _reserveBalance,
     uint32 _reserveRatio,
-    uint256 _depositAmount) public view returns (uint32)
+    uint256 _depositAmount) external view returns (uint32)
   {
     // validate input
     require(_supply > 0 && _reserveBalance > 0 && _reserveRatio > 0 && _reserveRatio <= MAX_RESERVE_RATIO);
@@ -128,7 +128,7 @@ contract BancorBondingCurve is Power {
     uint32 _supply,
     uint256 _reserveBalance,
     uint32 _reserveRatio,
-    uint32 _sellAmount) public view virtual returns (uint256)
+    uint32 _sellAmount) external view virtual returns (uint256)
   {
     // validate input
     require(_supply > 0 && _reserveBalance > 0 && _reserveRatio > 0 && _reserveRatio <= MAX_RESERVE_RATIO && _sellAmount <= _supply);

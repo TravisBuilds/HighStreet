@@ -18,6 +18,9 @@ contract HSToken is ERC20, Ownable {
     using SafeMath for uint256;
     EnumerableSet.AddressSet private _minters;
 
+    event AddMinter(address newMinter);     
+    event DelMinter(address deleltedMinter);      
+
     /**
     * @dev constructor function.
     *
@@ -34,7 +37,7 @@ contract HSToken is ERC20, Ownable {
     * @param _amount                number of tokens to be minted to an address.
     * @return bool                  status of mint
     */
-    function mint(address _to, uint256 _amount) public onlyMinter returns (bool) {
+    function mint(address _to, uint256 _amount) external onlyMinter returns (bool) {
         if (_amount.add(totalSupply()) > maxSupply) {
             return false;
         }
@@ -50,6 +53,7 @@ contract HSToken is ERC20, Ownable {
     */
     function addMinter(address _addMinter) public onlyOwner returns (bool) {
         require(_addMinter != address(0), "HSToken: _addMinter is the zero address");
+        emit AddMinter(_addMinter);
         return EnumerableSet.add(_minters, _addMinter);
     }
 
@@ -59,8 +63,9 @@ contract HSToken is ERC20, Ownable {
     * @param _delMinter             the address to be deleted from the minter list.
     * @return bool                  status of remove
     */
-    function delMinter(address _delMinter) public onlyOwner returns (bool) {
+    function delMinter(address _delMinter) external onlyOwner returns (bool) {
         require(_delMinter != address(0), "HSToken: _delMinter is the zero address");
+        emit DelMinter(_delMinter);
         return EnumerableSet.remove(_minters, _delMinter);
     }
 
@@ -89,7 +94,7 @@ contract HSToken is ERC20, Ownable {
     * @param _index                 the index of minter.
     * @return address               minter address.
     */
-    function getMinter(uint256 _index) public view onlyOwner returns (address){
+    function getMinter(uint256 _index) external view onlyOwner returns (address){
         require(_index <= getMinterLength() - 1, "HSToken: _index out of bounds");
         return EnumerableSet.at(_minters, _index);
     }

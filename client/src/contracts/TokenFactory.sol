@@ -16,6 +16,7 @@ contract TokenFactory is Initializable, UUPSUpgradeable, OwnableUpgradeable { //
 	mapping(string => address) registry;			// registry for storing products. Mapped from product name to address.
 
 	event Create(string name, bool state);		// event to fire when a new type of token is created
+	event UpdatedBeacon(address newBeacon);		// event to fire when a new beacon replaces old beacon
 
 	/**
    * @dev initializer function.
@@ -23,7 +24,7 @@ contract TokenFactory is Initializable, UUPSUpgradeable, OwnableUpgradeable { //
    * @param _beacon                   	address for beacon pointing to the implementation logic for product tokens
    *
   */
-	function initialize(address _beacon) public initializer{
+	function initialize(address _beacon) external initializer{
 		__Ownable_init();
 		UpdateBeacon(_beacon);
 	}
@@ -37,6 +38,7 @@ contract TokenFactory is Initializable, UUPSUpgradeable, OwnableUpgradeable { //
 	function UpdateBeacon(address _beacon) public onlyOwner {
 		require( Address.isContract(_beacon), "Invalid Beacon address");
 		beacon = IBeacon(_beacon);
+		emit UpdatedBeacon(_beacon);
 	}
 
 	/**
@@ -47,7 +49,7 @@ contract TokenFactory is Initializable, UUPSUpgradeable, OwnableUpgradeable { //
    * @param _productName   						 product name for a new token. The product name has to be unique                	
    * @param _data											 encoded data for the initialize function call with parameters.
   */
-	function createToken(string memory _productName, bytes memory _data) public onlyOwner{
+	function createToken(string memory _productName, bytes memory _data) external onlyOwner{
 		require(registry[_productName]==address(0), "The product token already exist");
 
 		address newProxyToken = address(new BeaconProxy(address(beacon), _data));
@@ -67,7 +69,7 @@ contract TokenFactory is Initializable, UUPSUpgradeable, OwnableUpgradeable { //
    * @param _productName   						 product name for the product token. 
    * @return address 									 the address of the product token.           	
   */
-	function retrieveToken(string memory _productName) public view returns(address) {
+	function retrieveToken(string memory _productName) external view returns(address) {
 		require(registry[_productName]!=address(0), "This product token does not exist");
 		return registry[_productName];
 	}
@@ -82,7 +84,7 @@ contract TokenFactory is Initializable, UUPSUpgradeable, OwnableUpgradeable { //
    *
    * @return address              address of the owner.
   */
-	function getOwner() public returns (address) {
-		return owner();
-	}
+	// function getOwner() public returns (address) {
+	// 	return owner();
+	// }
 }

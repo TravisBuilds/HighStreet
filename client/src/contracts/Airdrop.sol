@@ -16,8 +16,8 @@ contract Airdrop {
        * @param contributors            list of receivers
        * @param balance                 amount each address will receive.
     */
-    function sendEqual(address token, address[] calldata contributors, uint256 balance) public {
-        require(contributors.length < 256, "Contributors length is less than 256.");
+    function sendEqual(address token, address[] calldata contributors, uint256 balance) external {
+        require(contributors.length < 256, "Contributors length is more than 256.");
         require(token != address(0), "Token address can not be zero");
         uint256 total = 0;
         IERC20 erc20token = IERC20(token);
@@ -36,9 +36,9 @@ contract Airdrop {
        * @param contributors            list of receivers
        * @param balances                 amount each address will receive.
     */
-    function send(address token, address[] calldata contributors, uint256[] calldata balances) public {
+    function send(address token, address[] calldata contributors, uint256[] calldata balances) external {
         require(token != address(0), "Token address can not be zero");
-        require(contributors.length < 256, "Contributors length is less than 256.");
+        require(contributors.length < 256, "Contributors length is more than 256.");
         require(contributors.length == balances.length," Contributors length is not equal balances length");
         uint256 total = 0;
         IERC20 erc20token = IERC20(token);

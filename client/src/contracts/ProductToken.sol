@@ -17,6 +17,7 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeabl
 	event Buy(address indexed sender, uint32 amount, uint deposit);		// event to fire when a new token is minted
   event Sell(address indexed sender, uint32 amount, uint refund);		// event to fire when a token has been sold back
   event Tradein(address indexed sender, uint32 amount);							// event to fire when a token is redeemed in the real world
+  event CreatorTransfer(address indexed newCreator);                // event to fire when a creator for the token is set
 
   uint256 public reserveBalance;      // amount of liquidity in the pool
   uint32 public reserveRatio;         // computed from the exponential factor in the 
@@ -48,7 +49,7 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeabl
    * @param _baseReserve              the base amount of reserve tokens, in accordance to _supplyOffset.
    *
   */
-  function initialize(string memory _name, string memory _symbol, uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve) public initializer{
+  function initialize(string memory _name, string memory _symbol, uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve) external initializer{
     __Ownable_init();
     __ERC20_init(_name, _symbol);
     __BancorBondingCurve_init();
@@ -117,7 +118,7 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeabl
    * @return price                   current price in reserve token (in our case, this is dai).                 
   */
   function getCurrentPrice() 
-  	public view virtual returns	(uint256 price)
+  	external view virtual returns	(uint256 price)
   {
   	return calculatePriceForNTokens(getTotalSupply(), reserveBalance, reserveRatio, 1);
   }
@@ -186,8 +187,8 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeabl
     uint256 actualDeposit;
 
     // If the amount in _deposit is more than enough to buy out the rest of the token in the pool
-    if (amount > getAvailability()) {
-      amount = getAvailability();
+    if (_amount > getAvailability()) {
+      _amount = getAvailability();
     }
 
     actualDeposit = getPriceForN(_amount);    
@@ -250,9 +251,9 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeabl
    *
    * @return address              address of the owner.
   */
-  function getOwner() public virtual returns (address) {
-    return owner();
-  }
+  // function getOwner() public virtual returns (address) {
+  //   return owner();
+  // }
 
   /**
    * @dev Sets the creator of the product to the parameter
@@ -260,8 +261,10 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeabl
    *
    * @param _creator             thea address of the creator.
   */
-  function setCreator(address payable _creator) public virtual onlyOwner {
+  function setCreator(address payable _creator) external virtual onlyOwner {
+    require(_creator!=address(0), "The newe creator address is not valid");
     creator = _creator ;
+    emit CreatorTransfer(_creator);
   }
 }
 

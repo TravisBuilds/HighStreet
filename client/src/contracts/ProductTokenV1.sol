@@ -13,6 +13,8 @@ contract ProductTokenV1 is ProductToken {
   IERC20 public dai;
   AggregatorV3Interface_v08 internal daiEthFeed;
 
+  event Update(address daiAddress, address chainlinkAddress);  
+
 	/**
    * @dev initializer function.
    *
@@ -25,7 +27,7 @@ contract ProductTokenV1 is ProductToken {
    * @param _daiAddress								the on-chain address of Dai, one of our supported reserve token
    * @param _chainlink								the address needed to create a aggregator for Chainlink.
   */
-  function initialize(string memory _name, string memory _symbol, uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve, address _daiAddress, address _chainlink) public initializer{   
+  function initialize(string memory _name, string memory _symbol, uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve, address _daiAddress, address _chainlink) external initializer{   
 		ProductToken.initialize(_name, _symbol, _reserveRatio, _maxTokenCount, _supplyOffset, _baseReserve);
 		__ProductToken_init_unchained(_daiAddress, _chainlink);
   }
@@ -37,7 +39,7 @@ contract ProductTokenV1 is ProductToken {
    * @param _daiAddress               the on-chain address of Dai, one of our supported reserve token
    * @param _chainlink                the address needed to create a aggregator for Chainlink.
   */
-  function update(address _daiAddress, address _chainlink) public onlyCreator{
+  function update(address _daiAddress, address _chainlink) external onlyCreator{
   	require(!hasUpdated, "contract is already updated");
   	// Duplicate logic here.
     require(_daiAddress!=address(0), "Invalid dai contract address");
@@ -46,6 +48,7 @@ contract ProductTokenV1 is ProductToken {
     daiEthFeed = AggregatorV3Interface_v08(_chainlink);
 
   	hasUpdated = true;
+    emit Update(_daiAddress, _chainlink);
   }
 
   /**
@@ -61,6 +64,7 @@ contract ProductTokenV1 is ProductToken {
     dai = IERC20(_daiAddress);
     daiEthFeed = AggregatorV3Interface_v08(_chainlink);
     hasUpdated = true;
+    emit Update(_daiAddress, _chainlink);
   }
 
   /**
@@ -146,8 +150,8 @@ contract ProductTokenV1 is ProductToken {
    *
    * @return address              address of the owner.
   */
-  function getOwner() public override returns (address) {
-    return owner();
-  }
+  // function getOwner() public override returns (address) {
+  //   return owner();
+  // }
 
 }
