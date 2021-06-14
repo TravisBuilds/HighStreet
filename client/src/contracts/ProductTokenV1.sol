@@ -27,7 +27,7 @@ contract ProductTokenV1 is ProductToken {
    * @param _daiAddress								the on-chain address of Dai, one of our supported reserve token
    * @param _chainlink								the address needed to create a aggregator for Chainlink.
   */
-  function initialize(string memory _name, string memory _symbol, uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve, address _daiAddress, address _chainlink) external initializer{   
+  function initialize(string memory _name, string memory _symbol, uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve, address _daiAddress, address _chainlink) public initializer{   
 		ProductToken.initialize(_name, _symbol, _reserveRatio, _maxTokenCount, _supplyOffset, _baseReserve);
 		__ProductToken_init_unchained(_daiAddress, _chainlink);
   }

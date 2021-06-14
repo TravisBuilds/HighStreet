@@ -49,7 +49,7 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeabl
    * @param _baseReserve              the base amount of reserve tokens, in accordance to _supplyOffset.
    *
   */
-  function initialize(string memory _name, string memory _symbol, uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve) external initializer{
+  function initialize(string memory _name, string memory _symbol, uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve) public initializer{
     __Ownable_init();
     __ERC20_init(_name, _symbol);
     __BancorBondingCurve_init();
