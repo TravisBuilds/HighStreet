@@ -28,7 +28,7 @@ contract BancorBondingCurve is Power {
    * to the two original functions below.
    *
    * Formula:
-   * Return = _reserveBalance * (((_amount / _supply + 1) ^ (1 / _reserveRatio)) - 1)
+   * Return = _reserveBalance * (((_amount / _supply + 1) ^ (MAX_RESERVE_RATIO / _reserveRatio)) - 1)
    *
    * @param _supply              continuous token total supply
    * @param _reserveBalance     total reserve token balance
