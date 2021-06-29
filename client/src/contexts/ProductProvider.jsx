@@ -23,33 +23,41 @@ const lorealfeature = randomfeature;
 const DBUG = true;
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 const signer = provider.getSigner();
+const formatDaiUnits = async (val) => ethers.utils.formatUnits(val.toString(), 18);
+const providerL1 = new ethers.providers.EtherscanProvider('rinkeby');
+const providerL2 = new ethers.providers.JsonRpcProvider('https://rinkeby.arbitrum.io/rpc');
+const daiAddressL1 = '0xc7ad46e0b8a400bb3c915120d284aafba8fc4735';
+const daiAddressL2 = '0x552444108a2aF6375205f320F196b5D1FEDFaA51';
+const l1GatewayRouter = '0x70C143928eCfFaf9F5b406f7f4fC28Dc43d68380';
+const l2GatewayRouter = '0x9413AD42910c1eA60c737dB5f58d1C504498a3cD';
+const daiContractL1 = new ethers.Contract(daiAddressL1, ERC20.abi, providerL1);
+const daiContractL2 = new ethers.Contract(daiAddressL2, ERC20.abi, providerL2);
+
+let userAccount;
 let isValidNetowrk;
+let isL1ToL2;
+let bridge;
 
 // factoryObj
-let factoryAddress;
-let factoryContract;
+const factoryAddress = FactoryProxy.networks[421611].address;
+const factoryContract = new ethers.Contract(factoryAddress, Factory.abi, providerL2);
 
 // tokenObj
 let tokenAddress;
 let tokenContract;
-let tokenSigner;
-
-// daiObj
-let daiAddress;
-let daiContract;
-let daiSigner;
 
 async function handleChainChanged(_chainId) {
+  console.log(_chainId);
   switch (_chainId) {
     case 4:
       console.log('(L1)Rinkeby Testnet');
-      daiAddress = '0xc7ad46e0b8a400bb3c915120d284aafba8fc4735';
-      await updateContract(_chainId);
+      await updateContract();
+      isL1ToL2 = true;
       break;
     case 421611:
       console.log('(L2)Arbitrum Testnet');
-      daiAddress = '0x552444108a2aF6375205f320F196b5D1FEDFaA51';
-      await updateContract(_chainId);
+      await updateContract();
+      isL1ToL2 = false;
       break;
     default:
       isValidNetowrk = false;
@@ -60,29 +68,150 @@ async function handleChainChanged(_chainId) {
 /*
 * Listening MetaMask change chain
 */
-window.ethereum.on('chainChanged', handleChainChanged);
+window.ethereum.on('chainChanged', (chainId) => {
+  // Handle the new chain.
+  // Correctly handling chain changes can be complicated.
+  // We recommend reloading the page unless you have good reason not to.
+  window.location.reload();
+});
+
 /*
 * Get network Id at beginning
 */
 provider.getNetwork().then(async (result) => handleChainChanged(result.chainId));
 
-async function updateContract(_chainId) {
+async function setupBridge() {
+  bridge = await Bridge.init(signer, /* l2Signer */ signer, l1GatewayRouter, l2GatewayRouter);
+  if (isL1ToL2) {
+    bridge.l2Bridge.l2Provider = providerL2;
+  } else {
+    bridge.l1Bridge.l1Provider = providerL1;
+  }
+  if (DBUG) {
+    console.log(`ether balance 1: ${await formatDaiUnits(await bridge.l1Bridge.l1Provider.getBalance(userAccount))}`);
+    console.log(`ether balance 2: ${await formatDaiUnits(await bridge.l2Bridge.l2Provider.getBalance(userAccount))}`);
+  }
+}
+
+async function approveDaiForBridge() {
+  const tx = await bridge.approveToken(daiAddressL1);
+  if (DBUG) console.log('waiting approval receipt ...');
+  const receipt = await tx.wait();
+  if (DBUG) console.log('approval receipt', receipt);
+
+  const data = await bridge.getAndUpdateL1TokenData(daiAddressL1);
+  const allowed = data.ERC20 && data.ERC20.allowed;
+  console.log('approval allowed', allowed);
+}
+
+async function depositDaiToL2(amount) {
+  const _tokenData = await bridge.getAndUpdateL1TokenData(daiAddressL1);
+  if (!(_tokenData && _tokenData.ERC20)) {
+    throw new Error('Token data not found');
+  }
+  const tokenData = _tokenData.ERC20;
+  const amountParsed = await ethers.utils.parseUnits(amount, tokenData.decimals);
+  console.log('amountParsed', amountParsed);
+  let tx;
+  try {
+    tx = await bridge.deposit(
+      daiAddressL1,
+      amountParsed._hex,
+      {},
+      undefined,
+    );
+
+    if (DBUG) console.log('deposit-l1 waiting receipt ...');
+    const receipt = await tx.wait();
+    if (DBUG) console.log('deposit-l1 receipt', receipt);
+
+    const tokenDepositData = (
+      await bridge.getDepositTokenEventData(receipt)
+    )[0];
+
+    const seqNum = await bridge.getInboxSeqNumFromContractTransaction(receipt);
+    if (DBUG) console.log('seqNum', seqNum);
+
+    const l2RetryableHash = await bridge.calculateL2RetryableTransactionHash(seqNum[0]);
+    if (DBUG) console.log('l2RetryableHash', l2RetryableHash);
+
+    const l2RedeemHash = await bridge.calculateRetryableAutoRedeemTxnHash(seqNum[0]);
+    if (DBUG) console.log('l2RedeemHash ', l2RedeemHash);
+
+    if (DBUG) console.log('deposit-l2 waiting redeemReceipt receipt ...');
+    const redeemReceipt = await providerL2.waitForTransaction(l2RedeemHash, undefined, 1000 * 60 * 10);
+    if (DBUG) console.log('deposit-l2 redeemReceipt receipt', redeemReceipt);
+
+    if (DBUG) console.log('deposit-l2 waiting retryableReceipt receipt ...');
+    const retryableReceipt = await providerL2.waitForTransaction(
+      l2RetryableHash
+    );
+    if (DBUG) console.log('deposit-l2 retryableReceipt receipt', retryableReceipt);
+
+    if (DBUG) console.log('deposit success');
+  } catch (err) {
+    console.log('depositDaiToL2 fail:', err, tx.hash);
+  }
+}
+
+async function depositEtherToL2(amount) {
+  let tx;
+  try {
+    tx = await bridge.depositETH(amount);
+    if (DBUG) console.log('deposit-l1 waiting receipt ...');
+    const rec = await tx.wait();
+    if (DBUG) console.log('deposit-l1 receipt', rec);
+
+    const seqNumArr = await bridge.getInboxSeqNumFromContractTransaction(rec);
+    if (seqNumArr === undefined) {
+      throw new Error('no seq num');
+    }
+    const seqNum = seqNumArr[0];
+    if (DBUG) console.log('seqNum', seqNum);
+
+    const l2TxHash = await bridge.calculateL2TransactionHash(seqNum);
+
+    if (DBUG) console.log('deposit-l2 waiting l2TxHash receipt ...');
+    const l2TxnRec = await providerL2.waitForTransaction(
+      l2TxHash,
+      undefined,
+      1000 * 60 * 12
+    );
+    if (DBUG) console.log('deposit-l2 l2TxHash receipt', l2TxnRec);
+
+    if (l2TxnRec.status === 1) {
+      if (DBUG) console.log('deposit success');
+    }
+  } catch (err) {
+    console.log('depositEtherToL2 fail:', err, tx.hash);
+  }
+}
+
+async function updateContract() {
   isValidNetowrk = true;
-  factoryAddress = FactoryProxy.networks[_chainId].address;
-  factoryContract = new ethers.Contract(factoryAddress, Factory.abi, provider);
-  daiContract = new ethers.Contract(daiAddress, ERC20.abi, provider);
-  daiSigner = await daiContract.connect(signer);
+  // userAccount = await provider.listAccounts().then((v) => v);
+  userAccount = await signer.getAddress();
+  console.log(`userAccount: ${userAccount}`);
+}
+
+async function getL2TokenCurrentPrice() {
+  return tokenContract.getCurrentPrice();
+}
+
+async function getDaiBalanceBothOfL1L2(account) {
+  const balanceL1 = await daiContractL1.balanceOf(account);
+  const balanceL2 = await daiContractL2.balanceOf(account);
+  console.log(`dai balance L1:${await formatDaiUnits(balanceL1)}, ${await formatDaiUnits(balanceL2)}`);
 }
 
 async function retrieveTokenByName(name) {
   if (!isValidNetowrk) return;
 
-  const prodName = 'HighGO';
+  const prodName = 'HighGO'; // fixed token name
   await factoryContract.retrieveToken(prodName).then(async (result) => {
     if (DBUG) console.log(`product: ${prodName}, address: ${result}`);
     tokenAddress = result;
-    tokenContract = new ethers.Contract(tokenAddress, TokenV1.abi, provider);
-    tokenSigner = tokenContract.connect(signer);
+    tokenContract = new ethers.Contract(tokenAddress, TokenV1.abi, providerL2);
   }).catch((e) => {
     console.log(e);
   });
@@ -100,31 +229,59 @@ function getPriceForN(tokens) { // token must be a number that's smaller than 2^
   return tokenContract.getPriceForN(tokens);
 }
 
-const formatDaiUnits = async (val) => ethers.utils.formatUnits(val.toString(), 18);
+async function getDaiSigner(address) {
+  const contract = new ethers.Contract(address, ERC20.abi, provider);
+  return contract.connect(signer);
+}
+
+async function getTokenSigner() {
+  const contract = new ethers.Contract(tokenAddress, TokenV1.abi, provider);
+  return contract.connect(signer);
+}
 
 async function buy(cashUpperBound) {
   if (!isValidNetowrk) return;
 
   const curTokenPrice = await tokenContract.getCurrentPrice();
-  console.log(`current product price ${await formatDaiUnits(curTokenPrice)}`);
+  const approvalPrice = curTokenPrice.mul('15').div('10');
+  if (DBUG) console.log(`current product price ${await formatDaiUnits(curTokenPrice)}`);
+  if (DBUG) console.log(`send dai amount(price * 1.5): ${await formatDaiUnits(approvalPrice)}`);
 
-  const approvlPrice = curTokenPrice.mul('15').div('10');
-  console.log(`send dai amount(price * 1.5): ${await formatDaiUnits(approvlPrice)}`);
-
-  await daiSigner.approve(tokenAddress, approvlPrice).then(async () => {
-    console.log('GET APPROVE');
-    await tokenSigner.buyWithDai(approvlPrice, '1');
-  }).catch((e) => {
-    console.log(e);
-  });
+  if (!isL1ToL2) {
+    const daiSigner = await getDaiSigner(daiAddressL2);
+    await daiSigner.approve(tokenAddress, approvalPrice).then(async () => {
+      console.log('GET APPROVE');
+      const tokenSigner = await getTokenSigner();
+      await tokenSigner.buyWithDai(approvalPrice, '1');
+    }).catch((e) => {
+      console.log(e);
+    });
+  } else {
+    if (DBUG) {
+      // try to get L2 token price when we at L1
+      const price = await getL2TokenCurrentPrice();
+      console.log(`current product price ${await formatDaiUnits(price)}`);
+      // try to get both of l1 l2 dai balance
+      await getDaiBalanceBothOfL1L2(userAccount);
+    }
+    await setupBridge();
+    await approveDaiForBridge();
+    await depositDaiToL2(await formatDaiUnits(approvalPrice));
+    await depositDaiToL2('100');
+    await depositEtherToL2(ethers.utils.parseEther('0.1'));
+  }
 }
 
 async function sell(tokenAmount) { // token must be a number that's smaller than 2^32 - 1
   if (!isValidNetowrk) return;
-  await tokenSigner.sell('1');
+  if (!isL1ToL2) {
+    const tokenSigner = await getTokenSigner();
+    await tokenSigner.sell('1');
+  }
 }
 
 async function tradeIn(tokenAmount) { // token must be a number that's smaller than 2^32 - 1
+  const tokenSigner = await getTokenSigner();
   await tokenSigner.tradein(tokenAmount);
 }
 
