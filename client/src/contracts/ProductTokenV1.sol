@@ -144,7 +144,11 @@ contract ProductTokenV1 is ProductToken {
     return price;
   }
 
-  
+  function _refund(address buyer, uint value) internal override {
+    bool success = dai.transfer(buyer, value.mul(980000).div(1000000));
+    require(success, "refund token failed");
+  }
+
   /**
    * @dev Return address of the current owner. This is used in testing only.
    *

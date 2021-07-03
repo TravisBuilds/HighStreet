@@ -282,7 +282,7 @@ async function sell(tokenAmount) { // token must be a number that's smaller than
 
 async function tradeIn(tokenAmount) { // token must be a number that's smaller than 2^32 - 1
   const tokenSigner = await getTokenSigner();
-  await tokenSigner.tradein(tokenAmount);
+  await tokenSigner.tradein(1);
 }
 
 // import ProductToken.sol
