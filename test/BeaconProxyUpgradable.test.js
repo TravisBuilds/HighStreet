@@ -16,7 +16,6 @@ const ProductTokenDestroy = artifacts.require('ProductTokenDestroy');
 const UpgradeableBeacon = artifacts.require('ProductUpgradeableBeacon');
 const BeaconProxy = artifacts.require('BeaconProxy');
 
-
 require('chai')
 	.use(require('chai-as-promised'))
 	.use(require('chai-bn')(BN))
@@ -140,6 +139,7 @@ contract('ProductBeaconProxy', function (accounts) {
   });
 
   it('Security check', async function (){
+    const DBG = false;
     const data = this.implementationV0.contract.methods.initialize('HighGO', 'HG', exp, max, offset, baseReserve).encodeABI();
     await this.tokenFactory.createToken(
       "HighGO", data, {from: accounts[0]}
@@ -152,24 +152,121 @@ contract('ProductBeaconProxy', function (accounts) {
     const highGoV2 = new ProductTokenV2(proxyAddress);
 
     // 1.the tokenFactory owner should be account[0]
-    assert.equal(await this.tokenFactory.getOwner.call(), accounts[0]);
+    assert.equal(await this.tokenFactory.owner.call(), accounts[0]);
     // 2.the productToken owner should be tokenFactory
-    assert.equal(await highGoV1.getOwner.call(), this.tokenFactory.address);
+    assert.equal(await highGoV1.owner.call(), this.tokenFactory.address);
     // 3.the creator in productToken should be account[0]
     assert.equal(await highGoV1.creator.call(), accounts[0])
     // 4. the creator of productToken should not be changed after upgrading
     assert.equal(await highGoV2.creator.call(), accounts[0])
 
-    // console.log("account[0]:",accounts[0]);
-    // console.log("account[1]:",accounts[1]);
-    // console.log("tokenFactory.address:",this.tokenFactory.address);
-    // console.log("tokenFactory.getOwner:",await this.tokenFactory.getOwner.call());
-    // console.log("highGoV1.getOwner:",await highGoV1.getOwner.call());
-    // console.log("highGoV1.creator:",await highGoV1.creator.call());
-    // console.log("highGoV2.getOwner:",await highGoV2.getOwner.call());
-    // console.log("highGoV2.creator:",await highGoV2.creator.call());
+    if(DBG) {
+      console.log("account[0]:",accounts[0]);
+      console.log("account[1]:",accounts[1]);
+      console.log("tokenFactory.address:",this.tokenFactory.address);
+      console.log("tokenFactory.getOwner:",await this.tokenFactory.getOwner.call());
+      console.log("highGoV1.getOwner:",await highGoV1.getOwner.call());
+      console.log("highGoV1.creator:",await highGoV1.creator.call());
+      console.log("highGoV2.getOwner:",await highGoV2.getOwner.call());
+      console.log("highGoV2.creator:",await highGoV2.creator.call());
+    }
+
   })
 
+  it('Redeem flow check', async function (){
+    const DEG = true;
+    const state_INITIAL = 0;
+    const state_AWAITING_SERVER_CHECK = 1;
+    const state_AWAITING_DELIVERY = 2;
+    const state_AWAITING_USER_APPROVAL = 3;
+    const state_COMPLETE_USER_REFUND = 4;
+    const state_COMPLETE = 5;
+
+    const owner = accounts[0];
+    const user1 = accounts[1];
+    const user2 = accounts[2];
+    await daiMock.faucet(user1, web3.utils.toWei('1000', 'ether'));
+    await daiMock.faucet(user2, web3.utils.toWei('1000', 'ether'));
+
+    // 1. owner deploy a product
+    const beacon = await UpgradeableBeacon.new(this.implementationV1.address, {from: owner});
+    this.tokenFactory.UpdateBeacon(beacon.address, {from: owner});
+    const data = this.implementationV1.contract
+              .methods.initialize('HighGO', 'HG', exp, '100', offset, baseReserve, daiMock.address, chainlinkAddress).encodeABI();
+    await this.tokenFactory.createToken(
+      "HighGO", data, {from: owner}
+    );
+    const proxyAddress = await this.tokenFactory.retrieveToken.call("HighGO");
+    const highGo = new ProductTokenV1(proxyAddress);
+
+    // 2. user1 buy a proudct
+    let priceforMaxBuy;
+    let price;
+    let balance;
+    priceforMaxBuy = await highGo.getPriceForN(16);
+    price = await highGo.getPriceForN(10);
+    await daiMock.approve(proxyAddress, priceforMaxBuy, {from: user1});
+    if(DEG) console.log('user1 pay max price', web3.utils.fromWei(priceforMaxBuy.toString(), 'ether'));
+    if(DEG) console.log('user1 pay price', web3.utils.fromWei(price.toString(), 'ether'));
+    await highGo.buyWithDai(priceforMaxBuy, 10, {from: user1});
+    balance = await highGo.balanceOf(user1, {from: user1});
+    if(DEG) console.log('user1 owner amount of token', balance.toString());
+
+    // 3. user2 buy a proudct
+    priceforMaxBuy = await highGo.getPriceForN(16);
+    price = await highGo.getPriceForN(10);
+    await daiMock.approve(proxyAddress, priceforMaxBuy, {from: user2});
+    if(DEG) console.log('user2 pay max price', web3.utils.fromWei(priceforMaxBuy.toString(), 'ether'));
+    if(DEG) console.log('user2 pay price', web3.utils.fromWei(price.toString(), 'ether'));
+    await highGo.buyWithDai(priceforMaxBuy, 10, {from: user2});
+    balance = await highGo.balanceOf(user2, {from: user2});
+    if(DEG) console.log('user2 owner amount of token', balance.toString());
+  
+
+    await highGo.tradein(1, {from: user1});
+    await highGo.tradein(2, {from: user1});
+    await highGo.tradein(3, {from: user1});
+    balance = await highGo.balanceOf(user1, {from: user1});
+    assert.equal(balance.toString(), 10 - 6);
+    if(DEG) console.log('user1 remain token after redeem', balance.toString());
+
+    const printEscrowList = async (list) => await list.reduce( async (_prev, val, index) => {
+          const state = await highGo.getEscrowStateByValue(val[0]);
+          const amount = val[1];
+          const value = val[2];
+          console.log('index:', index, 'state:', state, 'amount:', amount, 'value:',  web3.utils.fromWei(value, 'ether'));
+          return Promise.resolve("DO_NOT_CALL");
+        },0);
+
+    let list = await highGo.getBuyerHistory(user1);
+    assert.equal(list.length, 3);
+    if(DEG) await printEscrowList(list);
+
+    // 4. redeem compelete
+    if(DEG) console.log('Update completed');
+    highGo.updateServerCheck(user1, 0);
+    highGo.confirmDelivery(user1, 0);
+    highGo.updateUserCompleted(user1, 0);
+    list = await highGo.getBuyerHistory(user1);
+    if(DEG) await printEscrowList(list);
+
+    let state = await highGo.getRedeemStatus(user1, 0);
+    assert.equal(state, state_COMPLETE);
+
+    // 5. redeem fail then send same amount of product
+    if(DEG) console.log('Update redeem fail');
+    balance = await daiMock.balanceOf(user1, {from: user1});
+    if(DEG) console.log('user1 balance before refund',  web3.utils.fromWei(balance.toString(), 'ether'));
+    highGo.updateServerCheck(user1, 1);
+    highGo.updateUserRefund(user1, 1);
+    state = await highGo.getRedeemStatus(user1, 1);
+    assert.equal(state, state_COMPLETE_USER_REFUND);
+    list = await highGo.getBuyerHistory(user1);
+    if(DEG) console.log('user1 refund',  web3.utils.fromWei(list[1][2], 'ether'));
+    balance = await daiMock.balanceOf(user1, {from: user1});
+    if(DEG) console.log('user1 balance after refund',  web3.utils.fromWei(balance.toString(), 'ether'));
+    if(DEG) await printEscrowList(list);
+  })
 
   // it('mulit Token Pricing Functions  update',async function(){
   //   const data = this.implementationV0.contract.methods.initialize('HighGO', 'HG', exp, max, offset, baseReserve).encodeABI();

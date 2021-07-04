@@ -9,7 +9,7 @@ import Col from 'react-bootstrap/Col';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import ProductProvider from '../contexts/ProductProvider';
-import kalonCard from '../assets/product1.png';
+import kalonCard from '../assets/product3.png';
 
 const TradeCard = (props) => {
   // change here
