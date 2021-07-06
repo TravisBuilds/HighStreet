@@ -12,6 +12,8 @@ contract ProductTokenV1 is ProductToken {
 	using SafeMathUpgradeable for uint256;
   IERC20 public dai;
   AggregatorV3Interface_v08 internal daiEthFeed;
+  uint256 public supplierDai;
+  address public supplierWallet;
 
   event Update(address daiAddress, address chainlinkAddress);  
 
@@ -84,9 +86,11 @@ contract ProductTokenV1 is ProductToken {
     uint256 amount;
     uint256 change;    
     (amount, change) = _buyForAmount(incomingEth.mul(960000).div(1000000), _amount); // ppm of 96%. 4% is the platform transaction fee
+
     // return change back to the sender.
     if (amount > 0) {                                               // If token transaction went through successfully
       payable(msg.sender).transfer(change.mul(uint256(daieth)).div(10**18));
+      supplierDai = incomingEth.add(10000).div(1000000);
     }
     else {                                                          // If token transaction failed
       payable(msg.sender).transfer(msg.value);                                 
@@ -109,6 +113,7 @@ contract ProductTokenV1 is ProductToken {
     // return change back to the sender.
     if (amount > 0) {                                               // If token transaction went through successfully
       dai.transfer(msg.sender, change);
+      supplierDai = _daiAmount.add(10000).div(1000000);
     }
     else {                                                          // If token transaction failed
       dai.transfer(msg.sender, _daiAmount);                               
@@ -124,6 +129,7 @@ contract ProductTokenV1 is ProductToken {
  	function sell(uint32 _amount) external virtual {
     uint256 returnAmount = _sellForAmount(_amount);
     bool success = dai.transfer(msg.sender, returnAmount.mul(980000).div(1000000));        // ppm of 98%. 2% is the platform transaction fee
+    supplierDai = returnAmount.add(10000).div(1000000);
     require(success, "selling token failed");
   }
 
@@ -144,7 +150,22 @@ contract ProductTokenV1 is ProductToken {
     return price;
   }
 
+  function setSupplierWallet(address  _supplierWallet) external virtual onlyOwner {
+    require(_supplierWallet!=address(0), "The new supplierWallet address is not valid");
+    supplierWallet = _supplierWallet ;
+  }
   
+  function getSupplierDailBalance() public view virtual returns (uint256) {
+    return supplierDai;
+  }
+
+  function claimSupplierDai(uint32 _amount) external virtual {
+    require(msg.sender==supplierWallet, "The address is not allowed");
+    if (_amount <= supplierDai){
+      dai.transferFrom(address(this), msg.sender, _amount);
+    }
+  }
+
   /**
    * @dev Return address of the current owner. This is used in testing only.
    *
