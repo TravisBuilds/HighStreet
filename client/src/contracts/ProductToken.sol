@@ -43,7 +43,7 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUp
   modifier onlyIfLaunched {
       require(
           islaunched,
-          "Proudct isn't lunched."
+          "Proudct haven't been launched yet."
       );
       _;
   }
