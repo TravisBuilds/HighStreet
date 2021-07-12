@@ -20,7 +20,7 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUp
   event Tradein(address indexed sender, uint32 amount);							// event to fire when a token is redeemed in the real world
   event CreatorTransfer(address indexed newCreator);                // event to fire when a creator for the token is set
 
-  bool private islaunched;
+  bool private isTradable;
   uint256 public reserveBalance;      // amount of liquidity in the pool
   uint32 public reserveRatio;         // computed from the exponential factor in the 
   uint32 public maxTokenCount;        // max token count, determined by the supply of our physical product
@@ -40,10 +40,10 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUp
       _;
   }
 
-  modifier onlyIfLaunched {
+  modifier onlyIftradable {
       require(
-          islaunched,
-          "Proudct haven't been launched yet."
+          isTradable,
+          "Proudct currently unable to trade."
       );
       _;
   }
@@ -86,8 +86,13 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUp
   }
 
   function launch() external virtual onlyCreator {
-    require(!islaunched, 'The product token is already launched');
-    islaunched = true;
+    require(!isTradable, 'The product token is already launched');
+    isTradable = true;
+  }
+
+  function pause() external virtual onlyCreator {
+    require(isTradable, 'The product token is already paused');
+    isTradable = false;
   }
 
 	/**
@@ -96,7 +101,7 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUp
    *
    * @param _amount                   amount of tokens that user wants to trade in.
   */
-  function tradein(uint32 _amount) external virtual {
+  function tradein(uint32 _amount) external virtual onlyIftradable {
   	_tradeinForAmount(_amount);
   }
 
