@@ -20,6 +20,7 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUp
   event Tradein(address indexed sender, uint32 amount);							// event to fire when a token is redeemed in the real world
   event CreatorTransfer(address indexed newCreator);                // event to fire when a creator for the token is set
 
+  bool private islaunched;
   uint256 public reserveBalance;      // amount of liquidity in the pool
   uint32 public reserveRatio;         // computed from the exponential factor in the 
   uint32 public maxTokenCount;        // max token count, determined by the supply of our physical product
@@ -35,6 +36,14 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUp
       require(
           msg.sender == creator,
           "Only creator can call this function."
+      );
+      _;
+  }
+
+  modifier onlyIfLaunched {
+      require(
+          islaunched,
+          "Proudct isn't lunched."
       );
       _;
   }
@@ -74,6 +83,11 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUp
     supplyOffset = _supplyOffset;
     reserveRatio = _reserveRatio;
     maxTokenCount = _maxTokenCount;
+  }
+
+  function launch() external virtual onlyCreator {
+    require(!islaunched, 'The product token is already launched');
+    islaunched = true;
   }
 
 	/**
@@ -275,15 +289,6 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUp
   function _refund(address buyer, uint value) internal virtual {
     // todo
   }
-
-  /**
-   * @dev Return address of the current owner. This is used in testing only.
-   *
-   * @return address              address of the owner.
-  */
-  // function getOwner() public virtual returns (address) {
-  //   return owner();
-  // }
 
   /**
    * @dev Sets the creator of the product to the parameter

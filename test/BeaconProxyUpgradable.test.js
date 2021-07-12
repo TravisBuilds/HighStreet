@@ -175,13 +175,17 @@ contract('ProductBeaconProxy', function (accounts) {
 
   it('Redeem flow check', async function (){
     const DEG = true;
-    const state_INITIAL = 0;
-    const state_AWAITING_SERVER_CHECK = 1;
-    const state_AWAITING_DELIVERY = 2;
-    const state_AWAITING_USER_APPROVAL = 3;
-    const state_COMPLETE_USER_REFUND = 4;
-    const state_COMPLETE = 5;
-
+    const STATE_INITIAL = 0;
+    const STATE_AWAITING_SERVER_CHECK = 1;
+    const STATE_AWAITING_DELIVERY = 2;
+    const STATE_AWAITING_USER_APPROVAL = 3;
+    const STATE_COMPLETE_USER_REFUND = 4;
+    const STATE_COMPLETE = 5;
+ 
+    const INDE_OF_STATE = 0;
+    const INDE_OF_AMOUNT = 1;
+    const INDE_OF_VALUE = 2;
+  
     const owner = accounts[0];
     const user1 = accounts[1];
     const user2 = accounts[2];
@@ -198,6 +202,7 @@ contract('ProductBeaconProxy', function (accounts) {
     );
     const proxyAddress = await this.tokenFactory.retrieveToken.call("HighGO");
     const highGo = new ProductTokenV1(proxyAddress);
+    highGo.launch({from: owner});
 
     // 2. user1 buy a proudct
     let priceforMaxBuy;
@@ -243,26 +248,29 @@ contract('ProductBeaconProxy', function (accounts) {
     if(DEG) await printEscrowList(list);
 
     // 4. redeem compelete
+    let id = 0
     if(DEG) console.log('Update completed');
-    highGo.updateServerCheck(user1, 0);
-    highGo.confirmDelivery(user1, 0);
-    highGo.updateUserCompleted(user1, 0);
+    highGo.updateServerCheck(user1, id);
+    highGo.confirmDelivery(user1, id);
+    highGo.updateUserCompleted(user1, id);
     list = await highGo.getBuyerHistory(user1);
     if(DEG) await printEscrowList(list);
 
-    let state = await highGo.getRedeemStatus(user1, 0);
-    assert.equal(state, state_COMPLETE);
+    let state = await highGo.getRedeemStatus(user1, id);
+    assert.equal(state, STATE_COMPLETE);
 
     // 5. redeem fail then send same amount of product
+    id = 1;
     if(DEG) console.log('Update redeem fail');
     balance = await daiMock.balanceOf(user1, {from: user1});
     if(DEG) console.log('user1 balance before refund',  web3.utils.fromWei(balance.toString(), 'ether'));
-    highGo.updateServerCheck(user1, 1);
-    highGo.updateUserRefund(user1, 1);
-    state = await highGo.getRedeemStatus(user1, 1);
-    assert.equal(state, state_COMPLETE_USER_REFUND);
+    highGo.updateServerCheck(user1, id);
+    highGo.updateUserRefund(user1, id);
+    state = await highGo.getRedeemStatus(user1, id);
+    assert.equal(state, STATE_COMPLETE_USER_REFUND);
     list = await highGo.getBuyerHistory(user1);
-    if(DEG) console.log('user1 refund',  web3.utils.fromWei(list[1][2], 'ether'));
+
+    if(DEG) console.log('user1 refund',  web3.utils.fromWei(list[id][INDE_OF_VALUE], 'ether'));
     balance = await daiMock.balanceOf(user1, {from: user1});
     if(DEG) console.log('user1 balance after refund',  web3.utils.fromWei(balance.toString(), 'ether'));
     if(DEG) await printEscrowList(list);

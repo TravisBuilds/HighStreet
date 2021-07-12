@@ -75,7 +75,7 @@ contract ProductTokenV1 is ProductToken {
    *
    * @param _amount             the amount of tokens to be bought.
   */
-  function buy(uint32 _amount) external virtual payable {
+  function buy(uint32 _amount) external virtual payable onlyIfLaunched{
     require(msg.value > 0, "Must send ether to buy tokens.");
 
     int daieth = getLatestDaiEthPrice();
@@ -99,7 +99,7 @@ contract ProductTokenV1 is ProductToken {
    *
    * @param _amount             the amount of tokens to be bought.
   */
-  function buyWithDai(uint256 _daiAmount, uint32 _amount) external virtual {
+  function buyWithDai(uint256 _daiAmount, uint32 _amount) external virtual onlyIfLaunched{
     require(_daiAmount > 0, "Value of dai must be greater than 0 to buy tokens.");
     bool success = dai.transferFrom(msg.sender, address(this), _daiAmount);
     require(success, "Purchase failed, amount to buy token was not successfully transferred.");
@@ -148,14 +148,4 @@ contract ProductTokenV1 is ProductToken {
     bool success = dai.transfer(buyer, value.mul(980000).div(1000000));
     require(success, "refund token failed");
   }
-
-  /**
-   * @dev Return address of the current owner. This is used in testing only.
-   *
-   * @return address              address of the owner.
-  */
-  // function getOwner() public override returns (address) {
-  //   return owner();
-  // }
-
 }
