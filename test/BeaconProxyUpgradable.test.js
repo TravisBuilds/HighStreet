@@ -182,9 +182,9 @@ contract('ProductBeaconProxy', function (accounts) {
     const STATE_COMPLETE_USER_REFUND = 4;
     const STATE_COMPLETE = 5;
  
-    const INDE_OF_STATE = 0;
-    const INDE_OF_AMOUNT = 1;
-    const INDE_OF_VALUE = 2;
+    const INDEX_OF_STATE = 0;
+    const INDEX_OF_AMOUNT = 1;
+    const INDEX_OF_VALUE = 2;
   
     const owner = accounts[0];
     const user1 = accounts[1];
@@ -270,7 +270,7 @@ contract('ProductBeaconProxy', function (accounts) {
     assert.equal(state, STATE_COMPLETE_USER_REFUND);
     list = await highGo.getBuyerHistory(user1);
 
-    if(DEG) console.log('user1 refund',  web3.utils.fromWei(list[id][INDE_OF_VALUE], 'ether'));
+    if(DEG) console.log('user1 refund',  web3.utils.fromWei(list[id][INDEX_OF_VALUE], 'ether'));
     balance = await daiMock.balanceOf(user1, {from: user1});
     if(DEG) console.log('user1 balance after refund',  web3.utils.fromWei(balance.toString(), 'ether'));
     if(DEG) await printEscrowList(list);
