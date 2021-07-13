@@ -19,6 +19,7 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUp
   event Sell(address indexed sender, uint32 amount, uint refund);		// event to fire when a token has been sold back
   event Tradein(address indexed sender, uint32 amount);							// event to fire when a token is redeemed in the real world
   event CreatorTransfer(address indexed newCreator);                // event to fire when a creator for the token is set
+  event Tradable(bool isTradable);
 
   bool private isTradable;
   uint256 public reserveBalance;      // amount of liquidity in the pool
@@ -88,11 +89,13 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUp
   function launch() external virtual onlyCreator {
     require(!isTradable, 'The product token is already launched');
     isTradable = true;
+    emit Tradable(isTradable);
   }
 
   function pause() external virtual onlyCreator {
     require(isTradable, 'The product token is already paused');
     isTradable = false;
+    emit Tradable(isTradable);
   }
 
 	/**

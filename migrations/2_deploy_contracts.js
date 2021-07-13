@@ -63,4 +63,9 @@ module.exports = async function (deployer, network, accounts ) {
 	await factoryInstance.createToken(
 		"HighGO", val, {from: accounts[0]}
 	);
+
+	//default launch token directly
+	const highGOAddress = await factoryInstance.retrieveToken("HighGO");
+	const highGOToken = await TokenV1.at(highGOAddress);
+	await highGOToken.launch({from: accounts[0]});
 };
