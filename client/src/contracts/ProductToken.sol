@@ -19,7 +19,9 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUp
   event Sell(address indexed sender, uint32 amount, uint refund);		// event to fire when a token has been sold back
   event Tradein(address indexed sender, uint32 amount);							// event to fire when a token is redeemed in the real world
   event CreatorTransfer(address indexed newCreator);                // event to fire when a creator for the token is set
+  event Tradable(bool isTradable);
 
+  bool private isTradable;
   uint256 public reserveBalance;      // amount of liquidity in the pool
   uint32 public reserveRatio;         // computed from the exponential factor in the 
   uint32 public maxTokenCount;        // max token count, determined by the supply of our physical product
@@ -35,6 +37,14 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUp
       require(
           msg.sender == creator,
           "Only creator can call this function."
+      );
+      _;
+  }
+
+  modifier onlyIfTradable {
+      require(
+          isTradable,
+          "Proudct currently unable to trade."
       );
       _;
   }
@@ -76,13 +86,25 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUp
     maxTokenCount = _maxTokenCount;
   }
 
+  function launch() external virtual onlyCreator {
+    require(!isTradable, 'The product token is already launched');
+    isTradable = true;
+    emit Tradable(isTradable);
+  }
+
+  function pause() external virtual onlyCreator {
+    require(isTradable, 'The product token is already paused');
+    isTradable = false;
+    emit Tradable(isTradable);
+  }
+
 	/**
    * @dev When user wants to trade in their token for retail product
    * the logistics for transfering product should be handled in the web application through centralized service.
    *
    * @param _amount                   amount of tokens that user wants to trade in.
   */
-  function tradein(uint32 _amount) external virtual {
+  function tradein(uint32 _amount) external virtual onlyIfTradable {
   	_tradeinForAmount(_amount);
   }
 
@@ -275,15 +297,6 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUp
   function _refund(address buyer, uint value) internal virtual {
     // todo
   }
-
-  /**
-   * @dev Return address of the current owner. This is used in testing only.
-   *
-   * @return address              address of the owner.
-  */
-  // function getOwner() public virtual returns (address) {
-  //   return owner();
-  // }
 
   /**
    * @dev Sets the creator of the product to the parameter

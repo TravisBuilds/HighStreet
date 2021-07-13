@@ -23,7 +23,7 @@ contract Escrow {
   
   event escrowStateUpdated(address, uint, escrowInfo);
 
-  function _addEscrow(uint32 _amount, uint _value) internal returns (uint){
+  function _addEscrow(uint32 _amount, uint _value) internal virtual returns (uint){
     require(_amount > 0, 'Invalid Amount');
     escrowInfo memory info;
     info.state = escrowState.AWAITING_SERVER_CHECK;
@@ -35,47 +35,47 @@ contract Escrow {
     return id;
   }
 
-  function _updateServerCheck(address buyer, uint id) internal {
+  function _updateServerCheck(address buyer, uint id) internal virtual{
     require(id >=  0 || id < escrowList[buyer].length , "Invalid id");
     escrowList[buyer][id].state = escrowState.AWAITING_DELIVERY;
     emit escrowStateUpdated(buyer, id, escrowList[buyer][id]);
   }
 
-  function _confirmDelivery(address buyer, uint id) internal {
+  function _confirmDelivery(address buyer, uint id) internal virtual{
     require(id >=  0 || id < escrowList[buyer].length , "Invalid id");
     require(escrowList[buyer][id].state == escrowState.AWAITING_DELIVERY, "Invalid state");
     escrowList[buyer][id].state = escrowState.AWAITING_USER_APPROVAL;
     emit escrowStateUpdated(buyer, id, escrowList[buyer][id]);
   }
 
-  function _updateUserCompleted(address buyer, uint id) internal {
+  function _updateUserCompleted(address buyer, uint id) internal virtual{
     require(id >=  0 || id < escrowList[buyer].length , "Invalid id");
     escrowList[buyer][id].state = escrowState.COMPLETE;
     emit escrowStateUpdated(buyer, id, escrowList[buyer][id]);
   }
 
-  function _updateUserRefund(address buyer, uint id) internal returns ( uint) {
+  function _updateUserRefund(address buyer, uint id) internal virtual returns ( uint) {
     require(id >=  0 || id < escrowList[buyer].length , "Invalid id");
     escrowList[buyer][id].state = escrowState.COMPLETE_USER_REFUND;
     emit escrowStateUpdated(buyer, id, escrowList[buyer][id]);
     return escrowList[buyer][id].value;
   }
 
-  function isStateCompleted(escrowState state) public pure returns (bool){
+  function isStateCompleted(escrowState state) public pure virtual returns (bool){
     return state == escrowState.COMPLETE ||
          state == escrowState.COMPLETE_USER_REFUND;
   }
 
-  function getBuyerHistory(address buyer) external view returns (escrowInfo [] memory) {
+  function getBuyerHistory(address buyer) external view virtual returns (escrowInfo [] memory) {
     return escrowList[buyer];
   }
 
-  function getRedeemStatus(address buyer, uint id) external view returns (escrowState){
+  function getRedeemStatus(address buyer, uint id) external view virtual returns (escrowState){
     require(id >=  0 || id < escrowList[buyer].length , "Invalid id");
     return escrowList[buyer][id].state;
   }
 
-  function getEscrowStateByValue (escrowState state) public pure returns (string memory) {
+  function getEscrowStateByValue (escrowState state) public pure virtual returns (string memory) {
     if (escrowState.INITIAL == state) return "INITIAL";
     if (escrowState.AWAITING_SERVER_CHECK == state) return "AWAITING_SERVER_CHECK";
     if (escrowState.AWAITING_DELIVERY == state) return "AWAITING_DELIVERY";
