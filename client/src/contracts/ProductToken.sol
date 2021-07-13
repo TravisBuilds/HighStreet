@@ -40,7 +40,7 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUp
       _;
   }
 
-  modifier onlyIftradable {
+  modifier onlyIfTradable {
       require(
           isTradable,
           "Proudct currently unable to trade."
@@ -101,7 +101,7 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUp
    *
    * @param _amount                   amount of tokens that user wants to trade in.
   */
-  function tradein(uint32 _amount) external virtual onlyIftradable {
+  function tradein(uint32 _amount) external virtual onlyIfTradable {
   	_tradeinForAmount(_amount);
   }
 

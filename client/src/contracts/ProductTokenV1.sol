@@ -75,7 +75,7 @@ contract ProductTokenV1 is ProductToken {
    *
    * @param _amount             the amount of tokens to be bought.
   */
-  function buy(uint32 _amount) external virtual payable onlyIftradable{
+  function buy(uint32 _amount) external virtual payable onlyIfTradable{
     require(msg.value > 0, "Must send ether to buy tokens.");
 
     int daieth = getLatestDaiEthPrice();
@@ -99,7 +99,7 @@ contract ProductTokenV1 is ProductToken {
    *
    * @param _amount             the amount of tokens to be bought.
   */
-  function buyWithDai(uint256 _daiAmount, uint32 _amount) external virtual onlyIftradable{
+  function buyWithDai(uint256 _daiAmount, uint32 _amount) external virtual onlyIfTradable{
     require(_daiAmount > 0, "Value of dai must be greater than 0 to buy tokens.");
     bool success = dai.transferFrom(msg.sender, address(this), _daiAmount);
     require(success, "Purchase failed, amount to buy token was not successfully transferred.");
@@ -121,7 +121,7 @@ contract ProductTokenV1 is ProductToken {
    *
    * @param _amount             the amount of tokens to be sold.
   */
- 	function sell(uint32 _amount) external virtual onlyIftradable{
+ 	function sell(uint32 _amount) external virtual onlyIfTradable{
     uint256 returnAmount = _sellForAmount(_amount);
     bool success = dai.transfer(msg.sender, returnAmount.mul(980000).div(1000000));        // ppm of 98%. 2% is the platform transaction fee
     require(success, "selling token failed");
