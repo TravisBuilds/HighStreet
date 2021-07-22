@@ -2,6 +2,7 @@
 const DaiMock = artifacts.require("DaiMock");
 // const { deployProxy } = require('@openzeppelin/truffle-upgrades');
 const Token = artifacts.require("ProductToken");
+const TokenV1 = artifacts.require("ProductTokenV1");
 const Factory = artifacts.require("TokenFactory");
 const ERC1967Proxy = artifacts.require('ERC1967Proxy');
 // const UUPSUpgradeable = artifacts.require('UUPSUpgradeable');
@@ -16,23 +17,55 @@ module.exports = async function (deployer, network, accounts ) {
 	} else if (network=='kovan') {
 		daiAdress = '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa';			// fill in the dai address from kovan
 		chainlinkAddress = '0x22B58f1EbEDfCA50feF632bD73368b2FdA96D541';
-	} 
-	else {
+	} else if (network=='rinkeby') {
+		daiAdress = '0xc7ad46e0b8a400bb3c915120d284aafba8fc4735';
+		chainlinkAddress = '0x01BE23585060835E02B77ef475b0Cc51aA1e0709';
+	} else if (network=='arbitrum') {
+		// Note:
+		// DAI address on Rinkeby(L1): 0xc7ad46e0b8a400bb3c915120d284aafba8fc4735
+		// then the pairing address of L2 is below:
+		daiAdress = '0x552444108a2aF6375205f320F196b5D1FEDFaA51';
+		// TODO: invalid chainLink Address
+		chainlinkAddress = "0x01BE23585060835E02B77ef475b0Cc51aA1e0709";
+	} else {
 		await deployer.deploy(DaiMock);
 		const dai = await DaiMock.deployed();
 		await dai.faucet(accounts[0], web3.utils.toWei('100', 'ether'));		// ether here just means 10 ** 18
 		daiAdress = dai.address;
 		chainlinkAddress = accounts[1];		// this is placeholder. Chainlink does not have a local network.
 	}
-	const implementationV0 = await Token.new();
-	const beacon = await UpgradeableBeacon.new(implementationV0.address);
-	// await deployer.deploy(Token, 330000, 500, 3, web3.utils.toWei('9', 'ether'));			// initialize reserve ratio for the token in ppm, stand in for testing.
-	// const token = await Token.deployed();
-	
-	// await deployer.deploy(Factory, beacon.address, {from: accounts[0]});
-	// const factory = await Factory.deployed();
-	this.implInitial = await Factory.new({from: accounts[0]});
-	const data = this.implInitial.contract.methods.initialize(beacon.address).encodeABI();
-	const { address } = await ERC1967Proxy.new(this.implInitial.address, data, {from: accounts[0]});
-  const factory = await Factory.at(address);
+
+	await deployer.deploy(Token, {from: accounts[0]});
+	const tokenImpl = await Token.deployed();
+
+	await deployer.deploy(TokenV1, {from: accounts[0]});
+	const tokenImplV1 = await TokenV1.deployed();
+
+	await deployer.deploy(UpgradeableBeacon, tokenImpl.address, {from: accounts[0]});
+	const beacon = await UpgradeableBeacon.deployed();
+
+	await deployer.deploy(Factory, {from: accounts[0]});
+	const factoyImpl = await Factory.deployed();
+
+	const data = factoyImpl.contract.methods.initialize(beacon.address).encodeABI();
+	await deployer.deploy(ERC1967Proxy,factoyImpl.address, data, {from: accounts[0]});
+	const factoyProxy = await ERC1967Proxy.deployed();
+	const factoryInstance = await Factory.at(factoyProxy.address);
+
+	await beacon.upgradeTo(tokenImplV1.address, {from: accounts[0]});
+
+	const exp = '330000';
+	const max = '500';
+	const offset = '10';
+	const baseReserve = web3.utils.toWei('0.33', 'ether');
+	const val = tokenImplV1.contract.methods.initialize('HighGO', 'HG', exp, max, offset, baseReserve,  daiAdress, chainlinkAddress).encodeABI();
+
+	await factoryInstance.createToken(
+		"HighGO", val, {from: accounts[0]}
+	);
+
+	//default launch token directly
+	const highGOAddress = await factoryInstance.retrieveToken("HighGO");
+	const highGOToken = await TokenV1.at(highGOAddress);
+	await highGOToken.launch({from: accounts[0]});
 };

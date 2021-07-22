@@ -5,20 +5,23 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import "./BancorBondingCurve.sol";
+import "./Escrow.sol";
 
 /// @title ProductToken
 /// @notice This is version 0 of the product token implementation.
 /// @dev This contract lays the foundation for transaction computations, including
 ///   bonding curve calculations and variable management. Version 0 of this contract
 ///   does not implement any transaction logic.
-contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeable {
+contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUpgradeable {
 	using SafeMathUpgradeable for uint256;
 
 	event Buy(address indexed sender, uint32 amount, uint deposit);		// event to fire when a new token is minted
   event Sell(address indexed sender, uint32 amount, uint refund);		// event to fire when a token has been sold back
   event Tradein(address indexed sender, uint32 amount);							// event to fire when a token is redeemed in the real world
   event CreatorTransfer(address indexed newCreator);                // event to fire when a creator for the token is set
+  event Tradable(bool isTradable);
 
+  bool private isTradable;
   uint256 public reserveBalance;      // amount of liquidity in the pool
   uint32 public reserveRatio;         // computed from the exponential factor in the 
   uint32 public maxTokenCount;        // max token count, determined by the supply of our physical product
@@ -33,7 +36,15 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeabl
   modifier onlyCreator {
       require(
           msg.sender == creator,
-          "Only owner can call this function."
+          "Only creator can call this function."
+      );
+      _;
+  }
+
+  modifier onlyIfTradable {
+      require(
+          isTradable,
+          "Proudct currently unable to trade."
       );
       _;
   }
@@ -75,13 +86,25 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeabl
     maxTokenCount = _maxTokenCount;
   }
 
+  function launch() external virtual onlyCreator {
+    require(!isTradable, 'The product token is already launched');
+    isTradable = true;
+    emit Tradable(isTradable);
+  }
+
+  function pause() external virtual onlyCreator {
+    require(isTradable, 'The product token is already paused');
+    isTradable = false;
+    emit Tradable(isTradable);
+  }
+
 	/**
    * @dev When user wants to trade in their token for retail product
    * the logistics for transfering product should be handled in the web application through centralized service.
    *
    * @param _amount                   amount of tokens that user wants to trade in.
   */
-  function tradein(uint32 _amount) external virtual {
+  function tradein(uint32 _amount) external virtual onlyIfTradable {
   	_tradeinForAmount(_amount);
   }
 
@@ -240,20 +263,40 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, OwnableUpgradeabl
     require(_amount > 0, "Amount must be non-zero.");
     require(balanceOf(msg.sender) >= _amount, "Insufficient tokens to burn.");
 
+    uint256 reimburseAmount = calculateSellReturn(_amount);
+    _addEscrow(_amount, reimburseAmount);
+
     _burn(msg.sender, _amount);
     tradeinCount = tradeinCount + _amount;			// Future: use safe math here.
 
     emit Tradein(msg.sender, _amount);
   }
 
-  /**
-   * @dev Return address of the current owner. This is used in testing only.
-   *
-   * @return address              address of the owner.
-  */
-  // function getOwner() public virtual returns (address) {
-  //   return owner();
-  // }
+  function updateServerCheck(address buyer, uint id) onlyCreator external virtual{
+    require(buyer != address(0), "Invalid buyer");
+    _updateServerCheck(buyer, id);
+  }
+
+  function confirmDelivery(address buyer, uint id) onlyCreator external virtual{
+    require(buyer != address(0), "Invalid buyer");
+    _confirmDelivery(buyer, id);
+  }
+
+  function updateUserCompleted(address buyer, uint id) onlyCreator external virtual{
+    require(buyer != address(0), "Invalid buyer");
+    _updateUserCompleted(buyer, id);
+  }
+
+  function updateUserRefund(address buyer, uint id) onlyCreator external virtual{
+    require(buyer != address(0), "Invalid buyer");
+    uint value = _updateUserRefund(buyer, id);
+    require(value >0 , "Invalid value");
+    _refund(buyer, value);
+  }
+
+  function _refund(address buyer, uint value) internal virtual {
+    // todo
+  }
 
   /**
    * @dev Sets the creator of the product to the parameter
