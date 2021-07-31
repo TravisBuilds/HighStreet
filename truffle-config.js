@@ -68,14 +68,20 @@ module.exports = {
     kovan: {
       provider: () => new HDWalletProvider([privateKey], kovanEndpointUrl),
       network_id: 42,
-      gas: 5000000,
+      gas: 12487794,
       gasPrice: 10000000000,
     },
     rinkeby: {
       provider: () => new HDWalletProvider([privateKey], rinkebyEndpointUrl),
       network_id: 4,
-      gas: 5000000,
+      gas: 20000000,
       gasPrice: 10000000000,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true,
+      websocket: true,
+      timeoutBlocks: 50000,
+      networkCheckTimeout: 10000000
     },
     arbitrum: {
       provider: function () {
@@ -111,7 +117,7 @@ module.exports = {
       settings: {          // See the solidity docs for advice about optimization and evmVersion
        optimizer: {
          enabled: true,
-         runs: 200
+         runs: 20
        },
        evmVersion: "byzantium"
       }

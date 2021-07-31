@@ -15,15 +15,15 @@ import "./Escrow.sol";
 contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUpgradeable {
 	using SafeMathUpgradeable for uint256;
 
-	event Buy(address indexed sender, uint32 amount, uint deposit);		// event to fire when a new token is minted
-  event Sell(address indexed sender, uint32 amount, uint refund);		// event to fire when a token has been sold back
+	event Buy(address indexed sender, uint32 amount, uint256 deposit);		// event to fire when a new token is minted
+  event Sell(address indexed sender, uint32 amount, uint256 refund);		// event to fire when a token has been sold back
   event Tradein(address indexed sender, uint32 amount);							// event to fire when a token is redeemed in the real world
   event CreatorTransfer(address indexed newCreator);                // event to fire when a creator for the token is set
   event Tradable(bool isTradable);
 
   bool private isTradable;
   uint256 public reserveBalance;      // amount of liquidity in the pool
-  uint32 public reserveRatio;         // computed from the exponential factor in the 
+  uint32 public reserveRatio;         // computed from the exponential factor in the
   uint32 public maxTokenCount;        // max token count, determined by the supply of our physical product
   uint32 public tradeinCount;         // number of tokens burned through redeeming procedure. This will drive price up permanently
   uint32 internal supplyOffset;       // an initial value used to set an initial price. This is not included in the total supply.
@@ -44,7 +44,7 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUp
   modifier onlyIfTradable {
       require(
           isTradable,
-          "Proudct currently unable to trade."
+          "unable to trade now."
       );
       _;
   }
@@ -108,7 +108,7 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUp
   	_tradeinForAmount(_amount);
   }
 
-  fallback () external { } 
+  fallback () external { }
 
   /**
    * @dev Function to check how many tokens of this product are currently available for purchase,
@@ -138,7 +138,7 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUp
    * @dev Function that computes current price for a token through bonding curve calculation
    * based on parameters such as total supply, reserve balance, and reserve ratio.
    *
-   * @return price                   current price in reserve token (in our case, this is dai).                 
+   * @return price                   current price in reserve token (in our case, this is dai).
   */
   function getCurrentPrice() 
   	external view virtual returns	(uint256 price)
@@ -151,9 +151,9 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUp
    * based on parameters such as total supply, reserve balance, and reserve ratio.
    *
    * @param  _amountProduct          token amount in traded token
-   * @return price                   total price in reserve token (in our case, this is dai).                 
+   * @return price                   total price in reserve token (in our case, this is dai).
   */
-  function getPriceForN(uint32 _amountProduct) 
+  function getPriceForN(uint32 _amountProduct)
   	public view virtual returns	(uint256 price)
   {
   	return calculatePriceForNTokens(getTotalSupply(), reserveBalance, reserveRatio, _amountProduct);
@@ -163,7 +163,7 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUp
    * @dev Function that computes number of product tokens one can buy given an amount in reserve token.
    *
    * @param  _amountReserve          purchaing amount in reserve token (dai)
-   * @return mintAmount              number of tokens in traded token that can be purchased by given amount.                  
+   * @return mintAmount              number of tokens in traded token that can be purchased by given amount.
   */
   function calculateBuyReturn(uint256 _amountReserve)
     public view virtual returns (uint32 mintAmount)
@@ -175,7 +175,7 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUp
    * @dev Function that computes selling price in reserve tokens given an amount in traded token.
    *
    * @param  _amountProduct          selling amount in product token
-   * @return soldAmount              total amount that will be transferred to the seller.                
+   * @return soldAmount              total amount that will be transferred to the seller.
   */
   function calculateSellReturn(uint32 _amountProduct)
     public view virtual returns (uint256 soldAmount)
@@ -214,7 +214,7 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUp
       _amount = getAvailability();
     }
 
-    actualDeposit = getPriceForN(_amount);    
+    actualDeposit = getPriceForN(_amount);
     if (actualDeposit > _deposit) {   // if user deposited token is not enough to buy ideal amount. This is a fallback option.
       amount = calculateBuyReturn(_deposit);
       actualDeposit = getPriceForN(amount);
@@ -272,29 +272,29 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUp
     emit Tradein(msg.sender, _amount);
   }
 
-  function updateServerCheck(address buyer, uint id) onlyCreator external virtual{
+  function updateServerCheck(address buyer, uint256 id) onlyCreator external virtual{
     require(buyer != address(0), "Invalid buyer");
     _updateServerCheck(buyer, id);
   }
 
-  function confirmDelivery(address buyer, uint id) onlyCreator external virtual{
+  function confirmDelivery(address buyer, uint256 id) onlyCreator external virtual{
     require(buyer != address(0), "Invalid buyer");
     _confirmDelivery(buyer, id);
   }
 
-  function updateUserCompleted(address buyer, uint id) onlyCreator external virtual{
+  function updateUserCompleted(address buyer, uint256 id) onlyCreator external virtual{
     require(buyer != address(0), "Invalid buyer");
     _updateUserCompleted(buyer, id);
   }
 
-  function updateUserRefund(address buyer, uint id) onlyCreator external virtual{
+  function updateUserRefund(address buyer, uint256 id) onlyCreator external virtual{
     require(buyer != address(0), "Invalid buyer");
-    uint value = _updateUserRefund(buyer, id);
+    uint256 value = _updateUserRefund(buyer, id);
     require(value >0 , "Invalid value");
     _refund(buyer, value);
   }
 
-  function _refund(address buyer, uint value) internal virtual {
+  function _refund(address buyer, uint256 value) internal virtual {
     // todo
   }
 

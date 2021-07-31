@@ -236,14 +236,15 @@ contract('ProductBeaconProxy', function (accounts) {
     if(DEG) console.log('user1 remain token after redeem', balance.toString());
 
     const printEscrowList = async (list) => await list.reduce( async (_prev, val, index) => {
-          const state = await highGo.getEscrowStateByValue(val[0]);
+          const ESCROW_STATE = ['INITIAL', 'AWAITING_SERVER_CHECK', 'AWAITING_DELIVERY', 'AWAITING_USER_APPROVAL', 'COMPLETE_USER_REFUND', 'COMPLETE'];
+          const state = ESCROW_STATE[val[0]];
           const amount = val[1];
           const value = val[2];
           console.log('index:', index, 'state:', state, 'amount:', amount, 'value:',  web3.utils.fromWei(value, 'ether'));
           return Promise.resolve("DO_NOT_CALL");
         },0);
 
-    let list = await highGo.getBuyerHistory(user1);
+    let list = await highGo.getEscrowHistory(user1);
     assert.equal(list.length, 3);
     if(DEG) await printEscrowList(list);
 
@@ -253,7 +254,7 @@ contract('ProductBeaconProxy', function (accounts) {
     highGo.updateServerCheck(user1, id);
     highGo.confirmDelivery(user1, id);
     highGo.updateUserCompleted(user1, id);
-    list = await highGo.getBuyerHistory(user1);
+    list = await highGo.getEscrowHistory(user1);
     if(DEG) await printEscrowList(list);
 
     let state = await highGo.getRedeemStatus(user1, id);
@@ -268,7 +269,7 @@ contract('ProductBeaconProxy', function (accounts) {
     highGo.updateUserRefund(user1, id);
     state = await highGo.getRedeemStatus(user1, id);
     assert.equal(state, STATE_COMPLETE_USER_REFUND);
-    list = await highGo.getBuyerHistory(user1);
+    list = await highGo.getEscrowHistory(user1);
 
     if(DEG) console.log('user1 refund',  web3.utils.fromWei(list[id][INDEX_OF_VALUE], 'ether'));
     balance = await daiMock.balanceOf(user1, {from: user1});
