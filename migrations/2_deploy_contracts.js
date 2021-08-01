@@ -36,9 +36,6 @@ module.exports = async function (deployer, network, accounts ) {
 		chainlinkAddress = accounts[1];		// this is placeholder. Chainlink does not have a local network.
 	}
 
-	daiAdress = '0xc7ad46e0b8a400bb3c915120d284aafba8fc4735';
-	chainlinkAddress = '0x74825DbC8BF76CC4e9494d0ecB210f676Efa001D';
-
 	await deployer.deploy(Token);
 	const tokenImpl = await Token.deployed();
 
