@@ -30,6 +30,7 @@
   },
   "scripts": {
     "heroku-prebuild": "cd client; npm install --also=dev; npm run build; cd -",
-    "start": "node server"
+    "start": "node server",
+    "check-size": "node test/contractSizeCheck.js"
   }
 }

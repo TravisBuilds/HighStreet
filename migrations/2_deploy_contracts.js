@@ -5,6 +5,7 @@ const Token = artifacts.require("ProductToken");
 const TokenV1 = artifacts.require("ProductTokenV1");
 const Factory = artifacts.require("TokenFactory");
 const ERC1967Proxy = artifacts.require('ERC1967Proxy');
+const BancorBondingCurve = artifacts.require('BancorBondingCurve');
 // const UUPSUpgradeable = artifacts.require('UUPSUpgradeable');
 const UpgradeableBeacon = artifacts.require('UpgradeableBeacon');
 
@@ -36,6 +37,10 @@ module.exports = async function (deployer, network, accounts ) {
 		chainlinkAddress = accounts[1];		// this is placeholder. Chainlink does not have a local network.
 	}
 
+	await deployer.deploy(BancorBondingCurve);
+	const BancorBondingCurveImpl = await BancorBondingCurve.deployed();
+	const BondingCurveAddress = BancorBondingCurveImpl.address;
+
 	await deployer.deploy(Token);
 	const tokenImpl = await Token.deployed();
 
@@ -59,7 +64,7 @@ module.exports = async function (deployer, network, accounts ) {
 	const max = '500';
 	const offset = '10';
 	const baseReserve = web3.utils.toWei('0.33', 'ether');
-	const val = tokenImplV1.contract.methods.initialize('HighGO', 'HG', exp, max, offset, baseReserve,  daiAdress, chainlinkAddress).encodeABI();
+	const val = tokenImplV1.contract.methods.initialize('HighGO', 'HG', BondingCurveAddress, exp, max, offset, baseReserve,  daiAdress, chainlinkAddress).encodeABI();
 
 	await factoryInstance.createToken(
 		"HighGO", val

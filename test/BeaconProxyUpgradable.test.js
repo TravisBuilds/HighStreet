@@ -12,6 +12,7 @@ const ProductTokenV3 = artifacts.require('ProductTokenV3');
 const ProductTokenV4 = artifacts.require('ProductTokenV4');
 const ProductTokenV5 = artifacts.require('ProductTokenV5');
 const DaiMock = artifacts.require('DaiMock');
+const BondingCurve = artifacts.require('BancorBondingCurve');
 const ProductTokenDestroy = artifacts.require('ProductTokenDestroy');
 const UpgradeableBeacon = artifacts.require('ProductUpgradeableBeacon');
 const BeaconProxy = artifacts.require('BeaconProxy');
@@ -28,7 +29,8 @@ contract('ProductBeaconProxy', function (accounts) {
 	const offset = '10';
 	const baseReserve = web3.utils.toWei('0.33', 'ether');
   let daiMock;
-  let chainlinkAddress; 
+  let chainlinkAddress;
+  let bondingCurveAddress;
 
   before('deploy implementation', async function () {
     this.factoryImp = await TokenFactory.new({from: accounts[0]});
@@ -39,6 +41,8 @@ contract('ProductBeaconProxy', function (accounts) {
     this.implementationV4 = await ProductTokenV4.new();
     this.implementationV5 = await ProductTokenV5.new();
     this.implementationDestroy = await ProductTokenDestroy.new();
+    this.bondingCurveImpl = await BondingCurve.new();
+    bondingCurveAddress = this.bondingCurveImpl.address
     daiMock = await DaiMock.new();      // dummy
     chainlinkAddress = accounts[4];     // dummy
   });
@@ -58,7 +62,7 @@ contract('ProductBeaconProxy', function (accounts) {
   });
 
   it('Initialize product token', async function () {
-      const data = this.implementationV0.contract.methods.initialize('HighGO', 'HG', exp, max, offset, baseReserve).encodeABI();
+      const data = this.implementationV0.contract.methods.initialize('HighGO', 'HG', bondingCurveAddress, exp, max, offset, baseReserve).encodeABI();
       await this.tokenFactory.createToken(
         "HighGO", data,
       );
@@ -78,7 +82,7 @@ contract('ProductBeaconProxy', function (accounts) {
   });
 
   it("Beacon Update With New Variables, existing variables shouldn't be overridden", async function(){
-    const data = this.implementationV0.contract.methods.initialize('HighGO', 'HG', exp, max, offset, baseReserve).encodeABI();
+    const data = this.implementationV0.contract.methods.initialize('HighGO', 'HG', bondingCurveAddress, exp, max, offset, baseReserve).encodeABI();
     await this.tokenFactory.createToken(
       "HighGO", data,
     );
@@ -89,7 +93,7 @@ contract('ProductBeaconProxy', function (accounts) {
     await this.beacon.upgradeTo(this.implementationV1.address);
     const dummy2 = new ProductTokenV1(proxyAddress);
     await expectRevert.unspecified(
-      dummy2.initialize('HighGO', 'HG', exp, '100', offset, baseReserve, daiMock.address, chainlinkAddress),
+      dummy2.initialize('HighGO', 'HG', bondingCurveAddress, exp, '100', offset, baseReserve, daiMock.address, chainlinkAddress),
     );
 
     // await expectRevert.unspecified(
@@ -105,7 +109,7 @@ contract('ProductBeaconProxy', function (accounts) {
   it("Proxy with newer implemnetation should be able to call initialize function from older implementations", async function(){
     await this.beacon.upgradeTo(this.implementationV1.address);
     console.log(daiMock.address);
-    const data = this.implementationV1.contract.methods.initialize('HighGO', 'HG', exp, max, offset, baseReserve,  daiMock.address, chainlinkAddress).encodeABI();
+    const data = this.implementationV1.contract.methods.initialize('HighGO', 'HG', bondingCurveAddress, exp, max, offset, baseReserve,  daiMock.address, chainlinkAddress).encodeABI();
       await this.tokenFactory.createToken(
         "HighGO", data,
       );
@@ -122,7 +126,7 @@ contract('ProductBeaconProxy', function (accounts) {
   });
 
   it('Pricing Functions  update',async function(){
-    const data = this.implementationV0.contract.methods.initialize('HighGO', 'HG', exp, max, offset, baseReserve).encodeABI();
+    const data = this.implementationV0.contract.methods.initialize('HighGO', 'HG', bondingCurveAddress, exp, max, offset, baseReserve).encodeABI();
       await this.tokenFactory.createToken(
         "HighGO", data,
       );
@@ -140,7 +144,7 @@ contract('ProductBeaconProxy', function (accounts) {
 
   it('Security check', async function (){
     const DBG = false;
-    const data = this.implementationV0.contract.methods.initialize('HighGO', 'HG', exp, max, offset, baseReserve).encodeABI();
+    const data = this.implementationV0.contract.methods.initialize('HighGO', 'HG', bondingCurveAddress, exp, max, offset, baseReserve).encodeABI();
     await this.tokenFactory.createToken(
       "HighGO", data, {from: accounts[0]}
     );
@@ -196,7 +200,7 @@ contract('ProductBeaconProxy', function (accounts) {
     const beacon = await UpgradeableBeacon.new(this.implementationV1.address, {from: owner});
     this.tokenFactory.UpdateBeacon(beacon.address, {from: owner});
     const data = this.implementationV1.contract
-              .methods.initialize('HighGO', 'HG', exp, '100', offset, baseReserve, daiMock.address, chainlinkAddress).encodeABI();
+              .methods.initialize('HighGO', 'HG', bondingCurveAddress, exp, '100', offset, baseReserve, daiMock.address, chainlinkAddress).encodeABI();
     await this.tokenFactory.createToken(
       "HighGO", data, {from: owner}
     );

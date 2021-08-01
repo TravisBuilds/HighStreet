@@ -33,8 +33,8 @@ contract ProductTokenV1 is ProductToken {
    * @param _daiAddress								the on-chain address of Dai, one of our supported reserve token
    * @param _chainlink								the address needed to create a aggregator for Chainlink.
   */
-  function initialize(string memory _name, string memory _symbol, uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve, address _daiAddress, address _chainlink) public initializer{
-		ProductToken.initialize(_name, _symbol, _reserveRatio, _maxTokenCount, _supplyOffset, _baseReserve);
+  function initialize(string memory _name, string memory _symbol, address _bondingCurveAddress, uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve, address _daiAddress, address _chainlink) public initializer{
+		ProductToken.initialize(_name, _symbol, _bondingCurveAddress, _reserveRatio, _maxTokenCount, _supplyOffset, _baseReserve);
 		__ProductToken_init_unchained(_daiAddress, _chainlink);
   }
 
@@ -181,15 +181,27 @@ contract ProductTokenV1 is ProductToken {
      * Address: 0x773616E4d11A78F511299002da57A0a94577F1f4
   */
   function getLatestDaiEthPrice() public view virtual returns (int) {
-    (,int256 price,,,) = daiEthFeed.latestRoundData();
-    require(price > 0, "Invalid Exchange rate");
+    (
+      uint80 roundID,
+      int price,
+      uint startedAt,
+      uint timeStamp,
+      uint80 answeredInRound
+    ) = daiEthFeed.latestRoundData();
+    require(price > 0, "Invalid DaiEth Exchange rate");
     return price;
   }
 
   function getLatestHsTokenEthPrice() public view virtual returns (int) {
     require(isSupportHsToken, "Not support yet");
-    (,int256 price,,,) = hsTokenEthFeed.latestRoundData();
-    require(price > 0, "Invalid Exchange rate");
+    (
+      uint80 roundID,
+      int price,
+      uint startedAt,
+      uint timeStamp,
+      uint80 answeredInRound
+    ) = hsTokenEthFeed.latestRoundData();
+    require(price > 0, "Invalid HsTokenEth Exchange rate");
     return price;
   }
 

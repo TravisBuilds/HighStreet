@@ -259,6 +259,7 @@ async function buy(cashUpperBound) {
   if (DBUG) console.log(`send dai amount(price * 1.5): ${await formatDaiUnits(approvalPrice)}`);
 
   if (isL1Only) {
+    // using dai or ether to buy product
     const isBuyWithDai = false;
     if (isBuyWithDai) {
       console.log('buy with dai');
@@ -275,8 +276,9 @@ async function buy(cashUpperBound) {
       let daiEth = await daiEtherContractL1.latestRoundData();
       console.log(daiEth);
       daiEth = await formatDaiUnits(daiEth.answer);
-      const valueInEther = (await formatDaiUnits(curTokenPrice)) * daiEth;
-      console.log(' ether:', valueInEther);
+      const valueInEther = (await formatDaiUnits(approvalPrice)) * daiEth;
+      console.log(' ether:', (await formatDaiUnits(curTokenPrice)) * daiEth);
+      console.log(' ether(*1.5):', valueInEther);
       const tokenSigner = await getTokenSigner();
       await tokenSigner.buy('1', { value: ethers.utils.parseEther(valueInEther.toFixed(18).toString()) });
     }
