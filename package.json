@@ -1,35 +1,33 @@
 {
-  "name": "HighStreetMarket",
-  "version": "v1.0.0",
-  "engines": {
-    "node": "15.x"
+  "name": "highstreet",
+  "version": "1.0.0",
+  "description": "# Abstract  ## Bringing DEFI concepts to Real Products   ### Inspiration  On May 9th 2019, the Uniswap team announced Unisocks($SOCKS) at the Fluidity Summit in NYC. Although Unisocks wouldn't be the first product represented on the Ethereum blockchain by Tokens, it would be the first to allow every token to be redeemable for a pair of actual SOCKS in real life. Since only 500 tokens will ever exist, every SOCKS sold increases the price of the next one. Following a bonding curve to govern it's price, Unisocks tokens can be sold back to the liquidity pool at any time.  [![socks](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/socks.png?raw=true \"socks\")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/socks.png?raw=true \"socks\")",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
   },
   "dependencies": {
-    "@chainlink/contracts": "^0.1.7",
-    "@openzeppelin/contracts": "^4.1.0",
-    "@openzeppelin/contracts-upgradeable": "^4.0.0",
-    "cookie-parser": "^1.4.5",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "express-jwt": "^6.0.0",
-    "jsonwebtoken": "^8.5.1",
-    "mongodb": "^3.6.6",
-    "passport": "^0.4.1",
-    "passport-instagram-basic-api": "^1.0.0"
-  },
-  "devDependencies": {
-    "@openzeppelin/test-helpers": "^0.5.11",
-    "@openzeppelin/truffle-upgrades": "^1.5.2",
+    "@chainlink/contracts": "^0.2.1",
+    "@openzeppelin/contracts": "^4.2.0",
+    "@openzeppelin/contracts-upgradeable": "^4.2.0",
+    "@openzeppelin/test-helpers": "^0.5.12",
+    "@openzeppelin/truffle-upgrades": "^1.8.0",
     "@openzeppelin/upgrades": "^2.8.0",
-    "@truffle/hdwallet-provider": "^1.2.2",
-    "arb-ethers-web3-bridge": "^0.7.3",
-    "chai": "^4.3.4",
+    "@truffle/hdwallet-provider": "^1.4.2",
     "chai-as-promised": "^7.1.1",
-    "chai-bn": "^0.2.1",
-    "solc": "^0.8.4"
+    "truffle-assertions": "^0.9.2"
   },
   "scripts": {
-    "heroku-prebuild": "cd client; npm install --also=dev; npm run build; cd -",
-    "start": "node server"
-  }
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TravisBuilds/HighStreet.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TravisBuilds/HighStreet/issues"
+  },
+  "homepage": "https://github.com/TravisBuilds/HighStreet#readme"
 }

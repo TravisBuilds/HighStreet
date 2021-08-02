@@ -17,7 +17,7 @@ function App() {
   const Metamask = new InjectedConnector({ supportedNetworks: [1, 4] });
 
   const Infura = new NetworkOnlyConnector({
-    providerURL: 'https://mainnet.infura.io/v3/...'
+    providerURL: 'https://127.0.0.1:8545'
   });
 
   const connectors = { Metamask, Infura };

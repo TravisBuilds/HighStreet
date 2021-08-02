@@ -28,7 +28,6 @@ contract ProductToken is ERC20Upgradeable, BancorBondingCurve, Escrow, OwnableUp
   uint32 public tradeinCount;         // number of tokens burned through redeeming procedure. This will drive price up permanently
   uint32 internal supplyOffset;       // an initial value used to set an initial price. This is not included in the total supply.
   address payable public creator;     // address that points to our corporate account address. This is 'public' for testing only and will be switched to internal before release.
-
   /**
    * @dev modifier used to check whether msg.sender is our corporate account
    *
