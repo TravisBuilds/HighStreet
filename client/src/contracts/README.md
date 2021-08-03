@@ -157,8 +157,8 @@ OpenZeppelin provides a complete suite of security products to build, manage, an
    4. communityUsers
     
    
-## .env.local
-   edit ".env.local" file (root dir) with your information
+## .env
+   edit ".env" file (root dir) with your information
       
       
       NODE_ENV=development
