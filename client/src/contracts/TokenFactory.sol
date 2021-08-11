@@ -53,7 +53,7 @@ contract TokenFactory is Initializable, UUPSUpgradeable, OwnableUpgradeable { //
 		require(registry[_productName]==address(0), "The product token already exist");
 
 		address newProxyToken = address(new BeaconProxy(address(beacon), _data));
-		(bool success, ) = newProxyToken.call(abi.encodeWithSignature("setCreator(address)", msg.sender));
+		(bool success, ) = newProxyToken.call(abi.encodeWithSignature("transferOwnership(address)", msg.sender));
 
 		if(success){
 			registry[_productName] = newProxyToken;

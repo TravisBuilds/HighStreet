@@ -15,11 +15,7 @@ contract BancorBondingCurve is Power {
   using SafeMathUpgradeable for uint256;
   uint32 private constant MAX_RESERVE_RATIO = 1000000;
 
-  /**
-   * @dev initializer function.
-   *
-  */
-  function __BancorBondingCurve_init() public initializer {  
+  constructor() public {
     __Power_init();
   }
 
@@ -35,7 +31,7 @@ contract BancorBondingCurve is Power {
    * @param _reserveRatio       the reserve ratio in the bancor curve.
    * @param _amount             number to tokens one wishes to purchase
    *
-   *  @return price for N tokens 
+   *  @return price for N tokens
   */
   function calculatePriceForNTokens(
     uint32 _supply,
@@ -47,13 +43,13 @@ contract BancorBondingCurve is Power {
     // special case for 0 tokens
     if (_amount == 0) {
       return 0;
-    } 
+    }
     uint256 supply = uint256(_supply);
     uint256 amount = uint256(_amount);    // amount declared here as an uint256 equivalent of _amount
     // special case if this is a linear function
     if (_reserveRatio == MAX_RESERVE_RATIO) {
       return amount.mul(_reserveBalance).div(supply);
-    } 
+    }
 
     uint256 result;
     uint8 precision;
@@ -94,7 +90,7 @@ contract BancorBondingCurve is Power {
     }
 
     uint256 supply = uint256(_supply);
-    
+
     // special case if the ratio = 100%
     if (_reserveRatio == MAX_RESERVE_RATIO) {
       return uint32(supply.mul(_depositAmount).div(_reserveBalance));

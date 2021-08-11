@@ -1,10 +1,12 @@
 pragma solidity ^0.8.2;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
+
 import "../ProductToken.sol";
 import "../ProductTokenV1.sol";
-import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
+import "../Power.sol";
+
 
 contract ProductTokenV2 is ProductTokenV1 {
   uint256 public newAttribute;
@@ -18,7 +20,7 @@ contract ProductTokenV2 is ProductTokenV1 {
   function getPriceForN(uint32 _amountProduct) 
   	public view override returns(uint256 price)
   {
-  	return calculatePriceForNTokens(getTotalSupply(), reserveBalance, reserveRatio+50000, _amountProduct);
+  	return bondingCurve.calculatePriceForNTokens(getTotalSupply(), reserveBalance, reserveRatio+50000, _amountProduct);
   }
 
     function getAvailability()
@@ -29,10 +31,13 @@ contract ProductTokenV2 is ProductTokenV1 {
 
 } 
 
-contract ProductTokenV3 is ProductTokenV2 {
+contract ProductTokenV3 is ProductTokenV2, Power{
     using SafeMathUpgradeable for uint256;
     uint32 private constant MAX_RESERVE_RATIO = 2000000;
 
+    function initializeV3(string memory _name, string memory _symbol, uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve, uint256 _newInitValue, address _daiAddress, address _chainlink) public  initializer {
+      Power.__Power_init();
+    }
 
 /**
    * @dev given a continuous token supply, reserve token balance, reserve ratio and a sell amount (in the continuous token),
@@ -52,7 +57,7 @@ contract ProductTokenV3 is ProductTokenV2 {
     uint32 _supply,
     uint256 _reserveBalance,
     uint32 _reserveRatio,
-    uint32 _sellAmount) public view override returns (uint256)
+    uint32 _sellAmount) public view returns (uint256)
   {
     // validate input
     require(_supply > 0 && _reserveBalance > 0 && _reserveRatio > 0 && _reserveRatio <= MAX_RESERVE_RATIO && _sellAmount <= _supply);
@@ -103,10 +108,9 @@ contract ProductTokenV5 is ProductTokenV3 {
    * @param _supplyOffset             a initial amount of offset that drive the price to a starting price
    * @param _baseReserve              the reserve balance when supply is 0. This is calculated based on the balance function, and evaluated at s = _supplyOffset
   */
-  function initializeV5(string memory _name, string memory _symbol, uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve, uint256 _newInitValue, address _daiAddress, address _chainlink) public  initializer {		
+  function initializeV5(string memory _name, string memory _symbol, address _bondingCurveAddress, uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve, uint256 _newInitValue, address _daiAddress, address _chainlink) public  initializer {		
     __ERC20_init(_name, _symbol);
-    __BancorBondingCurve_init();
-    ProductToken.__ProductToken_init_unchained(_reserveRatio, _maxTokenCount, _supplyOffset, _baseReserve);
+    ProductToken.__ProductToken_init_unchained(_bondingCurveAddress, _reserveRatio, _maxTokenCount, _supplyOffset, _baseReserve);
     ProductTokenV1.__ProductToken_init_unchained(_daiAddress, _chainlink);
     newInitValue= _newInitValue;
   }

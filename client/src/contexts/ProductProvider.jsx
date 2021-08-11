@@ -10,6 +10,7 @@ import FactoryProxy from '../build/contracts/ERC1967Proxy.json';
 import Factory from '../build/contracts/TokenFactory.json';
 import TokenV1 from '../build/contracts/ProductTokenV1.json';
 import ERC20 from '../build/contracts/IERC20.json';
+import AggregatorV3Interface from '../build/contracts/AggregatorV3Interface.json';
 
 // +++ template fix UI error
 const kalonCard = mystery;
@@ -32,6 +33,9 @@ const l1GatewayRouter = '0x70C143928eCfFaf9F5b406f7f4fC28Dc43d68380';
 const l2GatewayRouter = '0x9413AD42910c1eA60c737dB5f58d1C504498a3cD';
 const daiContractL1 = new ethers.Contract(daiAddressL1, ERC20.abi, providerL1);
 const daiContractL2 = new ethers.Contract(daiAddressL2, ERC20.abi, providerL2);
+const daiEtherAddress = '0x74825DbC8BF76CC4e9494d0ecB210f676Efa001D';
+const daiEtherContractL1 = new ethers.Contract(daiEtherAddress, AggregatorV3Interface.abi, providerL1);
+const isL1Only = true;
 
 let userAccount;
 let isValidNetowrk;
@@ -39,8 +43,12 @@ let isL1ToL2;
 let bridge;
 
 // factoryObj
-const factoryAddress = FactoryProxy.networks[421611].address;
-const factoryContract = new ethers.Contract(factoryAddress, Factory.abi, providerL2);
+const netowrkId = 4; // rinkeby
+const factoryAddress = FactoryProxy.networks[netowrkId].address;
+let factoryContract = new ethers.Contract(factoryAddress, Factory.abi, providerL2);
+if (isL1Only) {
+  factoryContract = new ethers.Contract(factoryAddress, Factory.abi, providerL1);
+}
 
 // tokenObj
 let tokenAddress;
@@ -212,6 +220,9 @@ async function retrieveTokenByName(name) {
     if (DBUG) console.log(`product: ${prodName}, address: ${result}`);
     tokenAddress = result;
     tokenContract = new ethers.Contract(tokenAddress, TokenV1.abi, providerL2);
+    if (isL1Only) {
+      tokenContract = new ethers.Contract(tokenAddress, TokenV1.abi, providerL1);
+    }
   }).catch((e) => {
     console.log(e);
   });
@@ -247,7 +258,31 @@ async function buy(cashUpperBound) {
   if (DBUG) console.log(`current product price ${await formatDaiUnits(curTokenPrice)}`);
   if (DBUG) console.log(`send dai amount(price * 1.5): ${await formatDaiUnits(approvalPrice)}`);
 
-  if (!isL1ToL2) {
+  if (isL1Only) {
+    // using dai or ether to buy product
+    const isBuyWithDai = false;
+    if (isBuyWithDai) {
+      console.log('buy with dai');
+      const daiSigner = await getDaiSigner(daiAddressL1);
+      await daiSigner.approve(tokenAddress, approvalPrice).then(async () => {
+        console.log('GET APPROVE');
+        const tokenSigner = await getTokenSigner();
+        await tokenSigner.buyWithDai(approvalPrice, '1');
+      }).catch((e) => {
+        console.log(e);
+      });
+    } else {
+      console.log('buy with ether');
+      let daiEth = await daiEtherContractL1.latestRoundData();
+      console.log(daiEth);
+      daiEth = await formatDaiUnits(daiEth.answer);
+      const valueInEther = (await formatDaiUnits(approvalPrice)) * daiEth;
+      console.log(' ether:', (await formatDaiUnits(curTokenPrice)) * daiEth);
+      console.log(' ether(*1.5):', valueInEther);
+      const tokenSigner = await getTokenSigner();
+      await tokenSigner.buy('1', { value: ethers.utils.parseEther(valueInEther.toFixed(18).toString()) });
+    }
+  } else if (!isL1ToL2) {
     const daiSigner = await getDaiSigner(daiAddressL2);
     await daiSigner.approve(tokenAddress, approvalPrice).then(async () => {
       console.log('GET APPROVE');
@@ -274,7 +309,7 @@ async function buy(cashUpperBound) {
 
 async function sell(tokenAmount) { // token must be a number that's smaller than 2^32 - 1
   if (!isValidNetowrk) return;
-  if (!isL1ToL2) {
+  if (isL1Only || !isL1ToL2) {
     const tokenSigner = await getTokenSigner();
     await tokenSigner.sell('1');
   }

@@ -68,14 +68,20 @@ module.exports = {
     kovan: {
       provider: () => new HDWalletProvider([privateKey], kovanEndpointUrl),
       network_id: 42,
-      gas: 5000000,
+      gas: 12487794,
       gasPrice: 10000000000,
     },
     rinkeby: {
       provider: () => new HDWalletProvider([privateKey], rinkebyEndpointUrl),
       network_id: 4,
-      gas: 5000000,
+      gas: 20000000,
       gasPrice: 10000000000,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true,
+      websocket: true,
+      timeoutBlocks: 50000,
+      networkCheckTimeout: 10000000
     },
     arbitrum: {
       provider: function () {
@@ -106,12 +112,12 @@ module.exports = {
   // Configure your compilers
   compilers: {
     solc: {
-      version: "0.8.2",    // Fetch exact version from solc-bin (default: truffle's version)
+      version: "0.8.3",    // Fetch exact version from solc-bin (default: truffle's version)
       // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
       settings: {          // See the solidity docs for advice about optimization and evmVersion
        optimizer: {
          enabled: true,
-         runs: 200
+         runs: 150
        },
        evmVersion: "byzantium"
       }

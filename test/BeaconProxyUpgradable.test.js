@@ -12,6 +12,7 @@ const ProductTokenV3 = artifacts.require('ProductTokenV3');
 const ProductTokenV4 = artifacts.require('ProductTokenV4');
 const ProductTokenV5 = artifacts.require('ProductTokenV5');
 const DaiMock = artifacts.require('DaiMock');
+const BondingCurve = artifacts.require('BancorBondingCurve');
 const ProductTokenDestroy = artifacts.require('ProductTokenDestroy');
 const UpgradeableBeacon = artifacts.require('ProductUpgradeableBeacon');
 const BeaconProxy = artifacts.require('BeaconProxy');
@@ -28,7 +29,8 @@ contract('ProductBeaconProxy', function (accounts) {
 	const offset = '10';
 	const baseReserve = web3.utils.toWei('0.33', 'ether');
   let daiMock;
-  let chainlinkAddress; 
+  let chainlinkAddress;
+  let bondingCurveAddress;
 
   before('deploy implementation', async function () {
     this.factoryImp = await TokenFactory.new({from: accounts[0]});
@@ -39,6 +41,8 @@ contract('ProductBeaconProxy', function (accounts) {
     this.implementationV4 = await ProductTokenV4.new();
     this.implementationV5 = await ProductTokenV5.new();
     this.implementationDestroy = await ProductTokenDestroy.new();
+    this.bondingCurveImpl = await BondingCurve.new();
+    bondingCurveAddress = this.bondingCurveImpl.address
     daiMock = await DaiMock.new();      // dummy
     chainlinkAddress = accounts[4];     // dummy
   });
@@ -58,7 +62,7 @@ contract('ProductBeaconProxy', function (accounts) {
   });
 
   it('Initialize product token', async function () {
-      const data = this.implementationV0.contract.methods.initialize('HighGO', 'HG', exp, max, offset, baseReserve).encodeABI();
+      const data = this.implementationV0.contract.methods.initialize('HighGO', 'HG', bondingCurveAddress, exp, max, offset, baseReserve).encodeABI();
       await this.tokenFactory.createToken(
         "HighGO", data,
       );
@@ -78,7 +82,7 @@ contract('ProductBeaconProxy', function (accounts) {
   });
 
   it("Beacon Update With New Variables, existing variables shouldn't be overridden", async function(){
-    const data = this.implementationV0.contract.methods.initialize('HighGO', 'HG', exp, max, offset, baseReserve).encodeABI();
+    const data = this.implementationV0.contract.methods.initialize('HighGO', 'HG', bondingCurveAddress, exp, max, offset, baseReserve).encodeABI();
     await this.tokenFactory.createToken(
       "HighGO", data,
     );
@@ -89,7 +93,7 @@ contract('ProductBeaconProxy', function (accounts) {
     await this.beacon.upgradeTo(this.implementationV1.address);
     const dummy2 = new ProductTokenV1(proxyAddress);
     await expectRevert.unspecified(
-      dummy2.initialize('HighGO', 'HG', exp, '100', offset, baseReserve, daiMock.address, chainlinkAddress),
+      dummy2.initialize('HighGO', 'HG', bondingCurveAddress, exp, '100', offset, baseReserve, daiMock.address, chainlinkAddress),
     );
 
     // await expectRevert.unspecified(
@@ -105,7 +109,7 @@ contract('ProductBeaconProxy', function (accounts) {
   it("Proxy with newer implemnetation should be able to call initialize function from older implementations", async function(){
     await this.beacon.upgradeTo(this.implementationV1.address);
     console.log(daiMock.address);
-    const data = this.implementationV1.contract.methods.initialize('HighGO', 'HG', exp, max, offset, baseReserve,  daiMock.address, chainlinkAddress).encodeABI();
+    const data = this.implementationV1.contract.methods.initialize('HighGO', 'HG', bondingCurveAddress, exp, max, offset, baseReserve,  daiMock.address, chainlinkAddress).encodeABI();
       await this.tokenFactory.createToken(
         "HighGO", data,
       );
@@ -122,7 +126,7 @@ contract('ProductBeaconProxy', function (accounts) {
   });
 
   it('Pricing Functions  update',async function(){
-    const data = this.implementationV0.contract.methods.initialize('HighGO', 'HG', exp, max, offset, baseReserve).encodeABI();
+    const data = this.implementationV0.contract.methods.initialize('HighGO', 'HG', bondingCurveAddress, exp, max, offset, baseReserve).encodeABI();
       await this.tokenFactory.createToken(
         "HighGO", data,
       );
@@ -140,7 +144,7 @@ contract('ProductBeaconProxy', function (accounts) {
 
   it('Security check', async function (){
     const DBG = false;
-    const data = this.implementationV0.contract.methods.initialize('HighGO', 'HG', exp, max, offset, baseReserve).encodeABI();
+    const data = this.implementationV0.contract.methods.initialize('HighGO', 'HG', bondingCurveAddress, exp, max, offset, baseReserve).encodeABI();
     await this.tokenFactory.createToken(
       "HighGO", data, {from: accounts[0]}
     );
@@ -154,11 +158,7 @@ contract('ProductBeaconProxy', function (accounts) {
     // 1.the tokenFactory owner should be account[0]
     assert.equal(await this.tokenFactory.owner.call(), accounts[0]);
     // 2.the productToken owner should be tokenFactory
-    assert.equal(await highGoV1.owner.call(), this.tokenFactory.address);
-    // 3.the creator in productToken should be account[0]
-    assert.equal(await highGoV1.creator.call(), accounts[0])
-    // 4. the creator of productToken should not be changed after upgrading
-    assert.equal(await highGoV2.creator.call(), accounts[0])
+    assert.equal(await highGoV1.owner.call(), accounts[0]);
 
     if(DBG) {
       console.log("account[0]:",accounts[0]);
@@ -166,9 +166,7 @@ contract('ProductBeaconProxy', function (accounts) {
       console.log("tokenFactory.address:",this.tokenFactory.address);
       console.log("tokenFactory.getOwner:",await this.tokenFactory.getOwner.call());
       console.log("highGoV1.getOwner:",await highGoV1.getOwner.call());
-      console.log("highGoV1.creator:",await highGoV1.creator.call());
       console.log("highGoV2.getOwner:",await highGoV2.getOwner.call());
-      console.log("highGoV2.creator:",await highGoV2.creator.call());
     }
 
   })
@@ -196,7 +194,7 @@ contract('ProductBeaconProxy', function (accounts) {
     const beacon = await UpgradeableBeacon.new(this.implementationV1.address, {from: owner});
     this.tokenFactory.UpdateBeacon(beacon.address, {from: owner});
     const data = this.implementationV1.contract
-              .methods.initialize('HighGO', 'HG', exp, '100', offset, baseReserve, daiMock.address, chainlinkAddress).encodeABI();
+              .methods.initialize('HighGO', 'HG', bondingCurveAddress, exp, '100', offset, baseReserve, daiMock.address, chainlinkAddress).encodeABI();
     await this.tokenFactory.createToken(
       "HighGO", data, {from: owner}
     );
@@ -236,14 +234,15 @@ contract('ProductBeaconProxy', function (accounts) {
     if(DEG) console.log('user1 remain token after redeem', balance.toString());
 
     const printEscrowList = async (list) => await list.reduce( async (_prev, val, index) => {
-          const state = await highGo.getEscrowStateByValue(val[0]);
+          const ESCROW_STATE = ['INITIAL', 'AWAITING_SERVER_CHECK', 'AWAITING_DELIVERY', 'AWAITING_USER_APPROVAL', 'COMPLETE_USER_REFUND', 'COMPLETE'];
+          const state = ESCROW_STATE[val[0]];
           const amount = val[1];
           const value = val[2];
           console.log('index:', index, 'state:', state, 'amount:', amount, 'value:',  web3.utils.fromWei(value, 'ether'));
           return Promise.resolve("DO_NOT_CALL");
         },0);
 
-    let list = await highGo.getBuyerHistory(user1);
+    let list = await highGo.getEscrowHistory(user1);
     assert.equal(list.length, 3);
     if(DEG) await printEscrowList(list);
 
@@ -253,7 +252,7 @@ contract('ProductBeaconProxy', function (accounts) {
     highGo.updateServerCheck(user1, id);
     highGo.confirmDelivery(user1, id);
     highGo.updateUserCompleted(user1, id);
-    list = await highGo.getBuyerHistory(user1);
+    list = await highGo.getEscrowHistory(user1);
     if(DEG) await printEscrowList(list);
 
     let state = await highGo.getRedeemStatus(user1, id);
@@ -268,7 +267,7 @@ contract('ProductBeaconProxy', function (accounts) {
     highGo.updateUserRefund(user1, id);
     state = await highGo.getRedeemStatus(user1, id);
     assert.equal(state, STATE_COMPLETE_USER_REFUND);
-    list = await highGo.getBuyerHistory(user1);
+    list = await highGo.getEscrowHistory(user1);
 
     if(DEG) console.log('user1 refund',  web3.utils.fromWei(list[id][INDEX_OF_VALUE], 'ether'));
     balance = await daiMock.balanceOf(user1, {from: user1});
