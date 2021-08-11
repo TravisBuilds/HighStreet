@@ -16,14 +16,6 @@ contract BancorBondingCurve is Power {
   uint32 private constant MAX_RESERVE_RATIO = 1000000;
 
   constructor() public {
-    __BancorBondingCurve_init();
-  }
-
-  /**
-   * @dev initializer function.
-   *
-  */
-  function __BancorBondingCurve_init() public initializer {
     __Power_init();
   }
 
@@ -51,13 +43,13 @@ contract BancorBondingCurve is Power {
     // special case for 0 tokens
     if (_amount == 0) {
       return 0;
-    } 
+    }
     uint256 supply = uint256(_supply);
     uint256 amount = uint256(_amount);    // amount declared here as an uint256 equivalent of _amount
     // special case if this is a linear function
     if (_reserveRatio == MAX_RESERVE_RATIO) {
       return amount.mul(_reserveBalance).div(supply);
-    } 
+    }
 
     uint256 result;
     uint8 precision;
