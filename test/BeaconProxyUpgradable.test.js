@@ -158,11 +158,7 @@ contract('ProductBeaconProxy', function (accounts) {
     // 1.the tokenFactory owner should be account[0]
     assert.equal(await this.tokenFactory.owner.call(), accounts[0]);
     // 2.the productToken owner should be tokenFactory
-    assert.equal(await highGoV1.owner.call(), this.tokenFactory.address);
-    // 3.the creator in productToken should be account[0]
-    assert.equal(await highGoV1.creator.call(), accounts[0])
-    // 4. the creator of productToken should not be changed after upgrading
-    assert.equal(await highGoV2.creator.call(), accounts[0])
+    assert.equal(await highGoV1.owner.call(), accounts[0]);
 
     if(DBG) {
       console.log("account[0]:",accounts[0]);
@@ -170,9 +166,7 @@ contract('ProductBeaconProxy', function (accounts) {
       console.log("tokenFactory.address:",this.tokenFactory.address);
       console.log("tokenFactory.getOwner:",await this.tokenFactory.getOwner.call());
       console.log("highGoV1.getOwner:",await highGoV1.getOwner.call());
-      console.log("highGoV1.creator:",await highGoV1.creator.call());
       console.log("highGoV2.getOwner:",await highGoV2.getOwner.call());
-      console.log("highGoV2.creator:",await highGoV2.creator.call());
     }
 
   })

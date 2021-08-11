@@ -31,18 +31,6 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
   address payable public creator;     // address that points to our corporate account address. This is 'public' for testing only and will be switched to internal before release.
   BancorBondingCurveV1Interface internal bondingCurve;
 
-  /**
-   * @dev modifier used to check whether msg.sender is our corporate account
-   *
-  */
-  modifier onlyCreator {
-      require(
-          msg.sender == creator,
-          "Only creator can call this function."
-      );
-      _;
-  }
-
   modifier onlyIfTradable {
       require(
           isTradable,
@@ -87,18 +75,18 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
     maxTokenCount = _maxTokenCount;
   }
 
-  function setBondingCurve(address _address) external virtual onlyCreator {
+  function setBondingCurve(address _address) external virtual onlyOwner {
     require(_address!=address(0), "Invalid address");
     bondingCurve = BancorBondingCurveV1Interface(_address);
   }
 
-  function launch() external virtual onlyCreator {
+  function launch() external virtual onlyOwner {
     require(!isTradable, 'The product token is already launched');
     isTradable = true;
     emit Tradable(isTradable);
   }
 
-  function pause() external virtual onlyCreator {
+  function pause() external virtual onlyOwner {
     require(isTradable, 'The product token is already paused');
     isTradable = false;
     emit Tradable(isTradable);
@@ -129,10 +117,10 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
   }
 
   /**
-   * @dev Function that computes supply value for the bonding curve 
+   * @dev Function that computes supply value for the bonding curve
    * based on current token in circulation, token offset initialized, and tokens already redeemed.
    *
-   * @return supply                   supply value for bonding curve calculation.                 
+   * @return supply                   supply value for bonding curve calculation.
   */
   function getTotalSupply()
     internal view virtual returns (uint32 supply)
@@ -258,7 +246,7 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
 
 
    /**
-   * @dev initiate token logics after a token is traded in. 
+   * @dev initiate token logics after a token is traded in.
    * This function only handles logics corresponding to token management in the smart contract side.
    *
    * @param _amount              product token wishes to be traded-in
@@ -278,22 +266,22 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
     emit Tradein(msg.sender, _amount);
   }
 
-  function updateServerCheck(address buyer, uint256 id) onlyCreator external virtual{
+  function updateServerCheck(address buyer, uint256 id) onlyOwner external virtual{
     require(buyer != address(0), "Invalid buyer");
     _updateServerCheck(buyer, id);
   }
 
-  function confirmDelivery(address buyer, uint256 id) onlyCreator external virtual{
+  function confirmDelivery(address buyer, uint256 id) onlyOwner external virtual{
     require(buyer != address(0), "Invalid buyer");
     _confirmDelivery(buyer, id);
   }
 
-  function updateUserCompleted(address buyer, uint256 id) onlyCreator external virtual{
+  function updateUserCompleted(address buyer, uint256 id) onlyOwner external virtual{
     require(buyer != address(0), "Invalid buyer");
     _updateUserCompleted(buyer, id);
   }
 
-  function updateUserRefund(address buyer, uint256 id) onlyCreator external virtual{
+  function updateUserRefund(address buyer, uint256 id) onlyOwner external virtual{
     require(buyer != address(0), "Invalid buyer");
     uint256 value = _updateUserRefund(buyer, id);
     require(value >0 , "Invalid value");
@@ -301,20 +289,8 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
   }
 
   function _refund(address buyer, uint256 value) internal virtual {
-    // todo
+    // override
   }
 
-  /**
-   * @dev Sets the creator of the product to the parameter
-   * Can only be set by the owner, which is the Token Factory contract.
-   *
-   * @param _creator             thea address of the creator.
-  */
-  function setCreator(address payable _creator) external virtual onlyOwner {
-    require(_creator!=address(0), "The newe creator address is not valid");
-    creator = _creator ;
-    emit CreatorTransfer(_creator);
-  }
 }
-
 

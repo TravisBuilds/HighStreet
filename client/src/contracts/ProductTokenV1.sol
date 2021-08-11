@@ -45,7 +45,7 @@ contract ProductTokenV1 is ProductToken {
    * @param _daiAddress               the on-chain address of Dai, one of our supported reserve token
    * @param _chainlink                the address needed to create a aggregator for Chainlink.
   */
-  function update(address _daiAddress, address _chainlink) external onlyCreator {
+  function update(address _daiAddress, address _chainlink) external onlyOwner {
   	require(!hasUpdated, "contract is already updated");
   	// Duplicate logic here.
     require(_daiAddress!=address(0), "Invalid dai contract address");
@@ -73,7 +73,7 @@ contract ProductTokenV1 is ProductToken {
     emit Update(_daiAddress, _chainlink);
   }
 
-  function setupHsToken(address _hsTokenAddress, address _chainlink) onlyCreator external virtual {
+  function setupHsToken(address _hsTokenAddress, address _chainlink) onlyOwner external virtual {
     require(!isSupportHsToken, "already updated");
     require(_hsTokenAddress!=address(0), "Invalid contract address");
     require(_chainlink!=address(0), "Invalid chainlink address");
