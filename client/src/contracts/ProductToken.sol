@@ -223,8 +223,8 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
   }
 
    /**
-   * @dev calculates the return for a given conversion (in the reserve token) 
-   * This function will try to compute the amount of liquidity one gets by selling _amount token, 
+   * @dev calculates the return for a given conversion (in the reserve token)
+   * This function will try to compute the amount of liquidity one gets by selling _amount token,
    * then it will initiate a transfer.
    *
    * @param _amount              amount of product token wishes to be sold
@@ -258,17 +258,14 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
     require(balanceOf(msg.sender) >= _amount, "Insufficient tokens to burn.");
 
     uint256 reimburseAmount = calculateSellReturn(_amount);
-    _addEscrow(_amount, reimburseAmount);
+    uint256 supplierCharge = _updateSupplierFee(reimburseAmount);
+
+    _addEscrow(_amount, reimburseAmount - supplierCharge);
 
     _burn(msg.sender, _amount);
     tradeinCount = tradeinCount + _amount;			// Future: use safe math here.
 
     emit Tradein(msg.sender, _amount);
-  }
-
-  function updateServerCheck(address buyer, uint256 id) onlyOwner external virtual{
-    require(buyer != address(0), "Invalid buyer");
-    _updateServerCheck(buyer, id);
   }
 
   function confirmDelivery(address buyer, uint256 id) onlyOwner external virtual{
@@ -289,6 +286,9 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
   }
 
   function _refund(address buyer, uint256 value) internal virtual {
+    // override
+  }
+  function _updateSupplierFee(uint256 value) internal virtual returns(uint256) {
     // override
   }
 

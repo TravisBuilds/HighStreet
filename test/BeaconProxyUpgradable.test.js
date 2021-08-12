@@ -174,11 +174,10 @@ contract('ProductBeaconProxy', function (accounts) {
   it('Redeem flow check', async function (){
     const DEG = true;
     const STATE_INITIAL = 0;
-    const STATE_AWAITING_SERVER_CHECK = 1;
-    const STATE_AWAITING_DELIVERY = 2;
-    const STATE_AWAITING_USER_APPROVAL = 3;
-    const STATE_COMPLETE_USER_REFUND = 4;
-    const STATE_COMPLETE = 5;
+    const STATE_AWAITING_PROCESSING = 1;
+    const STATE_AWAITING_USER_APPROVAL = 2;
+    const STATE_COMPLETE_USER_REFUND = 3;
+    const STATE_COMPLETE = 4;
  
     const INDEX_OF_STATE = 0;
     const INDEX_OF_AMOUNT = 1;
@@ -234,7 +233,7 @@ contract('ProductBeaconProxy', function (accounts) {
     if(DEG) console.log('user1 remain token after redeem', balance.toString());
 
     const printEscrowList = async (list) => await list.reduce( async (_prev, val, index) => {
-          const ESCROW_STATE = ['INITIAL', 'AWAITING_SERVER_CHECK', 'AWAITING_DELIVERY', 'AWAITING_USER_APPROVAL', 'COMPLETE_USER_REFUND', 'COMPLETE'];
+          const ESCROW_STATE = ['INITIAL', 'AWAITING_PROCESSING', 'AWAITING_USER_APPROVAL', 'COMPLETE_USER_REFUND', 'COMPLETE'];
           const state = ESCROW_STATE[val[0]];
           const amount = val[1];
           const value = val[2];
@@ -249,7 +248,6 @@ contract('ProductBeaconProxy', function (accounts) {
     // 4. redeem compelete
     let id = 0
     if(DEG) console.log('Update completed');
-    highGo.updateServerCheck(user1, id);
     highGo.confirmDelivery(user1, id);
     highGo.updateUserCompleted(user1, id);
     list = await highGo.getEscrowHistory(user1);
@@ -263,7 +261,6 @@ contract('ProductBeaconProxy', function (accounts) {
     if(DEG) console.log('Update redeem fail');
     balance = await daiMock.balanceOf(user1, {from: user1});
     if(DEG) console.log('user1 balance before refund',  web3.utils.fromWei(balance.toString(), 'ether'));
-    highGo.updateServerCheck(user1, id);
     highGo.updateUserRefund(user1, id);
     state = await highGo.getRedeemStatus(user1, id);
     assert.equal(state, STATE_COMPLETE_USER_REFUND);

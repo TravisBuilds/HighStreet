@@ -104,7 +104,7 @@ contract ProductTokenV1 is ProductToken {
     // return change back to the sender.
     if (amount > 0) {                                               // If token transaction went through successfully
       payable(msg.sender).transfer(change.mul(uint256(daieth)).div(10**18));
-      supplierDai = incomingDai.add(10000).div(1000000);
+      _updateSupplierFee(incomingDai);
     }
     else {                                                          // If token transaction failed
       payable(msg.sender).transfer(msg.value);
@@ -127,7 +127,7 @@ contract ProductTokenV1 is ProductToken {
     // return change back to the sender.
     if (amount > 0) {                                               // If token transaction went through successfully
       dai.transfer(msg.sender, change);
-      supplierDai = _daiAmount.add(10000).div(1000000);
+      _updateSupplierFee(_daiAmount);
     }
     else {                                                          // If token transaction failed
       dai.transfer(msg.sender, _daiAmount);
@@ -155,7 +155,7 @@ contract ProductTokenV1 is ProductToken {
     if (amount > 0) {
       uint256 hsTokenChange = change.div(uint256(hsEth)).mul(uint256(daieth));
       hsToken.transfer(msg.sender, hsTokenChange);
-      supplierDai = incomingDai.add(10000).div(1000000);
+      _updateSupplierFee(incomingDai);
     } else {
       hsToken.transfer(msg.sender, _hsTokenAmount);
     }
@@ -170,7 +170,7 @@ contract ProductTokenV1 is ProductToken {
  	function sell(uint32 _amount) external virtual onlyIfTradable {
     uint256 returnAmount = _sellForAmount(_amount);
     bool success = dai.transfer(msg.sender, returnAmount.mul(980000).div(1000000));        // ppm of 98%. 2% is the platform transaction fee
-    supplierDai = returnAmount.add(10000).div(1000000);
+    _updateSupplierFee(returnAmount);
     require(success, "selling token failed");
   }
 
@@ -210,6 +210,13 @@ contract ProductTokenV1 is ProductToken {
     supplierWallet = _supplierWallet ;
   }
 
+  function _updateSupplierFee(uint256 value) internal override returns(uint256) {
+    require(value > 0, "no enough value");
+    uint256 charge = value.mul(10000).div(1000000);
+    supplierDai += charge;
+    return charge;
+  }
+
   function getSupplierDaiBalance() public view virtual returns (uint256) {
     return supplierDai;
   }
@@ -225,4 +232,15 @@ contract ProductTokenV1 is ProductToken {
     bool success = dai.transfer(buyer, value.mul(980000).div(1000000));
     require(success, "refund token failed");
   }
+
+  function depositDai(uint256 _amount) external virtual {
+    bool success = dai.transferFrom(msg.sender, address(this), _amount);
+    require(success, "refund token failed");
+  }
+
+  function withdrawEther(uint256 _amount) payable external virtual onlyOwner {
+    require(address(this).balance > 0, "no enough ether");
+    payable(msg.sender).transfer(_amount);
+  }
+
 }

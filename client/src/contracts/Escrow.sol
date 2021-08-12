@@ -6,8 +6,7 @@ contract Escrow {
 
   enum escrowState {
     INITIAL,
-    AWAITING_SERVER_CHECK,
-    AWAITING_DELIVERY,
+    AWAITING_PROCESSING,
     AWAITING_USER_APPROVAL,
     COMPLETE_USER_REFUND,
     COMPLETE
@@ -26,7 +25,7 @@ contract Escrow {
   function _addEscrow(uint32 _amount, uint256 _value) internal virtual returns (uint256){
     require(_amount > 0, 'Invalid Amount');
     escrowInfo memory info;
-    info.state = escrowState.AWAITING_SERVER_CHECK;
+    info.state = escrowState.AWAITING_PROCESSING;
     info.amount = _amount;
     info.value = _value;
     escrowList[msg.sender].push(info);
@@ -35,33 +34,27 @@ contract Escrow {
     return id;
   }
 
-  function _updateServerCheck(address buyer, uint256 id) internal virtual{
-    require(id >=  0 || id < escrowList[buyer].length , "Invalid id");
-    escrowList[buyer][id].state = escrowState.AWAITING_DELIVERY;
-    emit escrowStateUpdated(buyer, id, escrowList[buyer][id]);
-  }
-
   function _confirmDelivery(address buyer, uint256 id) internal virtual{
-    require(id >=  0 || id < escrowList[buyer].length , "Invalid id");
-    require(escrowList[buyer][id].state == escrowState.AWAITING_DELIVERY, "Invalid state");
+    require(id >=  0 || id < escrowList[buyer].length, "Invalid id");
+    require(escrowList[buyer][id].state == escrowState.AWAITING_PROCESSING, "Invalid state");
     escrowList[buyer][id].state = escrowState.AWAITING_USER_APPROVAL;
     emit escrowStateUpdated(buyer, id, escrowList[buyer][id]);
   }
 
-  function _updateUserCompleted(address buyer, uint256 id) internal virtual{
-    require(id >=  0 || id < escrowList[buyer].length , "Invalid id");
+  function _updateUserCompleted(address buyer, uint256 id) internal virtual {
+    require(id >=  0 || id < escrowList[buyer].length, "Invalid id");
     escrowList[buyer][id].state = escrowState.COMPLETE;
     emit escrowStateUpdated(buyer, id, escrowList[buyer][id]);
   }
 
   function _updateUserRefund(address buyer, uint256 id) internal virtual returns ( uint) {
-    require(id >=  0 || id < escrowList[buyer].length , "Invalid id");
+    require(id >=  0 || id < escrowList[buyer].length, "Invalid id");
     escrowList[buyer][id].state = escrowState.COMPLETE_USER_REFUND;
     emit escrowStateUpdated(buyer, id, escrowList[buyer][id]);
     return escrowList[buyer][id].value;
   }
 
-  function isStateCompleted(escrowState state) public pure virtual returns (bool){
+  function isStateCompleted(escrowState state) public pure virtual returns (bool) {
     return state == escrowState.COMPLETE ||
          state == escrowState.COMPLETE_USER_REFUND;
   }
@@ -70,8 +63,8 @@ contract Escrow {
     return escrowList[buyer];
   }
 
-  function getRedeemStatus(address buyer, uint256 id) external view virtual returns (escrowState){
-    require(id >=  0 || id < escrowList[buyer].length , "Invalid id");
+  function getRedeemStatus(address buyer, uint256 id) external view virtual returns (escrowState) {
+    require(id >=  0 || id < escrowList[buyer].length, "Invalid id");
     return escrowList[buyer][id].state;
   }
 
