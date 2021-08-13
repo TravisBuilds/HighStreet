@@ -33,7 +33,7 @@
     "heroku-prebuild": "cd client; npm install --also=dev; npm run build; cd -",
     "start": "node server",
     "check-size": "node test/contractSizeCheck.js",
-    "testcase:hsToken-suite":"truffle test ./test/HsToken.erc20.js"
-
+    "testcase:HsToken-suite":"truffle test ./test/HsToken.erc20.js",
+    "testcase:BeaconProxyUpgradable":"truffle test test/BeaconProxyUpgradable.test.js"
   }
 }

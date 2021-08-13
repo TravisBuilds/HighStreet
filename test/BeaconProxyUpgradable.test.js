@@ -205,25 +205,31 @@ contract('ProductBeaconProxy', function (accounts) {
     let priceforMaxBuy;
     let price;
     let balance;
-    priceforMaxBuy = await highGo.getPriceForN(16);
-    price = await highGo.getPriceForN(10);
-    await daiMock.approve(proxyAddress, priceforMaxBuy, {from: user1});
-    if(DEG) console.log('user1 pay max price', web3.utils.fromWei(priceforMaxBuy.toString(), 'ether'));
-    if(DEG) console.log('user1 pay price', web3.utils.fromWei(price.toString(), 'ether'));
-    await highGo.buyWithDai(priceforMaxBuy, 10, {from: user1});
+    // priceforMaxBuy = await highGo.getPriceForN(16);
+    // price = await highGo.getPriceForN(10);
+    // await daiMock.approve(proxyAddress, priceforMaxBuy, {from: user1});
+    // if(DEG) console.log('user1 pay max price', web3.utils.fromWei(priceforMaxBuy.toString(), 'ether'));
+    // if(DEG) console.log('user1 pay price', web3.utils.fromWei(price.toString(), 'ether'));
+    // await highGo.buyWithDai(priceforMaxBuy, {from: user1});
+    // if(DEG) console.log('user1 owner amount of token', balance.toString());
+    for(let i=0 ; i<10; i++) {
+      price = await highGo.getPriceForN(2);
+      await daiMock.approve(proxyAddress, price, {from: user1});
+      if(DEG) console.log(i, ': user1 pay price', web3.utils.fromWei(price.toString(), 'ether'));
+      await highGo.buyWithDai(price, {from: user1});
+    }
     balance = await highGo.balanceOf(user1, {from: user1});
     if(DEG) console.log('user1 owner amount of token', balance.toString());
 
     // 3. user2 buy a proudct
-    priceforMaxBuy = await highGo.getPriceForN(16);
-    price = await highGo.getPriceForN(10);
-    await daiMock.approve(proxyAddress, priceforMaxBuy, {from: user2});
-    if(DEG) console.log('user2 pay max price', web3.utils.fromWei(priceforMaxBuy.toString(), 'ether'));
-    if(DEG) console.log('user2 pay price', web3.utils.fromWei(price.toString(), 'ether'));
-    await highGo.buyWithDai(priceforMaxBuy, 10, {from: user2});
+    for(let i=0 ; i<10; i++) {
+      price = await highGo.getPriceForN(2);
+      await daiMock.approve(proxyAddress, price, {from: user2});
+      if(DEG) console.log(i, ': user2 pay price', web3.utils.fromWei(price.toString(), 'ether'));
+      await highGo.buyWithDai(price, {from: user2});
+    }
     balance = await highGo.balanceOf(user2, {from: user2});
     if(DEG) console.log('user2 owner amount of token', balance.toString());
-  
 
     await highGo.tradein(1, {from: user1});
     await highGo.tradein(2, {from: user1});

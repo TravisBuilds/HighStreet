@@ -90,11 +90,11 @@ contract ProductTokenV1 is ProductToken {
    * since we compute bonding curve with dai, we have to first convert ether price into dai.
    * transactions are still handled using eth.
    *
-   * @param _amount             the amount of tokens to be bought.
   */
-  function buy(uint32 _amount) external virtual payable onlyIfTradable {
+  function buy() external virtual payable onlyIfTradable {
     require(msg.value > 0, "Must send ether to buy tokens.");
 
+    uint32 _amount = 1;
     int256 daieth = getLatestDaiEthPrice();
     uint256 incomingDai = msg.value.mul(10**18).div(uint256(daieth));
     uint256 amount;
@@ -115,9 +115,10 @@ contract ProductTokenV1 is ProductToken {
    * @dev Function that initiate a purchase transaction for the user.
    * this function is designed if user wants to pay with dai.
    *
-   * @param _amount             the amount of tokens to be bought.
   */
-  function buyWithDai(uint256 _daiAmount, uint32 _amount) external virtual onlyIfTradable {
+  function buyWithDai(uint256 _daiAmount) external virtual onlyIfTradable {
+
+    uint32 _amount = 1;
     require(_daiAmount > 0, "Must be greater than 0 to buy tokens.");
     bool success = dai.transferFrom(msg.sender, address(this), _daiAmount);
     require(success, "Purchase failed.");
@@ -134,9 +135,10 @@ contract ProductTokenV1 is ProductToken {
     }
   }
 
-  function buyWithHsToken(uint256 _hsTokenAmount, uint32 _amount) external virtual onlyIfTradable {
+  function buyWithHsToken(uint256 _hsTokenAmount) external virtual onlyIfTradable {
     require(isSupportHsToken, "not support yet");
     require(_hsTokenAmount > 0, "Must be greater than 0 to buy tokens.");
+    uint32 _amount = 1;
     bool success = hsToken.transferFrom(msg.sender, address(this), _hsTokenAmount);
     require(success, "Purchase failed");
 
