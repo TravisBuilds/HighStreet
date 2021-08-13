@@ -90,11 +90,11 @@ contract ProductTokenV1 is ProductToken {
    * since we compute bonding curve with dai, we have to first convert ether price into dai.
    * transactions are still handled using eth.
    *
-   * @param _amount             the amount of tokens to be bought.
   */
-  function buy(uint32 _amount) external virtual payable onlyIfTradable {
+  function buy() external virtual payable onlyIfTradable {
     require(msg.value > 0, "Must send ether to buy tokens.");
 
+    uint32 _amount = 1;
     int256 daieth = getLatestDaiEthPrice();
     uint256 incomingDai = msg.value.mul(10**18).div(uint256(daieth));
     uint256 amount;
@@ -104,7 +104,7 @@ contract ProductTokenV1 is ProductToken {
     // return change back to the sender.
     if (amount > 0) {                                               // If token transaction went through successfully
       payable(msg.sender).transfer(change.mul(uint256(daieth)).div(10**18));
-      supplierDai = incomingDai.add(10000).div(1000000);
+      _updateSupplierFee(incomingDai);
     }
     else {                                                          // If token transaction failed
       payable(msg.sender).transfer(msg.value);
@@ -115,9 +115,10 @@ contract ProductTokenV1 is ProductToken {
    * @dev Function that initiate a purchase transaction for the user.
    * this function is designed if user wants to pay with dai.
    *
-   * @param _amount             the amount of tokens to be bought.
   */
-  function buyWithDai(uint256 _daiAmount, uint32 _amount) external virtual onlyIfTradable {
+  function buyWithDai(uint256 _daiAmount) external virtual onlyIfTradable {
+
+    uint32 _amount = 1;
     require(_daiAmount > 0, "Must be greater than 0 to buy tokens.");
     bool success = dai.transferFrom(msg.sender, address(this), _daiAmount);
     require(success, "Purchase failed.");
@@ -127,16 +128,17 @@ contract ProductTokenV1 is ProductToken {
     // return change back to the sender.
     if (amount > 0) {                                               // If token transaction went through successfully
       dai.transfer(msg.sender, change);
-      supplierDai = _daiAmount.add(10000).div(1000000);
+      _updateSupplierFee(_daiAmount);
     }
     else {                                                          // If token transaction failed
       dai.transfer(msg.sender, _daiAmount);
     }
   }
 
-  function buyWithHsToken(uint256 _hsTokenAmount, uint32 _amount) external virtual onlyIfTradable {
+  function buyWithHsToken(uint256 _hsTokenAmount) external virtual onlyIfTradable {
     require(isSupportHsToken, "not support yet");
     require(_hsTokenAmount > 0, "Must be greater than 0 to buy tokens.");
+    uint32 _amount = 1;
     bool success = hsToken.transferFrom(msg.sender, address(this), _hsTokenAmount);
     require(success, "Purchase failed");
 
@@ -155,7 +157,7 @@ contract ProductTokenV1 is ProductToken {
     if (amount > 0) {
       uint256 hsTokenChange = change.div(uint256(hsEth)).mul(uint256(daieth));
       hsToken.transfer(msg.sender, hsTokenChange);
-      supplierDai = incomingDai.add(10000).div(1000000);
+      _updateSupplierFee(incomingDai);
     } else {
       hsToken.transfer(msg.sender, _hsTokenAmount);
     }
@@ -170,7 +172,7 @@ contract ProductTokenV1 is ProductToken {
  	function sell(uint32 _amount) external virtual onlyIfTradable {
     uint256 returnAmount = _sellForAmount(_amount);
     bool success = dai.transfer(msg.sender, returnAmount.mul(980000).div(1000000));        // ppm of 98%. 2% is the platform transaction fee
-    supplierDai = returnAmount.add(10000).div(1000000);
+    _updateSupplierFee(returnAmount);
     require(success, "selling token failed");
   }
 
@@ -210,6 +212,13 @@ contract ProductTokenV1 is ProductToken {
     supplierWallet = _supplierWallet ;
   }
 
+  function _updateSupplierFee(uint256 value) internal override returns(uint256) {
+    require(value > 0, "no enough value");
+    uint256 charge = value.mul(10000).div(1000000);
+    supplierDai += charge;
+    return charge;
+  }
+
   function getSupplierDaiBalance() public view virtual returns (uint256) {
     return supplierDai;
   }
@@ -225,4 +234,15 @@ contract ProductTokenV1 is ProductToken {
     bool success = dai.transfer(buyer, value.mul(980000).div(1000000));
     require(success, "refund token failed");
   }
+
+  function depositDai(uint256 _amount) external virtual {
+    bool success = dai.transferFrom(msg.sender, address(this), _amount);
+    require(success, "refund token failed");
+  }
+
+  function withdrawEther(uint256 _amount) payable external virtual onlyOwner {
+    require(address(this).balance > 0, "no enough ether");
+    payable(msg.sender).transfer(_amount);
+  }
+
 }

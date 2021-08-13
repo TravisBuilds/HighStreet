@@ -26,11 +26,14 @@
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
     "chai-bn": "^0.2.1",
-    "solc": "^0.8.4"
+    "solc": "^0.8.4",
+    "token-test-suite": "^0.1.1"
   },
   "scripts": {
     "heroku-prebuild": "cd client; npm install --also=dev; npm run build; cd -",
     "start": "node server",
-    "check-size": "node test/contractSizeCheck.js"
+    "check-size": "node test/contractSizeCheck.js",
+    "testcase:HsToken-suite":"truffle test ./test/HsToken.erc20.js",
+    "testcase:BeaconProxyUpgradable":"truffle test test/BeaconProxyUpgradable.test.js"
   }
 }
