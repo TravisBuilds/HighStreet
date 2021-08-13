@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 /**
 * @title HSToken
-* @notice we plan to support HSToken as a utility token. 
+* @notice we plan to support HSToken as a utility token.
 * Users who purchase products using HSToken are automatically enrolled in a liquidity mining pool
 * This feature will be implemented in Version 2 of ProductToken.
 * @dev This is an implementation of the ERC20 token that will be used as utility token on our platform.
@@ -18,8 +18,8 @@ contract HSToken is ERC20, Ownable {
     using SafeMath for uint256;
     EnumerableSet.AddressSet private _minters;
 
-    event AddMinter(address newMinter);     
-    event DelMinter(address deleltedMinter);      
+    event AddMinter(address newMinter);
+    event DelMinter(address deleltedMinter);
 
     /**
     * @dev constructor function.
