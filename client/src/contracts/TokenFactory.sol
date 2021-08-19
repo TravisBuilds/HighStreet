@@ -10,7 +10,7 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 /// @title TokenFactory
 /// @dev This is the factory smart contract that is responsible for token creation and address management.
-contract TokenFactory is Initializable, UUPSUpgradeable, OwnableUpgradeable { // is Initializable{
+contract TokenFactory is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
 	IBeacon public beacon;										// this is set to Public for the purpose of testing. In release this will be internal 
 	mapping(string => address) registry;			// registry for storing products. Mapped from product name to address.

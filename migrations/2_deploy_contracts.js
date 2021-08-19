@@ -1,12 +1,10 @@
 
 const DaiMock = artifacts.require("DaiMock");
-// const { deployProxy } = require('@openzeppelin/truffle-upgrades');
 const Token = artifacts.require("ProductToken");
 const TokenV1 = artifacts.require("ProductTokenV1");
 const Factory = artifacts.require("TokenFactory");
 const ERC1967Proxy = artifacts.require('ERC1967Proxy');
 const BancorBondingCurve = artifacts.require('BancorBondingCurve');
-// const UUPSUpgradeable = artifacts.require('UUPSUpgradeable');
 const UpgradeableBeacon = artifacts.require('UpgradeableBeacon');
 
 module.exports = async function (deployer, network, accounts ) {

@@ -142,7 +142,7 @@ contract ProductTokenV1 is ProductToken {
     bool success = hsToken.transferFrom(msg.sender, address(this), _hsTokenAmount);
     require(success, "Purchase failed");
 
-    int256 hsEth = getLatestDaiEthPrice();
+    int256 hsEth = getLatestHsTokenEthPrice();
     int256 daieth = getLatestDaiEthPrice();
 
     uint256 incomingDai = _hsTokenAmount.mul(uint256(hsEth)).div(uint256(daieth));

@@ -16,6 +16,7 @@ const BondingCurve = artifacts.require('BancorBondingCurve');
 const ProductTokenDestroy = artifacts.require('ProductTokenDestroy');
 const UpgradeableBeacon = artifacts.require('ProductUpgradeableBeacon');
 const BeaconProxy = artifacts.require('BeaconProxy');
+const ChainLinkMock = artifacts.require('ChainLinkMock');
 
 require('chai')
 	.use(require('chai-as-promised'))
@@ -108,7 +109,7 @@ contract('ProductBeaconProxy', function (accounts) {
 
   it("Proxy with newer implemnetation should be able to call initialize function from older implementations", async function(){
     await this.beacon.upgradeTo(this.implementationV1.address);
-    console.log(daiMock.address);
+    // console.log(daiMock.address);
     const data = this.implementationV1.contract.methods.initialize('HighGO', 'HG', bondingCurveAddress, exp, max, offset, baseReserve,  daiMock.address, chainlinkAddress).encodeABI();
       await this.tokenFactory.createToken(
         "HighGO", data,
@@ -171,8 +172,49 @@ contract('ProductBeaconProxy', function (accounts) {
 
   })
 
+  it('using ether to buy product', async function(){
+    const DEG = false;
+    const owner = accounts[0];
+    const user1 = accounts[1];
+    const bnToEther = (value) => web3.utils.fromWei(value.toString(), 'ether');
+
+    // 1. deploy chainlink mock
+    // ratio: https://data.chain.link/ethereum/mainnet/stablecoins/dai-eth
+    const DaiEtherRaio = 0.0003223554;
+    const DaiEther = await ChainLinkMock.new(web3.utils.toWei(DaiEtherRaio.toString(), 'ether'), {from: owner});
+    let latestRoundData = await DaiEther.latestRoundData();
+    let answer = web3.utils.fromWei(latestRoundData[1].toString(), 'ether');
+    if(DEG) console.log('latestRoundData - answer', answer);
+    assert.equal(DaiEtherRaio, answer);
+
+    // 2. owner deploy a product
+    const beacon = await UpgradeableBeacon.new(this.implementationV1.address, {from: owner});
+    this.tokenFactory.UpdateBeacon(beacon.address, {from: owner});
+    const data = this.implementationV1.contract
+              .methods.initialize('HighGO', 'HG', bondingCurveAddress, exp, '100', offset, baseReserve, daiMock.address, DaiEther.address).encodeABI();
+    await this.tokenFactory.createToken(
+      "HighGO", data, {from: owner}
+    );
+    const proxyAddress = await this.tokenFactory.retrieveToken.call("HighGO");
+    const highGo = new ProductTokenV1(proxyAddress);
+    highGo.launch({from: owner});
+
+    //3. using ether to buy one token
+    let priceBN = await highGo.getPriceForN(1);
+    let price = bnToEther(priceBN);
+    if(DEG) console.log('current product price(DAI)', price);
+    let priceToBuy = Number.parseFloat(price*DaiEtherRaio*1.05).toFixed(18);
+    if(DEG) console.log('current product price(Ether)', priceToBuy);
+    if(DEG) console.log('balance of user1 before buy product', bnToEther(await web3.eth.getBalance(user1)));
+    await highGo.buy({from: user1, value:web3.utils.toWei(priceToBuy.toString(), 'ether')});
+    if(DEG) console.log('balance of user1 after buy product', bnToEther(await web3.eth.getBalance(user1)));
+
+    let balance = await highGo.balanceOf(user1);
+    assert.equal(balance.toString(), 1);
+  })
+
   it('Redeem flow check', async function (){
-    const DEG = true;
+    const DEG = false;
     const STATE_INITIAL = 0;
     const STATE_AWAITING_PROCESSING = 1;
     const STATE_AWAITING_USER_APPROVAL = 2;
@@ -205,13 +247,6 @@ contract('ProductBeaconProxy', function (accounts) {
     let priceforMaxBuy;
     let price;
     let balance;
-    // priceforMaxBuy = await highGo.getPriceForN(16);
-    // price = await highGo.getPriceForN(10);
-    // await daiMock.approve(proxyAddress, priceforMaxBuy, {from: user1});
-    // if(DEG) console.log('user1 pay max price', web3.utils.fromWei(priceforMaxBuy.toString(), 'ether'));
-    // if(DEG) console.log('user1 pay price', web3.utils.fromWei(price.toString(), 'ether'));
-    // await highGo.buyWithDai(priceforMaxBuy, {from: user1});
-    // if(DEG) console.log('user1 owner amount of token', balance.toString());
     for(let i=0 ; i<10; i++) {
       price = await highGo.getPriceForN(2);
       await daiMock.approve(proxyAddress, price, {from: user1});
@@ -267,7 +302,7 @@ contract('ProductBeaconProxy', function (accounts) {
     if(DEG) console.log('Update redeem fail');
     balance = await daiMock.balanceOf(user1, {from: user1});
     if(DEG) console.log('user1 balance before refund',  web3.utils.fromWei(balance.toString(), 'ether'));
-    highGo.updateUserRefund(user1, id);
+    await highGo.updateUserRefund(user1, id);
     state = await highGo.getRedeemStatus(user1, id);
     assert.equal(state, STATE_COMPLETE_USER_REFUND);
     list = await highGo.getEscrowHistory(user1);
@@ -277,6 +312,7 @@ contract('ProductBeaconProxy', function (accounts) {
     if(DEG) console.log('user1 balance after refund',  web3.utils.fromWei(balance.toString(), 'ether'));
     if(DEG) await printEscrowList(list);
   })
+
 
   // it('mulit Token Pricing Functions  update',async function(){
   //   const data = this.implementationV0.contract.methods.initialize('HighGO', 'HG', exp, max, offset, baseReserve).encodeABI();
