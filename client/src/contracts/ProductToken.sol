@@ -34,7 +34,7 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
   modifier onlyIfTradable {
       require(
           isTradable,
-          "unable to trade now."
+          "unable to trade now"
       );
       _;
   }
@@ -271,9 +271,8 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
     require(balanceOf(msg.sender) >= _amount, "Insufficient tokens to burn.");
 
     uint256 reimburseAmount = calculateSellReturn(_amount);
-    uint256 supplierCharge = _updateSupplierFee(reimburseAmount);
-
-    _addEscrow(_amount, reimburseAmount - supplierCharge);
+    _updateSupplierFee(reimburseAmount);
+    _addEscrow(_amount, reimburseAmount.mul(980000).div(1000000));
 
     _burn(msg.sender, _amount);
     tradeinCount = tradeinCount + _amount;			// Future: use safe math here.

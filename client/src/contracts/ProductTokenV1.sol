@@ -248,7 +248,7 @@ contract ProductTokenV1 is ProductToken {
   function _updateSupplierFee(uint256 value) internal override returns(uint256) {
     require(value > 0, "no enough value");
     uint256 charge = value.mul(10000).div(1000000);
-    supplierDai += charge;
+    supplierDai = supplierDai.add(charge);
     return charge;
   }
 
@@ -268,8 +268,10 @@ contract ProductTokenV1 is ProductToken {
   function claimSupplierDai(uint256 _amount) external virtual {
     require(msg.sender==supplierWallet, "The address is not allowed");
     if (_amount <= supplierDai){
-      dai.transferFrom(address(this), msg.sender, _amount);
-      // Need to decrease amount from supplierDai
+      bool success =  dai.transfer(msg.sender, _amount);
+      if (success) {
+        supplierDai = supplierDai.sub(_amount);
+      }
     }
   }
 
