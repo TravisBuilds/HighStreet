@@ -73,6 +73,15 @@ contract ProductTokenV1 is ProductToken {
     emit Update(_daiAddress, _chainlink);
   }
 
+  /**
+   * @dev This is a placeholder function for a price oracle.
+   * Our current price oracle of choice is Chainlink. 
+   * The goal is that once High Street Token becomes officially supported by chainlink, 
+   * we can update the contract to support conversion between Street Token and Dai.
+   *
+   * @param _hsTokenAddress           the address of deployed Street Token
+   * @param _chainlink                the address of chainlink interface
+  */
   function setupHsToken(address _hsTokenAddress, address _chainlink) onlyOwner external virtual {
     require(!isSupportHsToken, "already updated");
     require(_hsTokenAddress!=address(0), "Invalid contract address");
@@ -115,6 +124,7 @@ contract ProductTokenV1 is ProductToken {
    * @dev Function that initiate a purchase transaction for the user.
    * this function is designed if user wants to pay with dai.
    *
+   * @param _daiAmount              amount of dai being paid to the contract
   */
   function buyWithDai(uint256 _daiAmount) external virtual onlyIfTradable {
 
@@ -135,6 +145,12 @@ contract ProductTokenV1 is ProductToken {
     }
   }
 
+  /**
+   * @dev Function that initiate a purchase transaction for the user.
+   * this function is a placeholder function, to simulate a scenario where user wants to pay with Street Token.
+   *
+   * @param _hsTokenAmount            amount of Street Token being paid to the contract
+  */
   function buyWithHsToken(uint256 _hsTokenAmount) external virtual onlyIfTradable {
     require(isSupportHsToken, "not support yet");
     require(_hsTokenAmount > 0, "Must be greater than 0 to buy tokens.");
@@ -177,7 +193,7 @@ contract ProductTokenV1 is ProductToken {
   }
 
   /**
-     * @dev tihs is the interfacing function to use chainlink service.
+     * @dev this is the interfacing function to use chainlink service.
      * Network: Mainnet
      * Aggregator: DAI/ETH
      * Address: 0x773616E4d11A78F511299002da57A0a94577F1f4
@@ -194,6 +210,12 @@ contract ProductTokenV1 is ProductToken {
     return price;
   }
 
+  /**
+     * @dev this is a mock interfacing function to use chainlink service.
+     * Network: Mainnet
+     * Aggregator: HSToken/ETH
+     * Address: TBD
+  */
   function getLatestHsTokenEthPrice() public view virtual returns (int) {
     require(isSupportHsToken, "Not support yet");
     (
@@ -207,11 +229,22 @@ contract ProductTokenV1 is ProductToken {
     return price;
   }
 
+  /**
+     * @dev this is a function that links wallet address of a supplier to a product.
+     *
+     * @param _supplierWallet         The wallet address provided by a brand supplier
+  */
   function setSupplierWallet(address _supplierWallet) external virtual onlyOwner {
     require(_supplierWallet!=address(0), "Address is invalid");
     supplierWallet = _supplierWallet ;
   }
 
+  /**
+     * @dev this is a function updates the amount of liquidity a supplier can withdraw from our liquidity pool
+     * The amount is 1 percent of the product value when a buy/sale has happened. 
+     *
+     * @param value         The value of the product
+  */
   function _updateSupplierFee(uint256 value) internal override returns(uint256) {
     require(value > 0, "no enough value");
     uint256 charge = value.mul(10000).div(1000000);
@@ -219,14 +252,22 @@ contract ProductTokenV1 is ProductToken {
     return charge;
   }
 
+  /**
+     * @dev this function returns the amount of reserve balance (dai) that the supplier can withdraw from the dapp.
+     * 
+  */
   function getSupplierDaiBalance() public view virtual returns (uint256) {
     return supplierDai;
   }
 
+  /**
+     * @dev A method for supplier to claim reserve currency that's accumulated over time.
+     * 
+     * @param _amount       The amount of reserve currency that supplier wants to withdraw
+  */
   function claimSupplierDai(uint256 _amount) external virtual {
     require(msg.sender==supplierWallet, "The address is not allowed");
     if (_amount <= supplierDai){
-
       bool success =  dai.transfer(msg.sender, _amount);
       if (success) {
         supplierDai = supplierDai.sub(_amount);
@@ -234,16 +275,37 @@ contract ProductTokenV1 is ProductToken {
     }
   }
 
-  function _refund(address buyer, uint256 value) internal override {
-    bool success = dai.transfer(buyer, value);
+  /**
+     * @dev A method that refunds the value of a product to a buyer/customer.
+     * 
+     * @param _buyer       The wallet address of the owner whose product token is under the redemption process
+     * @param _value       The market value of the token being redeemed
+     * 
+  */
+  function _refund(address _buyer, uint256 _value) internal override {
+    bool success = dai.transfer(_buyer, _value.mul(980000).div(1000000));
     require(success, "refund token failed");
   }
 
+  /**
+     * @dev A method allow us to add liquidity (dai) to the contract
+     * Since we use dai as a return for sales, we predict we'll have to keep dai 
+     * 
+     * @param _amount       The amount of tokens in reserve currency (dai)
+     * 
+  */
   function depositDai(uint256 _amount) external virtual {
     bool success = dai.transferFrom(msg.sender, address(this), _amount);
-    require(success, "deposit dai failed");
+    require(success, "adding liquidity failed");
   }
 
+  /**
+     * @dev A method allow us to withdraw liquidity (eth) from the contract
+     * Since eth is not used as a return currency, we need to withdraw eth from the system.
+     * 
+     * @param _amount       The amount of tokens in reserve currency (dai)
+     * 
+  */
   function withdrawEther(uint256 _amount) payable external virtual onlyOwner {
     require(address(this).balance > 0, "no enough ether");
     payable(msg.sender).transfer(_amount);

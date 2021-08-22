@@ -75,17 +75,31 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
     maxTokenCount = _maxTokenCount;
   }
 
+  /**
+   * @dev requires function to be called from owner. sets a bonding curve implementation for this product.
+   *
+   * @param _address             the address of the bonding curve implementation
+   *
+  */
   function setBondingCurve(address _address) external virtual onlyOwner {
     require(_address!=address(0), "Invalid address");
     bondingCurve = BancorBondingCurveV1Interface(_address);
   }
 
+  /**
+   * @dev requires function to be called from owner. this enables customers to buy, sell, or redeem the product.
+   *
+  */
   function launch() external virtual onlyOwner {
     require(!isTradable, 'The product token is already launched');
     isTradable = true;
     emit Tradable(isTradable);
   }
 
+  /**
+   * @dev requires function to be called from owner. this prevents customers from buying, selling, or redeeming the product.
+   *
+  */
   function pause() external virtual onlyOwner {
     require(isTradable, 'The product token is already paused');
     isTradable = false;
@@ -94,7 +108,6 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
 
 	/**
    * @dev When user wants to trade in their token for retail product
-   * the logistics for transfering product should be handled in the web application through centralized service.
    *
    * @param _amount                   amount of tokens that user wants to trade in.
   */
@@ -245,9 +258,9 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
   }
 
 
-   /**
+  /**
    * @dev initiate token logics after a token is traded in.
-   * This function only handles logics corresponding to token management in the smart contract side.
+   * This function will start an escrow process, which holds user's token until a redemption process is done.
    *
    * @param _amount              product token wishes to be traded-in
   */
@@ -267,16 +280,34 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
     emit Tradein(msg.sender, _amount);
   }
 
+  /**
+   * @dev used to update the status of redemption to "Confirm Delivery" after an escrow process has been started.
+   *
+   * @param buyer                 the wallet address of rpdocut token owner    
+   * @param id                    the id of the escrow, returned to the user after starting of redemption process
+  */
   function confirmDelivery(address buyer, uint256 id) onlyOwner external virtual{
     require(buyer != address(0), "Invalid buyer");
     _confirmDelivery(buyer, id);
   }
 
+  /**
+   * @dev used to update the status of redemption to "User Complete" after an escrow process has been started.
+   *
+   * @param buyer                 the wallet address of rpdocut token owner    
+   * @param id                    the id of the escrow, returned to the user after starting of redemption process
+  */
   function updateUserCompleted(address buyer, uint256 id) onlyOwner external virtual{
     require(buyer != address(0), "Invalid buyer");
     _updateUserCompleted(buyer, id);
   }
 
+  /**
+   * @dev used to update the status of redemption to "User Refunded" after an escrow process has been started.
+   *
+   * @param buyer                 the wallet address of rpdocut token owner    
+   * @param id                    the id of the escrow, returned to the user after starting of redemption process
+  */
   function updateUserRefund(address buyer, uint256 id) onlyOwner external virtual{
     require(buyer != address(0), "Invalid buyer");
     uint256 value = _updateUserRefund(buyer, id);
@@ -284,9 +315,27 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
     _refund(buyer, value);
   }
 
+  /**
+   * @dev refund function.
+   * This function returns the equivalent amount of Dai (reserve currency) to a product owner if an redemption fails
+   * This is only triggered in the extremely rare cases.
+   * This function is not implemented in Version 0 of Product Token
+   *
+   * @param buyer                 the wallet address of rpdocut token owner    
+   * @param id                    the id of the escrow, returned to the user after starting of redemption process
+  */
   function _refund(address buyer, uint256 value) internal virtual {
     // override
   }
+
+
+  /**
+   * @dev change supplier fee value.
+   * This function updates the amount of allowance that a brand can withdraw.
+   * The exact amount is dependent on the price value of the product evaulated based on number of products being redeemed
+   * 
+   * @param value                 the amount in reserve currency 
+  */
   function _updateSupplierFee(uint256 value) internal virtual returns(uint256) {
     // override
   }
