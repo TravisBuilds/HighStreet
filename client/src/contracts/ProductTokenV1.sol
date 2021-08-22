@@ -215,7 +215,7 @@ contract ProductTokenV1 is ProductToken {
   function _updateSupplierFee(uint256 value) internal override returns(uint256) {
     require(value > 0, "no enough value");
     uint256 charge = value.mul(10000).div(1000000);
-    supplierDai += charge;
+    supplierDai = supplierDai.add(charge);
     return charge;
   }
 
@@ -231,7 +231,7 @@ contract ProductTokenV1 is ProductToken {
   }
 
   function _refund(address buyer, uint256 value) internal override {
-    bool success = dai.transfer(buyer, value.mul(980000).div(1000000));
+    bool success = dai.transfer(buyer, value);
     require(success, "refund token failed");
   }
 
