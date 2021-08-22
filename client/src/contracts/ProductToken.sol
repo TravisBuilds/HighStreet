@@ -34,7 +34,7 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
   modifier onlyIfTradable {
       require(
           isTradable,
-          "unable to trade now."
+          "unable to trade now"
       );
       _;
   }

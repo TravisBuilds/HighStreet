@@ -226,7 +226,11 @@ contract ProductTokenV1 is ProductToken {
   function claimSupplierDai(uint256 _amount) external virtual {
     require(msg.sender==supplierWallet, "The address is not allowed");
     if (_amount <= supplierDai){
-      dai.transferFrom(address(this), msg.sender, _amount);
+
+      bool success =  dai.transfer(msg.sender, _amount);
+      if (success) {
+        supplierDai = supplierDai.sub(_amount);
+      }
     }
   }
 
@@ -237,7 +241,7 @@ contract ProductTokenV1 is ProductToken {
 
   function depositDai(uint256 _amount) external virtual {
     bool success = dai.transferFrom(msg.sender, address(this), _amount);
-    require(success, "refund token failed");
+    require(success, "deposit dai failed");
   }
 
   function withdrawEther(uint256 _amount) payable external virtual onlyOwner {
