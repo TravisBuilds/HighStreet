@@ -31,9 +31,8 @@ contract('escrow flow check', function (accounts) {
     const transactionFee  = 0.02 ;
 
     const STATE_AWAITING_PROCESSING = 1;
-    const STATE_AWAITING_USER_APPROVAL = 2;
-    const STATE_COMPLETE_USER_REFUND = 3;
-    const STATE_COMPLETE = 4;
+    const STATE_COMPLETE_USER_REFUND = 2;
+    const STATE_COMPLETE = 3;
 
     const numberToBigNumber = (val) => web3.utils.toWei(val.toString(), 'ether');
     const bigNumberToNumber = (val) => web3.utils.fromWei(val.toString(), 'ether');
@@ -132,10 +131,6 @@ contract('escrow flow check', function (accounts) {
     let transId = 0;
     let trans = (await highGo.getEscrowHistory(user1))[transId];
     assert.equal(trans.state, STATE_AWAITING_PROCESSING);
-
-    await highGo.confirmDelivery(user1, transId, {from: owner});
-    trans = (await highGo.getEscrowHistory(user1))[transId];
-    assert.equal(trans.state, STATE_AWAITING_USER_APPROVAL);
 
     await highGo.updateUserCompleted(user1, transId, {from: owner});
     trans = (await highGo.getEscrowHistory(user1))[transId];

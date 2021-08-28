@@ -281,20 +281,9 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
   }
 
   /**
-   * @dev used to update the status of redemption to "Confirm Delivery" after an escrow process has been started.
-   *
-   * @param buyer                 the wallet address of rpdocut token owner    
-   * @param id                    the id of the escrow, returned to the user after starting of redemption process
-  */
-  function confirmDelivery(address buyer, uint256 id) onlyOwner external virtual{
-    require(buyer != address(0), "Invalid buyer");
-    _confirmDelivery(buyer, id);
-  }
-
-  /**
    * @dev used to update the status of redemption to "User Complete" after an escrow process has been started.
    *
-   * @param buyer                 the wallet address of rpdocut token owner    
+   * @param buyer                 the wallet address of product buyer
    * @param id                    the id of the escrow, returned to the user after starting of redemption process
   */
   function updateUserCompleted(address buyer, uint256 id) onlyOwner external virtual{
@@ -305,7 +294,7 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
   /**
    * @dev used to update the status of redemption to "User Refunded" after an escrow process has been started.
    *
-   * @param buyer                 the wallet address of rpdocut token owner    
+   * @param buyer                 the wallet address of product buyer
    * @param id                    the id of the escrow, returned to the user after starting of redemption process
   */
   function updateUserRefund(address buyer, uint256 id) onlyOwner external virtual{
@@ -321,10 +310,10 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
    * This is only triggered in the extremely rare cases.
    * This function is not implemented in Version 0 of Product Token
    *
-   * @param buyer                 the wallet address of rpdocut token owner    
-   * @param id                    the id of the escrow, returned to the user after starting of redemption process
+   * @param _buyer       The wallet address of the owner whose product token is under the redemption process
+   * @param _value       The market value of the token being redeemed
   */
-  function _refund(address buyer, uint256 value) internal virtual {
+  function _refund(address _buyer, uint256 _value) internal virtual {
     // override
   }
 
@@ -333,10 +322,10 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
    * @dev change supplier fee value.
    * This function updates the amount of allowance that a brand can withdraw.
    * The exact amount is dependent on the price value of the product evaulated based on number of products being redeemed
-   * 
-   * @param value                 the amount in reserve currency 
+   *
+   * @param _value                 the amount in reserve currency
   */
-  function _updateSupplierFee(uint256 value) internal virtual returns(uint256) {
+  function _updateSupplierFee(uint256 _value) internal virtual returns(uint256) {
     // override
   }
 

@@ -277,22 +277,22 @@ contract ProductTokenV1 is ProductToken {
 
   /**
      * @dev A method that refunds the value of a product to a buyer/customer.
-     * 
+     *
      * @param _buyer       The wallet address of the owner whose product token is under the redemption process
      * @param _value       The market value of the token being redeemed
-     * 
+     *
   */
   function _refund(address _buyer, uint256 _value) internal override {
-    bool success = dai.transfer(_buyer, _value.mul(980000).div(1000000));
+    bool success = dai.transfer(_buyer, _value);
     require(success, "refund token failed");
   }
 
   /**
      * @dev A method allow us to add liquidity (dai) to the contract
      * Since we use dai as a return for sales, we predict we'll have to keep dai 
-     * 
+     *
      * @param _amount       The amount of tokens in reserve currency (dai)
-     * 
+     *
   */
   function depositDai(uint256 _amount) external virtual {
     bool success = dai.transferFrom(msg.sender, address(this), _amount);
@@ -302,13 +302,13 @@ contract ProductTokenV1 is ProductToken {
   /**
      * @dev A method allow us to withdraw liquidity (eth) from the contract
      * Since eth is not used as a return currency, we need to withdraw eth from the system.
-     * 
-     * @param _amount       The amount of tokens in reserve currency (dai)
-     * 
+     *
+     * @param _value       the value of ether
+     *
   */
-  function withdrawEther(uint256 _amount) payable external virtual onlyOwner {
+  function withdrawEther(uint256 _value) payable external virtual onlyOwner {
     require(address(this).balance > 0, "no enough ether");
-    payable(msg.sender).transfer(_amount);
+    payable(msg.sender).transfer(_value);
   }
 
 }

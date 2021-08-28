@@ -7,7 +7,6 @@ contract Escrow {
   enum escrowState {
     INITIAL,
     AWAITING_PROCESSING,
-    AWAITING_USER_APPROVAL,
     COMPLETE_USER_REFUND,
     COMPLETE
   }
@@ -32,13 +31,6 @@ contract Escrow {
     uint256 id = escrowList[msg.sender].length -1;
     emit escrowStateUpdated(msg.sender, id, info);
     return id;
-  }
-
-  function _confirmDelivery(address buyer, uint256 id) internal virtual{
-    require(id >=  0 || id < escrowList[buyer].length, "Invalid id");
-    require(escrowList[buyer][id].state == escrowState.AWAITING_PROCESSING, "Invalid state");
-    escrowList[buyer][id].state = escrowState.AWAITING_USER_APPROVAL;
-    emit escrowStateUpdated(buyer, id, escrowList[buyer][id]);
   }
 
   function _updateUserCompleted(address buyer, uint256 id) internal virtual {
