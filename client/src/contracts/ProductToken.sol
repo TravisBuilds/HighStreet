@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.2;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -145,12 +147,14 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
    * @dev Function that computes current price for a token through bonding curve calculation
    * based on parameters such as total supply, reserve balance, and reserve ratio.
    *
-   * @return price                   current price in reserve token (in our case, this is dai).
+   * @return price                   current price in reserve token (in our case, this is dai). (with 4% platform fee)
   */
   function getCurrentPrice()
-  	external view virtual returns	(uint256 price)
+  	public view virtual returns	(uint256 price)
   {
-  	return bondingCurve.calculatePriceForNTokens(getTotalSupply(), reserveBalance, reserveRatio, 1);
+    uint256 price = bondingCurve.calculatePriceForNTokens(getTotalSupply(), reserveBalance, reserveRatio, 1);
+    // ppm of 104%. 4% is the platform transaction fee
+    return price.mul(1040000).div(1000000);
   }
 
   /**
@@ -158,13 +162,16 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
    * based on parameters such as total supply, reserve balance, and reserve ratio.
    *
    * @param  _amountProduct          token amount in traded token
-   * @return price                   total price in reserve token (in our case, this is dai).
+   * @return price                   total price in reserve token (in our case, this is dai). (with 4% platform fee)
   */
   function getPriceForN(uint32 _amountProduct)
   	public view virtual returns	(uint256 price)
   {
-  	return bondingCurve.calculatePriceForNTokens(getTotalSupply(), reserveBalance, reserveRatio, _amountProduct);
+    uint256 price = bondingCurve.calculatePriceForNTokens(getTotalSupply(), reserveBalance, reserveRatio, _amountProduct);
+    // ppm of 104%. 4% is the platform transaction fee
+    return price.mul(1040000).div(1000000);
   }
+
 
   /**
    * @dev Function that computes number of product tokens one can buy given an amount in reserve token.
@@ -172,10 +179,23 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
    * @param  _amountReserve          purchaing amount in reserve token (dai)
    * @return mintAmount              number of tokens in traded token that can be purchased by given amount.
   */
+  function _buyReturn(uint256 _amountReserve)
+    internal view virtual returns (uint32 mintAmount)
+  {
+    return bondingCurve.calculatePurchaseReturn(getTotalSupply(), reserveBalance, reserveRatio, _amountReserve);
+  }
+
+  /**
+   * @dev Function that computes number of product tokens one can buy given an amount in reserve token.
+   *
+   * @param  _amountReserve          purchaing amount in reserve token (dai)(with 4% platform fee)
+   * @return mintAmount              number of tokens in traded token that can be purchased by given amount.
+  */
   function calculateBuyReturn(uint256 _amountReserve)
     public view virtual returns (uint32 mintAmount)
   {
-    return bondingCurve.calculatePurchaseReturn(getTotalSupply(), reserveBalance, reserveRatio, _amountReserve);
+    // ppm of 96%. 4% is the platform transaction fee
+    return _buyReturn(_amountReserve.mul(1000000).div(1040000));
   }
 
   /**
@@ -184,10 +204,39 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
    * @param  _amountProduct          selling amount in product token
    * @return soldAmount              total amount that will be transferred to the seller.
   */
+  function _sellReturn(uint32 _amountProduct)
+    internal view virtual returns (uint256 soldAmount)
+  {
+    return bondingCurve.calculateSaleReturn(getTotalSupply(), reserveBalance, reserveRatio, _amountProduct);
+  }
+
+  /**
+   * @dev Function that computes selling price in reserve tokens given an amount in traded token.
+   *
+   * @param  _amountProduct          selling amount in product token
+   * @return soldAmount              total amount that will be transferred to the seller (with 2% platform fee).
+  */
   function calculateSellReturn(uint32 _amountProduct)
     public view virtual returns (uint256 soldAmount)
   {
-    return bondingCurve.calculateSaleReturn(getTotalSupply(), reserveBalance, reserveRatio, _amountProduct);
+    // ppm of 98%. 2% is the platform transaction fee
+    return _sellReturn(_amountProduct).mul(980000).div(1000000);
+  }
+
+   /**
+   * @dev calculates the return for a given conversion (in product token)
+   * This function validate whether is enough to purchase token.
+   * If enough, the function will deduct, and then mint one token for the user. Any extras are return as change.
+   * If not enough, will return as change directly
+   * then replace the _amount with the actual amount and proceed with the above logic.
+   *
+   * @param _deposit              reserve token deposited
+   *
+   * @return token                amount bought in product token
+   * @return change               amount of change in reserve tokens.
+  */
+  function _buy(uint256 _deposit) internal virtual returns (uint32, uint256) {
+    return _buyForAmount(_deposit, 1);
   }
 
    /**
@@ -223,14 +272,18 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
 
     actualDeposit = getPriceForN(_amount);
     if (actualDeposit > _deposit) {   // if user deposited token is not enough to buy ideal amount. This is a fallback option.
-      amount = calculateBuyReturn(_deposit);
+      uint256 fee = actualDeposit.mul(40000).div(1040000);
+      amount = _buyReturn(_deposit.sub(fee));
       actualDeposit = getPriceForN(amount);
+      if(amount == 0 ) {
+        return (amount, _deposit);
+      }
     } else {
       amount = _amount;
     }
 
     _mint(msg.sender, amount);
-    reserveBalance = reserveBalance.add(actualDeposit);
+    reserveBalance = reserveBalance.add(actualDeposit.mul(1000000).div(1040000));
     emit Buy(msg.sender, amount, actualDeposit);
     return (amount, _deposit.sub(actualDeposit));    // return amount of token bought and change
   }
@@ -250,7 +303,7 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
   	require(_amount > 0, "Amount must be non-zero.");
     require(balanceOf(msg.sender) >= _amount, "Insufficient tokens to sell.");
     // calculate amount of liquidity to reimburse
-  	uint256 reimburseAmount = calculateSellReturn(_amount);
+  	uint256 reimburseAmount = _sellReturn(_amount);
  		reserveBalance = reserveBalance.sub(reimburseAmount);
     _burn(msg.sender, _amount);
     emit Sell(msg.sender, _amount, reimburseAmount);
@@ -270,8 +323,9 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
     require(_amount > 0, "Amount must be non-zero.");
     require(balanceOf(msg.sender) >= _amount, "Insufficient tokens to burn.");
 
-    uint256 reimburseAmount = calculateSellReturn(_amount);
+    uint256 reimburseAmount = _sellReturn(_amount);
     _updateSupplierFee(reimburseAmount);
+    // ppm of 98%. 2% is the platform transaction fee
     _addEscrow(_amount, reimburseAmount.mul(980000).div(1000000));
 
     _burn(msg.sender, _amount);
