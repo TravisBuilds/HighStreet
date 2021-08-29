@@ -4,6 +4,13 @@ pragma solidity ^0.8.2;
 
 contract Escrow {
 
+  /**
+     * @dev this is the enum representation of shipping status.
+     * INITIAL                When an escrow has been created
+     * AWAITING_PROCESSING    When an escrow has been locked and product is in transit
+     * COMPLETE_USER_REFUND   When an product shipment has failed and user refund is happening
+     * COMPLETE               When an shipment is delivered successfully
+  */
   enum escrowState {
     INITIAL,
     AWAITING_PROCESSING,
@@ -11,16 +18,28 @@ contract Escrow {
     COMPLETE
   }
 
+  /**
+     * @dev this is the struct class of escrow.
+     * state                  The current shipping status
+     * amount                 The amount of token being redeemed
+     * value                  The actual reserve token being locked up
+  */
   struct escrowInfo {
     escrowState state;
     uint32 amount;
     uint256 value;
   }
 
-  mapping(address => escrowInfo[]) public escrowList;
+  mapping(address => escrowInfo[]) public escrowList;       // A list of user to escrow being saved
 
-  event escrowStateUpdated(address, uint256, escrowInfo);
+  event escrowStateUpdated(address, uint256, escrowInfo);   // Event that's fired when a new redeem request has been created.
 
+  /**
+     * @dev this is a function updates the amount of liquidity a supplier can withdraw from our liquidity pool
+     * The amount is 1 percent of the product value when a buy/sale has happened. 
+     *
+     * @param value         The value of the product
+  */
   function _addEscrow(uint32 _amount, uint256 _value) internal virtual returns (uint256){
     require(_amount > 0, 'Invalid Amount');
     escrowInfo memory info;
