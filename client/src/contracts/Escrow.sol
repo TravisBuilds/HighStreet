@@ -35,10 +35,11 @@ contract Escrow {
   event escrowStateUpdated(address, uint256, escrowInfo);   // Event that's fired when a new redeem request has been created.
 
   /**
-     * @dev this is a function updates the amount of liquidity a supplier can withdraw from our liquidity pool
-     * The amount is 1 percent of the product value when a buy/sale has happened. 
+     * @dev Create a new escrow and add it to the list of pending escrows.
      *
-     * @param value         The value of the product
+     * @param _amount        The amount of tokens being redeemed
+     * @param _value         The value of the product in reserve token
+     * @return               The id of the escrow created
   */
   function _addEscrow(uint32 _amount, uint256 _value) internal virtual returns (uint256){
     require(_amount > 0, 'Invalid Amount');
@@ -47,36 +48,69 @@ contract Escrow {
     info.amount = _amount;
     info.value = _value;
     escrowList[msg.sender].push(info);
-    uint256 id = escrowList[msg.sender].length -1;
-    emit escrowStateUpdated(msg.sender, id, info);
-    return id;
+    uint256 _id = escrowList[msg.sender].length -1;
+    emit escrowStateUpdated(msg.sender, _id, info);
+    return _id;
   }
 
-  function _updateUserCompleted(address buyer, uint256 id) internal virtual {
-    require(id >=  0 || id < escrowList[buyer].length, "Invalid id");
-    escrowList[buyer][id].state = escrowState.COMPLETE;
-    emit escrowStateUpdated(buyer, id, escrowList[buyer][id]);
+  /**
+     * @dev Update state for the redemption process to completed
+     * This is triggered by our backend after shipment partner has confirmed delivery
+     *
+     * @param _buyer        The wallet address of the user
+     * @param _id           The cached id of the escrow, retrieved from database
+  */
+  function _updateUserCompleted(address _buyer, uint256 _id) internal virtual {
+    require(_id >=  0 || _id < escrowList[_buyer].length, "Invalid _id");
+    escrowList[_buyer][_id].state = escrowState.COMPLETE;
+    emit escrowStateUpdated(_buyer, _id, escrowList[_buyer][_id]);
   }
 
-  function _updateUserRefund(address buyer, uint256 id) internal virtual returns ( uint) {
-    require(id >=  0 || id < escrowList[buyer].length, "Invalid id");
-    escrowList[buyer][id].state = escrowState.COMPLETE_USER_REFUND;
-    emit escrowStateUpdated(buyer, id, escrowList[buyer][id]);
-    return escrowList[buyer][id].value;
+  /**
+     * @dev Update state for the redemption process to refunded
+     * This is triggered by our backend after shipment partner has confirmed deilvery failed
+     *
+     * @param _buyer        The wallet address of the user
+     * @param _id           The cached id of the escrow, retrieved from database
+     * @return              The amount of reserve currency in dai that needs to be refunded.
+  */
+  function _updateUserRefund(address _buyer, uint256 _id) internal virtual returns (uint) {
+    require(_id >=  0 || _id < escrowList[_buyer].length, "Invalid _id");
+    escrowList[_buyer][_id].state = escrowState.COMPLETE_USER_REFUND;
+    emit escrowStateUpdated(_buyer, _id, escrowList[_buyer][_id]);
+    return escrowList[_buyer][_id].value;
   }
 
-  function isStateCompleted(escrowState state) public pure virtual returns (bool) {
-    return state == escrowState.COMPLETE ||
-         state == escrowState.COMPLETE_USER_REFUND;
+  /**
+     * @dev Helper function to check whether a escrow state is completed
+     *
+     * @param _state       The state to be checked
+  */
+  function isStateCompleted(escrowState _state) public pure virtual returns (bool) {
+    return _state == escrowState.COMPLETE ||
+         _state == escrowState.COMPLETE_USER_REFUND;
   }
 
-  function getEscrowHistory(address buyer) external view virtual returns (escrowInfo [] memory) {
-    return escrowList[buyer];
+  /**
+     * @dev Return the list of all escrows created for a certain user
+     *
+     * @param _buyer       The address of the buyer
+     * @return             A list of past escrows
+  */
+  function getEscrowHistory(address _buyer) external view virtual returns (escrowInfo [] memory) {
+    return escrowList[_buyer];
   }
 
-  function getRedeemStatus(address buyer, uint256 id) external view virtual returns (escrowState) {
-    require(id >=  0 || id < escrowList[buyer].length, "Invalid id");
-    return escrowList[buyer][id].state;
+  /** 
+     * @dev Get status of a particular redemption process
+     *
+     * @param _buyer       The address of the buyer
+     * @param _id          The cached id of the escrow, retrieved from database
+     * @return             The current status
+  */
+  function getRedeemStatus(address _buyer, uint256 _id) external view virtual returns (escrowState) {
+    require(_id >=  0 || _id < escrowList[_buyer].length, "Invalid _id");
+    return escrowList[_buyer][_id].state;
   }
 
 }
