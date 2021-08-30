@@ -1,37 +1,37 @@
 pragma solidity ^0.8.2;
 
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "./Power.sol"; // Efficient power function.
 
 /**
-* @title Bancor formula by Bancor with slight modifications from LumiereVR
-*
-* Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements;
-* and to You under the Apache License, Version 2.0. "
-*/
-
-/**
-* General rule of computation we will use here:
+* @title BancorBondingCurve
+* @notice General rule of computation we will use here:
 * token amount will be passed in as uint32, since tokens we have are indivisible
 * they will be converted to uint256 in function for safemath computation
 * if a uint32 variable needs to be returned, it will be computed as uint256 value, then casted explicitly 
+* @dev This is an implementation of the Bancor formula with slight modifications.
 */
 contract BancorBondingCurve is Power {
-  using SafeMath for uint256;
+  using SafeMathUpgradeable for uint256;
   uint32 private constant MAX_RESERVE_RATIO = 1000000;
+
+  constructor() public {
+    __Power_init();
+  }
+
   /**
    * @dev Try to compute the price to purchage n token. This is the modified component in addition 
    * to the two original functions below.
    *
    * Formula:
-   * Return = _reserveBalance * (((_amount / _supply + 1) ^ (1 / _reserveRatio)) - 1)
+   * Return = _reserveBalance * (((_amount / _supply + 1) ^ (MAX_RESERVE_RATIO / _reserveRatio)) - 1)
    *
    * @param _supply              continuous token total supply
    * @param _reserveBalance     total reserve token balance
    * @param _reserveRatio       the reserve ratio in the bancor curve.
    * @param _amount             number to tokens one wishes to purchase
    *
-   *  @return price for N tokens 
+   *  @return price for N tokens
   */
   function calculatePriceForNTokens(
     uint32 _supply,
@@ -43,13 +43,13 @@ contract BancorBondingCurve is Power {
     // special case for 0 tokens
     if (_amount == 0) {
       return 0;
-    } 
+    }
     uint256 supply = uint256(_supply);
     uint256 amount = uint256(_amount);    // amount declared here as an uint256 equivalent of _amount
     // special case if this is a linear function
     if (_reserveRatio == MAX_RESERVE_RATIO) {
       return amount.mul(_reserveBalance).div(supply);
-    } 
+    }
 
     uint256 result;
     uint8 precision;
@@ -90,7 +90,7 @@ contract BancorBondingCurve is Power {
     }
 
     uint256 supply = uint256(_supply);
-    
+
     // special case if the ratio = 100%
     if (_reserveRatio == MAX_RESERVE_RATIO) {
       return uint32(supply.mul(_depositAmount).div(_reserveBalance));
@@ -124,7 +124,7 @@ contract BancorBondingCurve is Power {
     uint32 _supply,
     uint256 _reserveBalance,
     uint32 _reserveRatio,
-    uint32 _sellAmount) public view returns (uint256)
+    uint32 _sellAmount) public view virtual returns (uint256)
   {
     // validate input
     require(_supply > 0 && _reserveBalance > 0 && _reserveRatio > 0 && _reserveRatio <= MAX_RESERVE_RATIO && _sellAmount <= _supply);
