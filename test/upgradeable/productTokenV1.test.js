@@ -27,13 +27,10 @@ contract('productTokenV1 flow check', function (accounts) {
 
     /* GLOBAL PARAMETERS*/
     const DEG = false;
-    const DaiEtherRaio = 0.0003223554;
-    const HsTokenEtherRaio = 0.5;
-    const BuytransFee  = 0.05 ;
-    const SaletransFee  = 0.02 ;
-
     const numberToBigNumber = (val) => web3.utils.toWei(val.toString(), 'ether');
     const bigNumberToNumber = (val) => web3.utils.fromWei(val.toString(), 'ether');
+    const DaiEtherRatio = numberToBigNumber(0.0003223554);
+    const HsTokenEtherRatio = numberToBigNumber(0.5);
 
     before('deploy implementation', async function () {
         this.owner = accounts[0];
@@ -45,9 +42,9 @@ contract('productTokenV1 flow check', function (accounts) {
         this.implementationV1 = await ProductTokenV1.new();
         this.bondingCurveImpl = await BondingCurve.new();
         this.daiMock = await DaiMock.new();
-        this.DaiEtherMock = await ChainLinkMock.new(numberToBigNumber(DaiEtherRaio), {from: this.owner});
+        this.DaiEtherMock = await ChainLinkMock.new(DaiEtherRatio, {from: this.owner});
         this.HsTokenMock = await DaiMock.new();
-        this.HsTokenEtherMock = await ChainLinkMock.new(numberToBigNumber(HsTokenEtherRaio), {from: this.owner});
+        this.HsTokenEtherMock = await ChainLinkMock.new(HsTokenEtherRatio, {from: this.owner});
     });
 
     beforeEach(async function () {
@@ -78,25 +75,23 @@ contract('productTokenV1 flow check', function (accounts) {
         await daiMock.faucet(user1, numberToBigNumber(1000));
         await HsTokenMock.faucet(user1, numberToBigNumber(1000));
 
-        let priceBN = await highGo.getPriceForN(1);
-        let price = bigNumberToNumber(priceBN);
-        let priceToBuy = Number.parseFloat(price * ( 1 + BuytransFee )).toFixed(18);
-        await daiMock.approve(highGo.address, numberToBigNumber(priceToBuy), {from: user1});
+        let price = await highGo.getCurrentPrice();
+        await daiMock.approve(highGo.address, price, {from: user1});
 
         await expectRevert(
-            highGo.buyWithDai(numberToBigNumber(priceToBuy), {from: user1})
+            highGo.buyWithDai(price, {from: user1})
             , "unable to trade now"
         );
 
-        priceToBuy = Number.parseFloat(price * DaiEtherRaio * (1 + BuytransFee)).toFixed(18);
+        price = (new BN(price)).mul(new BN(DaiEtherRatio));
         await expectRevert(
-            highGo.buy({from: user1, value:numberToBigNumber(priceToBuy)})
+            highGo.buy({from: user1, value:price})
             , "unable to trade now"
         );
 
-        priceToBuy = Number.parseFloat(price * DaiEtherRaio / HsTokenEtherRaio * (1 + BuytransFee)).toFixed(18);
+        price = (new BN(price)).mul(new BN(DaiEtherRatio)).div(new BN(HsTokenEtherRatio));
         await expectRevert(
-            highGo.buyWithHsToken(numberToBigNumber(priceToBuy), {from: user1})
+            highGo.buyWithHsToken(price, {from: user1})
             , "unable to trade now"
         );
 
@@ -118,21 +113,19 @@ contract('productTokenV1 flow check', function (accounts) {
         await HsTokenMock.faucet(user1, numberToBigNumber(1000));
         highGo.launch({from: owner});
 
-        let priceBN = await highGo.getPriceForN(1);
-        let price = bigNumberToNumber(priceBN);
-        let priceToBuy = Number.parseFloat(price * ( 1 + BuytransFee )).toFixed(18);
-        await daiMock.approve(highGo.address, numberToBigNumber(priceToBuy), {from: user1});
+        let price = await highGo.getCurrentPrice();
+        await daiMock.approve(highGo.address, price, {from: user1});
 
         // getAvailability
         let amount = (await highGo.getAvailability()).toString();
-        assert.equal(amount, max);
+        assert.equal(amount, max, "available amout of product token should equal to default value before any trade be made");
 
-        await highGo.buyWithDai(numberToBigNumber(priceToBuy), {from: user1})
-        assert.equal(await highGo.balanceOf(user1), 1);
+        await highGo.buyWithDai(price, {from: user1})
+        assert.equal(await highGo.balanceOf(user1), 1, "should able to buy one product token");
 
         // getAvailability
         amount = (await highGo.getAvailability()).toString();
-        assert.equal(amount, max - 1);
+        assert.equal(amount, max - 1, "currenlty available token should equal to default value minus token had been sold");
 
 
         // getCurrentPrice
@@ -145,12 +138,11 @@ contract('productTokenV1 flow check', function (accounts) {
         assert(bigNumberToNumber(await highGo.calculateSellReturn(1)) > 0 );
 
         // getLatestDaiEthPrice
-        assert.equal(bigNumberToNumber(await highGo.getLatestDaiEthPrice()),  DaiEtherRaio);
+        assert.equal(await highGo.getLatestDaiEthPrice(),  DaiEtherRatio);
 
         // getLatestHsTokenEthPrice
-        assert.equal(bigNumberToNumber(await highGo.getLatestHsTokenEthPrice()),  HsTokenEtherRaio);
+        assert.equal(await highGo.getLatestHsTokenEthPrice(),  HsTokenEtherRatio);
     });
-
 
     it('should not able to trade if temp pause product token', async function (){
         let { highGo, daiMock, HsTokenMock, user1, owner} =this;
@@ -160,51 +152,64 @@ contract('productTokenV1 flow check', function (accounts) {
 
         highGo.launch({from: owner});
 
-        let priceBN = await highGo.getPriceForN(1);
-        let price = bigNumberToNumber(priceBN);
-        let priceToBuy = Number.parseFloat(price * ( 1 + BuytransFee )).toFixed(18);
-        await daiMock.approve(highGo.address, numberToBigNumber(priceToBuy), {from: user1});
-        await highGo.buyWithDai(numberToBigNumber(priceToBuy), {from: user1})
-        assert.equal(await highGo.balanceOf(user1), 1);
+        let price = await highGo.getCurrentPrice();
+        await daiMock.approve(highGo.address, price, {from: user1});
+        await highGo.buyWithDai(price, {from: user1})
+        assert.equal(await highGo.balanceOf(user1), 1, "user should able to buy token before is been paused");
 
+        // paused product token
         highGo.pause({from: owner});
 
         await expectRevert(
-            highGo.buyWithDai(numberToBigNumber(priceToBuy), {from: user1})
+            highGo.buyWithDai(price, {from: user1})
+            , "unable to trade now"
+        );
+
+        price = (new BN(price)).mul(new BN(DaiEtherRatio));
+        await expectRevert(
+            highGo.buy({from: user1, value: price})
+            , "unable to trade now"
+        );
+
+        price = (new BN(price)).mul(new BN(DaiEtherRatio)).div(new BN(HsTokenEtherRatio));
+        await expectRevert(
+            highGo.buyWithHsToken(price, {from: user1})
+            , "unable to trade now"
+        );
+
+        await expectRevert(
+            highGo.sell(1, {from: user1})
+            , "unable to trade now"
+        );
+
+        await expectRevert(
+            highGo.tradein(1, {from: user1})
             , "unable to trade now"
         );
     });
 
-    it('using dai should success' , async function (){
+    it('should be success by using dai' , async function (){
         let { highGo, daiMock, HsTokenMock, user1, owner} =this;
-
-        await daiMock.faucet(user1, numberToBigNumber(1000));
-        await HsTokenMock.faucet(user1, numberToBigNumber(1000));
 
         highGo.launch({from: owner});
 
-        let priceBN = await highGo.getPriceForN(1);
-        let price = bigNumberToNumber(priceBN);
-        let priceToBuy = Number.parseFloat(price * ( 1 + BuytransFee )).toFixed(18);
-        await daiMock.approve(highGo.address, numberToBigNumber(priceToBuy), {from: user1});
+        let price = await highGo.getCurrentPrice();
+        await daiMock.approve(highGo.address, price, {from: user1});
 
-        await highGo.buyWithDai(numberToBigNumber(priceToBuy), {from: user1})
+        await highGo.buyWithDai(price, {from: user1})
         assert.equal(await highGo.balanceOf(user1), 1);
     });
 
     it('should be success by using ether', async function (){
         let { highGo, daiMock, HsTokenMock, user1, owner} =this;
 
-        await daiMock.faucet(user1, numberToBigNumber(1000));
-        await HsTokenMock.faucet(user1, numberToBigNumber(1000));
-
         highGo.launch({from: owner});
 
-        let priceBN = await highGo.getPriceForN(1);
-        let price = bigNumberToNumber(priceBN);
-        let priceToBuy = Number.parseFloat(price * DaiEtherRaio * (1 + BuytransFee)).toFixed(18);
+        let price = await highGo.getCurrentPriceOnEther();
+        // add 0.1% for prevent Exchange loss
+        price = (new BN(price)).mul(new BN(1001)).div(new BN(1000));
 
-        await highGo.buy({from: user1, value:numberToBigNumber(priceToBuy)})
+        await highGo.buy({from: user1, value: price})
         assert.equal(await highGo.balanceOf(user1), 1);
     });
 
@@ -216,12 +221,12 @@ contract('productTokenV1 flow check', function (accounts) {
 
         highGo.launch({from: owner});
 
-        let priceBN = await highGo.getPriceForN(1);
-        let price = bigNumberToNumber(priceBN);
-        let priceToBuy = Number.parseFloat(price * DaiEtherRaio / HsTokenEtherRaio * (1 + BuytransFee)).toFixed(18);
-        await HsTokenMock.approve(highGo.address, numberToBigNumber(priceToBuy), {from: user1});
+        let price = await highGo.getCurrentPriceOnHsToken();
+        // add 0.1% for prevent Exchange loss
+        price = (new BN(price)).mul(new BN(1001)).div(new BN(1000));
+        await HsTokenMock.approve(highGo.address, price, {from: user1});
 
-        await highGo.buyWithHsToken(numberToBigNumber(priceToBuy), {from: user1})
+        await highGo.buyWithHsToken(price, {from: user1})
         assert.equal(await highGo.balanceOf(user1), 1);
     });
 
@@ -236,33 +241,41 @@ contract('productTokenV1 flow check', function (accounts) {
         // setSupplierWallet
         await highGo.setSupplierWallet(supplier, {from: owner});
 
-        let supplierDai = 0;
-        const supplierFeeRate = 0.01;
+        let supplierDai = new BN(0);
 
         for(let i=0 ; i< 5; i++) {
-            let priceBN = await highGo.getPriceForN(1);
-            let price = bigNumberToNumber(priceBN);
-            if(DEG) console.log(i, ': current product price(DAI)', price);
-            let priceToBuy = Number.parseFloat(price*1.05).toFixed(18);
-            await daiMock.approve(highGo.address, numberToBigNumber(priceToBuy), {from: user1});
-            await highGo.buyWithDai(web3.utils.toWei(priceToBuy.toString(), 'ether'), {from: user1});
-            supplierDai += priceToBuy * supplierFeeRate;
+            let price = await highGo.getCurrentPrice();
+            if(DEG) console.log(i, ': current product price(DAI)', bigNumberToNumber(price));
+            await daiMock.approve(highGo.address, price, {from: user1});
+            await highGo.buyWithDai(price, {from: user1});
+            // 1% for supplier fee
+            let supplierFeeRate = (new BN(price)).mul(new BN(1)).div(new BN(100));
+            if(DEG) console.log(i, ': supplierFeeRate', bigNumberToNumber(supplierFeeRate));
+            supplierDai = supplierDai.add(supplierFeeRate);
         }
 
         let balance = await highGo.getSupplierDaiBalance();
-        assert.equal(Number.parseFloat(supplierDai).toFixed(10), Number.parseFloat(bigNumberToNumber(balance)).toFixed(10));
+        assert.equal(supplierDai.toString(), balance.toString());
 
         let amountOfSell = 2;
-        supplierDai += bigNumberToNumber(await highGo.calculateSellReturn(amountOfSell)) * supplierFeeRate;
+        // sellReturn already contain 2% platform fee
+        let sellReturn = await highGo.calculateSellReturn(amountOfSell);
+        // origin value = sellReturn / 0.98
+        sellReturn = (new BN(sellReturn)).mul(new BN(numberToBigNumber(100))).div(new BN(numberToBigNumber(98)))
+        // 1% for supplier fee
+        sellReturn = sellReturn.mul(new BN(1)).div(new BN(100));
+        supplierDai = supplierDai.add(sellReturn);
         await highGo.sell(amountOfSell, {from: user1});
 
         balance = await highGo.getSupplierDaiBalance();
-        assert.equal(Number.parseFloat(supplierDai).toFixed(10), Number.parseFloat(bigNumberToNumber(balance)).toFixed(10));
+        assert.equal(supplierDai.toString(), balance.toString());
 
         // claimSupplierDai
-        await highGo.claimSupplierDai(balance*0.5, {from: supplier});
+        let claimValue = (new BN(balance)).mul(new BN(50)).div(new BN(100));
+        let remainValue = (new BN(balance)).sub(claimValue);
+        await highGo.claimSupplierDai(claimValue, {from: supplier});
         let balanceAfter = await highGo.getSupplierDaiBalance();
-        assert.equal(Number.parseFloat(bigNumberToNumber(balance*0.5)).toFixed(10), Number.parseFloat(bigNumberToNumber(balanceAfter)).toFixed(10));
+        assert.equal(remainValue.toString(), balanceAfter.toString(), "remain supplier dai should be right");
 
     });
 

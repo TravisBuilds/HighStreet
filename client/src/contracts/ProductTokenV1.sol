@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.2;
 
 import {AggregatorV3Interface as AggregatorV3Interface_v08 } from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
@@ -103,16 +105,17 @@ contract ProductTokenV1 is ProductToken {
   function buy() external virtual payable onlyIfTradable {
     require(msg.value > 0, "Must send ether to buy tokens.");
 
-    uint32 _amount = 1;
     int256 daieth = getLatestDaiEthPrice();
     uint256 incomingDai = msg.value.mul(10**18).div(uint256(daieth));
     uint256 amount;
     uint256 change;
-    (amount, change) = _buyForAmount(incomingDai.mul(960000).div(1000000), _amount); // ppm of 96%. 4% is the platform transaction fee
+    (amount, change) = _buy(incomingDai);
 
     // return change back to the sender.
     if (amount > 0) {                                               // If token transaction went through successfully
-      payable(msg.sender).transfer(change.mul(uint256(daieth)).div(10**18));
+      if(change > 0) {
+        payable(msg.sender).transfer(change.mul(uint256(daieth)).div(10**18));
+      }
       _updateSupplierFee(incomingDai);
     }
     else {                                                          // If token transaction failed
@@ -128,16 +131,17 @@ contract ProductTokenV1 is ProductToken {
   */
   function buyWithDai(uint256 _daiAmount) external virtual onlyIfTradable {
 
-    uint32 _amount = 1;
     require(_daiAmount > 0, "Must be greater than 0 to buy tokens.");
     bool success = dai.transferFrom(msg.sender, address(this), _daiAmount);
     require(success, "Purchase failed.");
     uint256 amount;
     uint256 change;
-    (amount, change) = _buyForAmount(_daiAmount.mul(960000).div(1000000), _amount); // ppm of 96%. 4% is the platform transaction fee
+    (amount, change) = _buy(_daiAmount);
     // return change back to the sender.
     if (amount > 0) {                                               // If token transaction went through successfully
-      dai.transfer(msg.sender, change);
+      if(change > 0) {
+        dai.transfer(msg.sender, change);
+      }
       _updateSupplierFee(_daiAmount);
     }
     else {                                                          // If token transaction failed
@@ -154,7 +158,6 @@ contract ProductTokenV1 is ProductToken {
   function buyWithHsToken(uint256 _hsTokenAmount) external virtual onlyIfTradable {
     require(isSupportHsToken, "not support yet");
     require(_hsTokenAmount > 0, "Must be greater than 0 to buy tokens.");
-    uint32 _amount = 1;
     bool success = hsToken.transferFrom(msg.sender, address(this), _hsTokenAmount);
     require(success, "Purchase failed");
 
@@ -163,16 +166,17 @@ contract ProductTokenV1 is ProductToken {
 
     uint256 incomingDai = _hsTokenAmount.mul(uint256(hsEth)).div(uint256(daieth));
 
-    // ppm of 96%. 4% is the platform transaction fee
     (
       uint256 amount,
       uint256 change
-    ) = _buyForAmount(incomingDai.mul(960000).div(1000000), _amount);
+    ) = _buy(incomingDai);
 
     // return change back to the sender.
     if (amount > 0) {
       uint256 hsTokenChange = change.div(uint256(hsEth)).mul(uint256(daieth));
-      hsToken.transfer(msg.sender, hsTokenChange);
+      if(change > 0) {
+        hsToken.transfer(msg.sender, hsTokenChange);
+      }
       _updateSupplierFee(incomingDai);
     } else {
       hsToken.transfer(msg.sender, _hsTokenAmount);
@@ -211,6 +215,17 @@ contract ProductTokenV1 is ProductToken {
   }
 
   /**
+   * @dev Function that computes current price for a token through bonding curve calculation
+   * based on parameters such as total supply, reserve balance, and reserve ratio.
+   *
+   * @return price                   current price in reserve token (ether).
+  */
+  function getCurrentPriceOnEther() public view virtual returns (uint256) {
+    int256 daieth = getLatestDaiEthPrice();
+    return getCurrentPrice().mul(uint256(daieth)).div(10**18);
+  }
+
+  /**
      * @dev this is a mock interfacing function to use chainlink service.
      * Network: Mainnet
      * Aggregator: HSToken/ETH
@@ -227,6 +242,18 @@ contract ProductTokenV1 is ProductToken {
     ) = hsTokenEthFeed.latestRoundData();
     require(price > 0, "Invalid HsTokenEth Exchange rate");
     return price;
+  }
+
+  /**
+   * @dev Function that computes current price for a token through bonding curve calculation
+   * based on parameters such as total supply, reserve balance, and reserve ratio.
+   *
+   * @return price                   current price in reserve token (HsToken).
+  */
+  function getCurrentPriceOnHsToken() public view virtual returns (uint256) {
+    int256 hsEth = getLatestHsTokenEthPrice();
+    int256 daieth = getLatestDaiEthPrice();
+    return getCurrentPrice().mul(uint256(daieth)).div(uint256(hsEth));
   }
 
   /**

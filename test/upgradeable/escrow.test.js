@@ -28,7 +28,6 @@ contract('escrow flow check', function (accounts) {
     /* GLOBAL PARAMETERS*/
     const DEG = false;
     const DaiEtherRaio = 0.0003223554;
-    const transactionFee  = 0.02 ;
 
     const STATE_AWAITING_PROCESSING = 1;
     const STATE_COMPLETE_USER_REFUND = 2;
@@ -37,7 +36,7 @@ contract('escrow flow check', function (accounts) {
     const numberToBigNumber = (val) => web3.utils.toWei(val.toString(), 'ether');
     const bigNumberToNumber = (val) => web3.utils.fromWei(val.toString(), 'ether');
     const printEscrowList = async (list) => await list.reduce( async (_prev, val, index) => {
-          const ESCROW_STATE = ['INITIAL', 'AWAITING_PROCESSING', 'AWAITING_USER_APPROVAL', 'COMPLETE_USER_REFUND', 'COMPLETE'];
+          const ESCROW_STATE = ['INITIAL', 'AWAITING_PROCESSING', 'COMPLETE_USER_REFUND', 'COMPLETE'];
           const state = ESCROW_STATE[val[0]];
           const amount = val[1];
           const value = val[2];
@@ -45,7 +44,7 @@ contract('escrow flow check', function (accounts) {
           return Promise.resolve("DO_NOT_CALL");
         },0);
 
-  before('deploy implementation', async function () {
+  beforeEach('deploy implementation', async function () {
     this.owner = accounts[0];
     this.user1 = accounts[1];
     this.user2 = accounts[2];
@@ -83,34 +82,35 @@ contract('escrow flow check', function (accounts) {
     await daiMock.faucet(user1, numberToBigNumber(1000));
 
     for(let i=0 ; i<5; i++) {
-      let priceBN = await highGo.getPriceForN(1);
-      let price = bigNumberToNumber(priceBN);
-      if(DEG) console.log(i, ': current highGo price(DAI)', price);
-      let priceToBuy = Number.parseFloat(price*1.05).toFixed(18);
-      await daiMock.approve(highGo.address, numberToBigNumber(priceToBuy), {from: user1});
-      await highGo.buyWithDai(numberToBigNumber(priceToBuy), {from: user1});
+      let price = await highGo.getCurrentPrice();
+      if(DEG) console.log(i, ': current highGo price(DAI)', bigNumberToNumber(price));
+      await daiMock.approve(highGo.address, price, {from: user1});
+      await highGo.buyWithDai(price, {from: user1});
     }
 
+    // get sell return before user starting tradin
     let redeemTokenValue = await highGo.calculateSellReturn(redeemNumber);
-    redeemTokenValue *= (1 - transactionFee);
 
+    // user tradin
+    let tradeinCountBefore = await highGo.tradeinCount();
     let balanceBefore = await highGo.balanceOf(user1);
     if(DEG) console.log('user1 owner amount of token before tradein:', balanceBefore.toString());
     await highGo.tradein(redeemNumber, {from: user1});
     let balanceAfter = await highGo.balanceOf(user1);
     if(DEG) console.log('user1 owner amount of token after tradein:', balanceAfter.toString());
 
-    assert.equal(balanceAfter, balanceBefore - redeemNumber );
+    assert.equal(tradeinCountBefore.toString(), 0, "initial amount should be zero");
+    assert.equal(balanceAfter, balanceBefore - redeemNumber,  "amount should be as same as amount of user tradein");
 
     let list = await highGo.getEscrowHistory(user1);
     assert.equal(list.length, 1, "user1 only redeem once");
 
     let trans = list[0];
 
-    assert.equal(trans.state, STATE_AWAITING_PROCESSING);
+    assert.equal(trans.state, STATE_AWAITING_PROCESSING, "escrow initial state should be STATE_AWAITING_PROCESSING");
     assert.equal(trans.amount, redeemNumber);
-    assert(Number.parseFloat(bigNumberToNumber(redeemTokenValue)).toFixed(10)
-           ,Number.parseFloat(bigNumberToNumber(trans.value)).toFixed(10)
+    assert.equal(redeemTokenValue
+           , trans.value
            , "the redeem value must be same ");
   });
 
@@ -120,21 +120,20 @@ contract('escrow flow check', function (accounts) {
 
     await daiMock.faucet(user1, numberToBigNumber(1000));
 
-    let priceBN = await highGo.getPriceForN(1);
-    let price = bigNumberToNumber(priceBN);
-    let priceToBuy = Number.parseFloat(price*1.05).toFixed(18);
-    await daiMock.approve(highGo.address, numberToBigNumber(priceToBuy), {from: user1});
-    await highGo.buyWithDai(numberToBigNumber(priceToBuy), {from: user1});
+    let price = await highGo.getCurrentPrice();
+    await daiMock.approve(highGo.address, price, {from: user1});
+    await highGo.buyWithDai(price, {from: user1});
 
     await highGo.tradein(redeemNumber, {from: user1});
 
     let transId = 0;
     let trans = (await highGo.getEscrowHistory(user1))[transId];
-    assert.equal(trans.state, STATE_AWAITING_PROCESSING);
+    assert.equal(trans.state, STATE_AWAITING_PROCESSING, "escrow initial state should be STATE_AWAITING_PROCESSING");
 
+    //update escrow state by owner
     await highGo.updateUserCompleted(user1, transId, {from: owner});
     trans = (await highGo.getEscrowHistory(user1))[transId];
-    assert.equal(trans.state, STATE_COMPLETE);
+    assert.equal(trans.state, STATE_COMPLETE, "escrow state should be STATE_COMPLETE after ower update to complete");
   });
 
   it('check tradein refund', async function (){
@@ -143,29 +142,30 @@ contract('escrow flow check', function (accounts) {
 
     await daiMock.faucet(user1, numberToBigNumber(1000));
 
-    let priceBN = await highGo.getPriceForN(1);
-    let price = bigNumberToNumber(priceBN);
-    let priceToBuy = Number.parseFloat(price*1.05).toFixed(18);
-    await daiMock.approve(highGo.address, numberToBigNumber(priceToBuy), {from: user1});
-    await highGo.buyWithDai(numberToBigNumber(priceToBuy), {from: user1});
+    let price = await highGo.getCurrentPrice();
+    await daiMock.approve(highGo.address, price, {from: user1});
+    await highGo.buyWithDai(price, {from: user1});
 
     await highGo.tradein(redeemNumber, {from: user1});
 
-    let transId = 2;
+    let transId = 0;
     let trans = (await highGo.getEscrowHistory(user1))[transId];
     assert.equal(trans.state, STATE_AWAITING_PROCESSING);
 
+    //update escrow state to refund by owner
     const balanceBeforeRefund = await daiMock.balanceOf(user1, {from: user1});
     await highGo.updateUserRefund(user1, transId, {from: owner});
     const balanceAfterRefund = await daiMock.balanceOf(user1, {from: user1});
 
     trans = (await highGo.getEscrowHistory(user1))[transId];
-    assert.equal(trans.state, STATE_COMPLETE_USER_REFUND);
+    assert.equal(trans.state, STATE_COMPLETE_USER_REFUND, "escrow state should be STATE_COMPLETE_USER_REFUND");
 
-    const refund = bigNumberToNumber(balanceAfterRefund) - bigNumberToNumber(balanceBeforeRefund);
-    assert(Number.parseFloat(refund).toFixed(10)
-           , Number.parseFloat(bigNumberToNumber(trans.value) *( 1 - transactionFee )).toFixed(10)
-           , "the redeem value must be same ");
+    // calculate the user balance after user get the refund
+    const refund = (new BN(balanceAfterRefund)).sub(new BN(balanceBeforeRefund));
+
+    assert.equal(refund.toString()
+          , (new BN(trans.value)).toString()
+          , "the increasing of user balance should as same as the the escrow value");
   });
 
 })
