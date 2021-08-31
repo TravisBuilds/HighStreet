@@ -9,13 +9,12 @@ contract('HSToken', function (accounts) {
 
 		// factory method to create new token contract
 		create: async function () {
-			return await HSToken.new();
+			return await HSToken.new(accounts[0]);
 		},
 
 		// factory callbacks to mint the tokens
-		// use "transfer" instead of "mint" for non-mintable tokens
-		mint: async function (token, to, amount) {
-			return await token.mint(to, amount, { from: accounts[0] });
+		transfer: async function (token, to, amount) {
+			return await token.transfer(to, amount, { from: accounts[0] });
 		},
 
 		// optional:
@@ -28,9 +27,9 @@ contract('HSToken', function (accounts) {
 		decimals: 18,
 
 		// initial state to test
-		initialSupply: "0",
+		initialSupply: "100000000000000000000000000",
 		initialBalances: [
-			[accounts[0], "0"]
+			[accounts[0], "100000000000000000000000000"]
 		],
 		// initialAllowances: [
 		// 	[accounts[0], accounts[1], 0]

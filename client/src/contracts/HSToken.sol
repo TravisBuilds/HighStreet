@@ -1,8 +1,7 @@
+// SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.2;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 /**
 * @title HSToken
@@ -11,15 +10,11 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 * This feature will be implemented in Version 2 of ProductToken.
 * @dev This is an implementation of the ERC20 token that will be used as utility token on our platform.
 */
-contract HSToken is ERC20, Ownable {
-    uint256 private constant maxSupply = 100000000 * 1e18;     // the total supply
+contract HSToken is ERC20 {
 
-    /**
-    * @dev constructor function.
-    *
-    */
-    constructor() public ERC20("Street Token", "HIGH"){
-        
+    constructor(address minter) public ERC20("Street Token", "HIGH"){
+        uint256 amount = 100000000 * 1e18; //decimals 18
+        _mint(minter, amount);
     }
 
-} 
+}
