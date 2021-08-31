@@ -18,7 +18,7 @@ contract HSToken is ERC20, Ownable {
     * @dev constructor function.
     *
     */
-    constructor() public ERC20("Street Token", "TKN"){
+    constructor() public ERC20("Street Token", "HIGH"){
         
     }
 
