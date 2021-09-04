@@ -146,9 +146,6 @@ The market place's front end interface is a web application built on React. Buyi
 
 [![sample](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/sample.png?raw=true "sample")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/sample.png?raw=true  "sample")
 
-  
-
-[![merchant](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/merchant.png?raw=true "merchant")](https://github.com/TravisBuilds/virtualmarket/blob/master/resources/merchant.png?raw=true  "merchant")
 
   
 
