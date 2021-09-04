@@ -8,3 +8,5 @@ server/server.*
 .endpoint
 .secret
 .mnemonic
+.kovanEndpoint
+.rinkebyEndpoint

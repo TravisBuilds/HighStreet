@@ -6,7 +6,7 @@
     "node": "15.x"
   },
   "dependencies": {
-    "arb-ts": "^0.0.12",
+    "arb-ts": "^0.0.19",
     "ethers": "^5.1.3",
     "node-sass": "^5.0.0",
     "react": "^17.0.2",

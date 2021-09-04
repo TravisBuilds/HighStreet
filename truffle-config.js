@@ -25,7 +25,8 @@ const HDWalletProvider = require('@truffle/hdwallet-provider');
 const fs = require('fs');
 // For Kovan testnet and mainnet using Infura
 const privateKey = fs.readFileSync(".secret").toString().trim();
-const endpointUrl = fs.readFileSync(".endpoint").toString().trim();
+const kovanEndpointUrl = fs.readFileSync(".kovanEndpoint").toString().trim();
+const rinkebyEndpointUrl = fs.readFileSync(".rinkebyEndpoint").toString().trim();
 // Using Arbitrum chain on Kovan net.
 const mnemonic = fs.readFileSync(".mnemonic").toString().trim();
 module.exports = {
@@ -51,11 +52,12 @@ module.exports = {
      port: 7545,            // Standard Ethereum port (default: none)
      network_id: "*",       // Any network (default: none)
     },
+
     // Another network with more advanced options...
     // advanced: {
     // port: 8777,             // Custom port
     // network_id: 1342,       // Custom network
-    // gas: 8500000,           // Gas sent with each transaction (default: ~6700000)
+    // gas: 8500000,           // Gas sent with each transaction (default: ~6700000) 
     // gasPrice: 20000000000,  // 20 gwei (in wei) (default: 100 gwei)
     // from: <address>,        // Account to send txs from (default: accounts[0])
     // websocket: true        // Enable EventEmitter interface for web3 (default: false)
@@ -64,23 +66,34 @@ module.exports = {
     // NB: It's important to wrap the provider as a function.
 
     kovan: {
-      provider: () => new HDWalletProvider([privateKey], endpointUrl),
+      provider: () => new HDWalletProvider([privateKey], kovanEndpointUrl),
       network_id: 42,
-      gas: 5000000,
+      gas: 12487794,
       gasPrice: 10000000000,
     },
-
+    rinkeby: {
+      provider: () => new HDWalletProvider([privateKey], rinkebyEndpointUrl),
+      network_id: 4,
+      gas: 20000000,
+      gasPrice: 10000000000,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true,
+      websocket: true,
+      timeoutBlocks: 50000,
+      networkCheckTimeout: 10000000
+    },
     arbitrum: {
       provider: function () {
         return wrapProvider(
-          new HDWalletProvider(mnemonic, 'https://kovan5.arbitrum.io/rpc')
+          new HDWalletProvider(mnemonic, 'https://rinkeby.arbitrum.io/rpc')
         )
       },
       network_id: '*', // Match any network id
       gas: 450000000,
       gasPrice: 0,
     },
-    
+
     // Useful for private networks
     // private: {
     // provider: () => new HDWalletProvider(mnemonic, `https://network.io`),
@@ -99,7 +112,7 @@ module.exports = {
   // Configure your compilers
   compilers: {
     solc: {
-      version: "0.8.2",    // Fetch exact version from solc-bin (default: truffle's version)
+      version: "0.8.3",    // Fetch exact version from solc-bin (default: truffle's version)
       // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
       settings: {          // See the solidity docs for advice about optimization and evmVersion
        optimizer: {
