@@ -6,7 +6,7 @@
   },
   "dependencies": {
     "@chainlink/contracts": "^0.1.7",
-    "@openzeppelin/contracts": "^4.1.0",
+    "@openzeppelin/contracts": "^4.3.2",
     "@openzeppelin/contracts-upgradeable": "^4.0.0",
     "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
@@ -33,7 +33,7 @@
     "heroku-prebuild": "cd client; npm install --also=dev; npm run build; cd -",
     "start": "node server",
     "check-size": "node test/contractSizeCheck.js",
-    "testcase:HsToken-suite":"truffle test ./test/HsToken.erc20.js",
-    "testcase:BeaconProxyUpgradable":"truffle test test/BeaconProxyUpgradable.test.js"
+    "testcase:HsToken-suite": "truffle test ./test/HIGH.token.test.js",
+    "testcase:BeaconProxyUpgradable": "truffle test test/BeaconProxyUpgradable.test.js"
   }
 }

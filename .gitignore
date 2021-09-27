@@ -10,3 +10,5 @@ server/server.*
 .mnemonic
 .kovanEndpoint
 .rinkebyEndpoint
+.mainnetEndpoint
+.secretTest

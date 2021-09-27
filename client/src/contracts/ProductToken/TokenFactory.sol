@@ -4,7 +4,6 @@ pragma solidity ^0.8.2;
 
 import "@openzeppelin/contracts/proxy/beacon/IBeacon.sol";
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
-import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
@@ -44,11 +43,11 @@ contract TokenFactory is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 	}
 
 	/**
-   * @dev function to create a new product token. 
+   * @dev function to create a new product token.
    * After creating a new beacon proxy, the token factory will pass in _data, the encoded function call for initialize.
    * Then factory will call method to set our corporate account as the creator of the new token.
    *
-   * @param _productName   						 product name for a new token. The product name has to be unique                	
+   * @param _productName   						 product name for a new token. The product name has to be unique
    * @param _data											 encoded data for the initialize function call with parameters.
   */
 	function createToken(string memory _productName, bytes memory _data) external onlyOwner{
@@ -68,8 +67,8 @@ contract TokenFactory is Initializable, UUPSUpgradeable, OwnableUpgradeable {
    * After creating a new beacon proxy, the token factory will pass in _data, the encoded function call for initialize.
    * Then factory will call method to set our corporate account as the creator of the new token.
    *
-   * @param _productName   						 product name for the product token. 
-   * @return address 									 the address of the product token.           	
+   * @param _productName   						 product name for the product token.
+   * @return address 									 the address of the product token.
   */
 	function retrieveToken(string memory _productName) external view returns(address) {
 		require(registry[_productName]!=address(0), "This product token does not exist");
@@ -77,16 +76,8 @@ contract TokenFactory is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 	}
 
 	/**
-   * @dev necessary function override from UUPSUpgradeable proxy contract.            	
+   * @dev necessary function override from UUPSUpgradeable proxy contract.
   */
 	function _authorizeUpgrade(address) internal override onlyOwner {}
 
-	/**
-   * @dev Return address of the current owner. This is used in testing only.
-   *
-   * @return address              address of the owner.
-  */
-	// function getOwner() public returns (address) {
-	// 	return owner();
-	// }
 }

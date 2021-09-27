@@ -1,22 +1,22 @@
 require('regenerator-runtime/runtime');
 const suite = require('token-test-suite/lib/suite');
-const HSToken = artifacts.require('HSToken');
+const HIGH = artifacts.require('HIGH');
 
-contract('HSToken', function (accounts) {
+contract('HIGH', function (accounts) {
 	let options = {
 		// accounts to test with, accounts[0] being the contract owner
 		accounts: accounts,
 
 		// factory method to create new token contract
 		create: async function () {
-			return await HSToken.new(accounts[0]);
+			return await HIGH.new(accounts[0]);
 		},
 
 		// factory callbacks to mint the tokens
+		// use "transfer" instead of "mint" for non-mintable tokens
 		transfer: async function (token, to, amount) {
 			return await token.transfer(to, amount, { from: accounts[0] });
 		},
-
 		// optional:
 		// also test the increaseApproval/decreaseApproval methods (not part of the ERC-20 standard)
 		increaseDecreaseApproval: false,

@@ -21,16 +21,17 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
 	event Buy(address indexed sender, uint32 amount, uint256 deposit);		// event to fire when a new token is minted
   event Sell(address indexed sender, uint32 amount, uint256 refund);		// event to fire when a token has been sold back
   event Tradein(address indexed sender, uint32 amount);							// event to fire when a token is redeemed in the real world
-  event CreatorTransfer(address indexed newCreator);                // event to fire when a creator for the token is set
   event Tradable(bool isTradable);
 
   bool private isTradable;
   uint256 public reserveBalance;      // amount of liquidity in the pool
+  uint256 public tradeinReserveBalance;      // amount of liquidity in the pool
   uint32 public reserveRatio;         // computed from the exponential factor in the
   uint32 public maxTokenCount;        // max token count, determined by the supply of our physical product
   uint32 public tradeinCount;         // number of tokens burned through redeeming procedure. This will drive price up permanently
   uint32 internal supplyOffset;       // an initial value used to set an initial price. This is not included in the total supply.
-  address payable public creator;     // address that points to our corporate account address. This is 'public' for testing only and will be switched to internal before release.
+  address private _manager;
+
   BancorBondingCurveV1Interface internal bondingCurve;
 
   modifier onlyIfTradable {
@@ -52,7 +53,8 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
    * @param _baseReserve              the base amount of reserve tokens, in accordance to _supplyOffset.
    *
   */
-  function initialize(string memory _name, string memory _symbol, address _bondingCurveAddress, uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve) public initializer{
+  function initialize(string memory _name, string memory _symbol, address _bondingCurveAddress,
+      uint32 _reserveRatio, uint32 _maxTokenCount, uint32 _supplyOffset, uint256 _baseReserve) public virtual initializer{
     __Ownable_init();
     __ERC20_init(_name, _symbol);
     __ProductToken_init_unchained(_bondingCurveAddress, _reserveRatio, _maxTokenCount, _supplyOffset, _baseReserve);
@@ -72,9 +74,14 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
     require(_reserveRatio > 0, "Invalid reserve ratio");
     bondingCurve = BancorBondingCurveV1Interface(_bondingCurveAddress);
     reserveBalance = _baseReserve;
+    tradeinReserveBalance = _baseReserve;
     supplyOffset = _supplyOffset;
     reserveRatio = _reserveRatio;
     maxTokenCount = _maxTokenCount;
+  }
+
+  function decimals() public view virtual override returns (uint8) {
+      return 0;
   }
 
   /**
@@ -108,15 +115,6 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
     emit Tradable(isTradable);
   }
 
-	/**
-   * @dev When user wants to trade in their token for retail product
-   *
-   * @param _amount                   amount of tokens that user wants to trade in.
-  */
-  function tradein(uint32 _amount) external virtual onlyIfTradable {
-  	_tradeinForAmount(_amount);
-  }
-
   fallback () external { }
 
   /**
@@ -137,7 +135,7 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
    *
    * @return supply                   supply value for bonding curve calculation.
   */
-  function getTotalSupply()
+  function _getTotalSupply()
     internal view virtual returns (uint32 supply)
   {
     return uint32(totalSupply().add(uint256(tradeinCount)).add(uint256(supplyOffset)));
@@ -152,9 +150,7 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
   function getCurrentPrice()
   	public view virtual returns	(uint256 price)
   {
-    uint256 price = bondingCurve.calculatePriceForNTokens(getTotalSupply(), reserveBalance, reserveRatio, 1);
-    // ppm of 104%. 4% is the platform transaction fee
-    return price.mul(1040000).div(1000000);
+    return getPriceForN(1);
   }
 
   /**
@@ -167,22 +163,25 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
   function getPriceForN(uint32 _amountProduct)
   	public view virtual returns	(uint256 price)
   {
-    uint256 price = bondingCurve.calculatePriceForNTokens(getTotalSupply(), reserveBalance, reserveRatio, _amountProduct);
-    // ppm of 104%. 4% is the platform transaction fee
-    return price.mul(1040000).div(1000000);
+    (uint value, uint fee) = _getPriceForN(_amountProduct);
+    return value.add(fee);
   }
 
+  function _getPriceForN(uint32 _amountProduct)
+  	internal view virtual returns	(uint256, uint256) {
+      uint256 price = bondingCurve.calculatePriceForNTokens(_getTotalSupply(), reserveBalance, reserveRatio, _amountProduct);
+      //8% is the platform transaction fee
+      uint256 fee = price.mul(8e12).div(1e14);
+      return (price, fee);
+    }
 
-  /**
-   * @dev Function that computes number of product tokens one can buy given an amount in reserve token.
-   *
-   * @param  _amountReserve          purchaing amount in reserve token (dai)
-   * @return mintAmount              number of tokens in traded token that can be purchased by given amount.
-  */
   function _buyReturn(uint256 _amountReserve)
-    internal view virtual returns (uint32 mintAmount)
+    internal view virtual returns (uint32, uint)
   {
-    return bondingCurve.calculatePurchaseReturn(getTotalSupply(), reserveBalance, reserveRatio, _amountReserve);
+    uint value = _amountReserve.mul(1e12).div(1.08e12);
+    uint fee = value.mul(8e12).div(1e14);
+    uint32 amount = bondingCurve.calculatePurchaseReturn(_getTotalSupply(), reserveBalance, reserveRatio, value.sub(fee));
+    return (amount, fee);
   }
 
   /**
@@ -194,20 +193,17 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
   function calculateBuyReturn(uint256 _amountReserve)
     public view virtual returns (uint32 mintAmount)
   {
-    // ppm of 96%. 4% is the platform transaction fee
-    return _buyReturn(_amountReserve.mul(1000000).div(1040000));
+    (uint32 amount,) = _buyReturn(_amountReserve);
+    return amount;
   }
 
-  /**
-   * @dev Function that computes selling price in reserve tokens given an amount in traded token.
-   *
-   * @param  _amountProduct          selling amount in product token
-   * @return soldAmount              total amount that will be transferred to the seller.
-  */
   function _sellReturn(uint32 _amountProduct)
-    internal view virtual returns (uint256 soldAmount)
+    internal view virtual returns (uint256, uint256)
   {
-    return bondingCurve.calculateSaleReturn(getTotalSupply(), reserveBalance, reserveRatio, _amountProduct);
+    // ppm of 98%. 2% is the platform transaction fee
+    uint reimburseAmount = bondingCurve.calculateSaleReturn(_getTotalSupply(), reserveBalance, reserveRatio, _amountProduct);
+    uint fee = reimburseAmount.mul(2e10).div(1e12);
+    return (reimburseAmount, fee);
   }
 
   /**
@@ -219,8 +215,8 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
   function calculateSellReturn(uint32 _amountProduct)
     public view virtual returns (uint256 soldAmount)
   {
-    // ppm of 98%. 2% is the platform transaction fee
-    return _sellReturn(_amountProduct).mul(980000).div(1000000);
+    (uint reimburseAmount, uint fee) = _sellReturn(_amountProduct);
+    return reimburseAmount.sub(fee);
   }
 
    /**
@@ -234,58 +230,24 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
    *
    * @return token                amount bought in product token
    * @return change               amount of change in reserve tokens.
+   * @return price
+   * @return fee
   */
-  function _buy(uint256 _deposit) internal virtual returns (uint32, uint256) {
-    return _buyForAmount(_deposit, 1);
-  }
-
-   /**
-   * @dev calculates the return for a given conversion (in product token)
-   * This function validate whether amount of deposit is enough to purchase _amount tokens.
-   * If enough, the function will deduct, and then mint specific amount for the user. Any extras are return as change.
-   * If not enough, the function will then trying to compute an actual amount that user can buy with _deposit,
-   * then replace the _amount with the actual amount and proceed with the above logic.
-   *
-   * @param _deposit              reserve token deposited
-   * @param _amount               the amount of tokens to be bought.
-   *
-   * @return token                amount bought in product token
-   * @return change               amount of change in reserve tokens.
-  */
-  function _buyForAmount(uint256 _deposit, uint32 _amount)
-    internal virtual returns (uint32, uint256)
+  function _buy(uint256 _deposit)
+    internal virtual returns (uint32, uint256, uint256, uint256)
   {
   	require(getAvailability() > 0, "Sorry, this token is sold out.");
     require(_deposit > 0, "Deposit must be non-zero.");
-    // Special case, buy 0 tokens, return all fund back to user.
-    if (_amount == 0) {
-      return (0, _deposit);
+
+    (uint price, uint fee ) = _getPriceForN(1);
+
+    if (price > _deposit) {
+      return (0, _deposit, 0, 0);
     }
-
-    uint32 amount;
-    uint256 actualDeposit;
-
-    // If the amount in _deposit is more than enough to buy out the rest of the token in the pool
-    if (_amount > getAvailability()) {
-      _amount = getAvailability();
-    }
-
-    actualDeposit = getPriceForN(_amount);
-    if (actualDeposit > _deposit) {   // if user deposited token is not enough to buy ideal amount. This is a fallback option.
-      uint256 fee = actualDeposit.mul(40000).div(1040000);
-      amount = _buyReturn(_deposit.sub(fee));
-      actualDeposit = getPriceForN(amount);
-      if(amount == 0 ) {
-        return (amount, _deposit);
-      }
-    } else {
-      amount = _amount;
-    }
-
-    _mint(msg.sender, amount);
-    reserveBalance = reserveBalance.add(actualDeposit.mul(1000000).div(1040000));
-    emit Buy(msg.sender, amount, actualDeposit);
-    return (amount, _deposit.sub(actualDeposit));    // return amount of token bought and change
+    _mint(msg.sender, 1);
+    reserveBalance = reserveBalance.add(price);
+    emit Buy(msg.sender, 1, price);
+    return (1, _deposit.sub(price).sub(fee), price, fee);
   }
 
    /**
@@ -295,44 +257,31 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
    *
    * @param _amount              amount of product token wishes to be sold
    *
-   * @return token               amount sold in reserved token
+   * @return amount               amount sold in reserved token
+   * @return fee
   */
   function _sellForAmount(uint32 _amount)
-    internal virtual returns (uint256)
+    internal virtual returns (uint256, uint256)
   {
   	require(_amount > 0, "Amount must be non-zero.");
     require(balanceOf(msg.sender) >= _amount, "Insufficient tokens to sell.");
     // calculate amount of liquidity to reimburse
-  	uint256 reimburseAmount = _sellReturn(_amount);
+  	(uint256 reimburseAmount, uint256 fee) = _sellReturn(_amount);
  		reserveBalance = reserveBalance.sub(reimburseAmount);
     _burn(msg.sender, _amount);
+
     emit Sell(msg.sender, _amount, reimburseAmount);
-    return reimburseAmount;
+    return (reimburseAmount.sub(fee), fee);
   }
 
-
-  /**
-   * @dev initiate token logics after a token is traded in.
-   * This function will start an escrow process, which holds user's token until a redemption process is done.
-   *
-   * @param _amount              product token wishes to be traded-in
-  */
-  function _tradeinForAmount(uint32 _amount)
-    internal virtual
+  function calculateTradinReturn(uint32 _amount)
+    public view virtual returns (uint256)
   {
-    require(_amount > 0, "Amount must be non-zero.");
-    require(balanceOf(msg.sender) >= _amount, "Insufficient tokens to burn.");
-
-    uint256 reimburseAmount = _sellReturn(_amount);
-    _updateSupplierFee(reimburseAmount);
-    // ppm of 98%. 2% is the platform transaction fee
-    _addEscrow(_amount, reimburseAmount.mul(980000).div(1000000));
-
-    _burn(msg.sender, _amount);
-    tradeinCount = tradeinCount + _amount;			// Future: use safe math here.
-
-    emit Tradein(msg.sender, _amount);
+  	require(_amount > 0, "invalid amount");
+    uint32 supply = uint32(uint256(_amount).add(uint256(tradeinCount)).add(uint256(supplyOffset)));
+  	return bondingCurve.calculateSaleReturn(supply, tradeinReserveBalance, reserveRatio, _amount);
   }
+
 
   /**
    * @dev used to update the status of redemption to "User Complete" after an escrow process has been started.
@@ -340,7 +289,8 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
    * @param buyer                 the wallet address of product buyer
    * @param id                    the id of the escrow, returned to the user after starting of redemption process
   */
-  function updateUserCompleted(address buyer, uint256 id) onlyOwner external virtual{
+  function updateUserCompleted(address buyer, uint256 id) external virtual {
+    require(msg.sender == owner() || msg.sender == _manager, 'permission denied');
     require(buyer != address(0), "Invalid buyer");
     _updateUserCompleted(buyer, id);
   }
@@ -351,7 +301,8 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
    * @param buyer                 the wallet address of product buyer
    * @param id                    the id of the escrow, returned to the user after starting of redemption process
   */
-  function updateUserRefund(address buyer, uint256 id) onlyOwner external virtual{
+  function updateUserRefund(address buyer, uint256 id) external virtual{
+    require(msg.sender == owner() || msg.sender == _manager, 'permission denied');
     require(buyer != address(0), "Invalid buyer");
     uint256 value = _updateUserRefund(buyer, id);
     require(value >0 , "Invalid value");
@@ -371,16 +322,13 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
     // override
   }
 
+  function setManager(address addr_) external virtual onlyOwner {
+    require(addr_ != address(0), 'invalid address');
+    _manager = addr_;
+  }
 
-  /**
-   * @dev change supplier fee value.
-   * This function updates the amount of allowance that a brand can withdraw.
-   * The exact amount is dependent on the price value of the product evaulated based on number of products being redeemed
-   *
-   * @param _value                 the amount in reserve currency
-  */
-  function _updateSupplierFee(uint256 _value) internal virtual returns(uint256) {
-    // override
+  function getManager() external view virtual returns(address) {
+    return _manager;
   }
 
 }
