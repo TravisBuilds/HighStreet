@@ -61,7 +61,9 @@ contract Escrow {
      * @param _id           The cached id of the escrow, retrieved from database
   */
   function _updateUserCompleted(address _buyer, uint256 _id) internal virtual {
-    require(_id >=  0 || _id < escrowList[_buyer].length, "Invalid _id");
+    require(_id >=  0 || _id < escrowList[_buyer].length, "Invalid id");
+    require(!isStateCompleted(escrowList[_buyer][_id].state), "already completed");
+
     escrowList[_buyer][_id].state = escrowState.COMPLETE;
     emit escrowStateUpdated(_buyer, _id, escrowList[_buyer][_id]);
   }
@@ -75,7 +77,9 @@ contract Escrow {
      * @return              The amount of reserve currency in dai that needs to be refunded.
   */
   function _updateUserRefund(address _buyer, uint256 _id) internal virtual returns (uint) {
-    require(_id >=  0 || _id < escrowList[_buyer].length, "Invalid _id");
+    require(_id >=  0 || _id < escrowList[_buyer].length, "Invalid id");
+    require(!isStateCompleted(escrowList[_buyer][_id].state), "already completed");
+
     escrowList[_buyer][_id].state = escrowState.COMPLETE_USER_REFUND;
     emit escrowStateUpdated(_buyer, _id, escrowList[_buyer][_id]);
     return escrowList[_buyer][_id].value;
@@ -109,7 +113,7 @@ contract Escrow {
      * @return             The current status
   */
   function getRedeemStatus(address _buyer, uint256 _id) external view virtual returns (escrowState) {
-    require(_id >=  0 || _id < escrowList[_buyer].length, "Invalid _id");
+    require(_id >=  0 || _id < escrowList[_buyer].length, "Invalid id");
     return escrowList[_buyer][_id].state;
   }
 
