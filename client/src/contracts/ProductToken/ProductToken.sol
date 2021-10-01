@@ -18,8 +18,8 @@ import "./Escrow.sol";
 contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
 	using SafeMathUpgradeable for uint256;
 
-	event Buy(address indexed sender, uint32 amount, uint256 deposit);		// event to fire when a new token is minted
-  event Sell(address indexed sender, uint32 amount, uint256 refund);		// event to fire when a token has been sold back
+	event Buy(address indexed sender, uint32 amount, uint256 price);		// event to fire when a new token is minted
+  event Sell(address indexed sender, uint32 amount, uint256 price);		// event to fire when a token has been sold back
   event Tradein(address indexed sender, uint32 amount);							// event to fire when a token is redeemed in the real world
   event Tradable(bool isTradable);
 
@@ -246,7 +246,7 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
     }
     _mint(msg.sender, 1);
     reserveBalance = reserveBalance.add(price);
-    emit Buy(msg.sender, 1, price);
+    emit Buy(msg.sender, 1, price.add(fee));
     return (1, _deposit.sub(price).sub(fee), price, fee);
   }
 
