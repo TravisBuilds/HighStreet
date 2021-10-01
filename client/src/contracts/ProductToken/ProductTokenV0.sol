@@ -50,7 +50,7 @@ contract ProductTokenV0 is ProductToken {
             if(change > 0) {
                 instance.transferFrom(address(this), msg.sender, voucher.tokenId, tokenId_, change);
             }
-            _updateSupplierFee(fee.mul(1e12).div(8e12));
+            _updateSupplierFee(fee.mul(1e12).div(4e12));
         } else {
             instance.transferFrom(address(this), msg.sender, voucher.tokenId, tokenId_, maxPrice_);
         }

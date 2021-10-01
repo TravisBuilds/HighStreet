@@ -171,15 +171,15 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
   	internal view virtual returns	(uint256, uint256) {
       uint256 price = bondingCurve.calculatePriceForNTokens(_getTotalSupply(), reserveBalance, reserveRatio, _amountProduct);
       //8% is the platform transaction fee
-      uint256 fee = price.mul(8e12).div(1e14);
+      uint256 fee = price.mul(4e12).div(1e14);
       return (price, fee);
     }
 
   function _buyReturn(uint256 _amountReserve)
     internal view virtual returns (uint32, uint)
   {
-    uint value = _amountReserve.mul(1e12).div(1.08e12);
-    uint fee = value.mul(8e12).div(1e14);
+    uint value = _amountReserve.mul(1e12).div(1.04e12);
+    uint fee = value.mul(4e12).div(1e14);
     uint32 amount = bondingCurve.calculatePurchaseReturn(_getTotalSupply(), reserveBalance, reserveRatio, value.sub(fee));
     return (amount, fee);
   }
