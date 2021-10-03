@@ -50,7 +50,7 @@ contract ProductTokenV0 is ProductToken {
             if(change > 0) {
                 instance.transferFrom(address(this), msg.sender, voucher.tokenId, tokenId_, change);
             }
-            _updateSupplierFee(fee.mul(1e12).div(8e12));
+            _updateSupplierFee(fee.mul(1e12).div(4e12));
         } else {
             instance.transferFrom(address(this), msg.sender, voucher.tokenId, tokenId_, maxPrice_);
         }
@@ -62,7 +62,14 @@ contract ProductTokenV0 is ProductToken {
         _updateSupplierFee(fee.mul(1e12).div(2e12));
     }
 
-    function tradeinVoucher(uint256 tokenId_, uint32 amount_) external virtual onlyIfTradable {
+    function sellByVoucher(uint32 amount_) external virtual onlyIfTradable{
+        (uint256 price, uint256 fee )= _sellForAmount(amount_);
+        IVNFT(voucher.addr).transferFrom(address(this), msg.sender, voucher.tokenId, price);
+        _updateSupplierFee(fee.mul(1e12).div(2e12));
+    }
+
+
+    function tradeinVoucher(uint32 amount_) external virtual onlyIfTradable {
         require(amount_ > 0, "Amount must be non-zero.");
         require(balanceOf(msg.sender) >= amount_, "Insufficient tokens to burn.");
 
