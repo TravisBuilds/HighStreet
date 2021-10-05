@@ -1,6 +1,7 @@
 
 # Highstreet World
 This repository covers the smart contract and web portion of Highstreet Market, a product within the Highstreet World Metaverse. 
+for more overviews on Highstreet World itself, please visit: https://docsend.com/view/6vcat9niwhrfjik3
 
 ## Highstreet Market: For Redeemable Limited Edition Products 
 
