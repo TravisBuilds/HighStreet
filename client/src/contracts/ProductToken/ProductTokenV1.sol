@@ -43,7 +43,7 @@ contract ProductTokenV1 is ProductToken {
             if(change > 0) {
                 high.transfer(msg.sender, change);
             }
-            _updateSupplierFee(fee.mul(1e12).div(8e12));
+            _updateSupplierFee(fee.mul(1e12).div(4e12));
         }else { // If token transaction failed
             high.transfer(msg.sender, maxPrice_);
         }
@@ -81,7 +81,7 @@ contract ProductTokenV1 is ProductToken {
         emit Tradein(msg.sender, amount_);
     }
 
-    function updateSupplierInfo( address wallet_) external onlyOwner {
+    function setSupplier( address wallet_) external virtual onlyOwner {
         require(wallet_!=address(0), "Address is invalid");
         supplier.wallet = wallet_;
     }
@@ -122,7 +122,7 @@ contract ProductTokenV1 is ProductToken {
         require(success, "refund token failed");
     }
 
-    function withdrawHigh(uint256 amount_, address to_) external virtual onlyOwner {
+    function claimHigh(uint256 amount_, address to_) external virtual onlyOwner {
         require(to_ != address(0), "invalid address");
         require(amount_ <= high.balanceOf(address(this)), 'invalid amount');
         high.transfer(to_, amount_);

@@ -15,7 +15,8 @@
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.6.6",
     "passport": "^0.4.1",
-    "passport-instagram-basic-api": "^1.0.0"
+    "passport-instagram-basic-api": "^1.0.0",
+    "truffle-flattener": "github:jplew/truffle-flattener"
   },
   "devDependencies": {
     "@openzeppelin/test-helpers": "^0.5.11",
