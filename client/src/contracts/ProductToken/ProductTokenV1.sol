@@ -25,7 +25,7 @@ contract ProductTokenV1 is ProductToken {
 
     supplierInfo public supplier;
     voucherInfo public voucher;
-    IERC20 high;
+    IERC20 private high;
 
     function setHigh(address highAddress_) external onlyOwner {
         require(highAddress_!=address(0), "Invalid address");
@@ -59,28 +59,6 @@ contract ProductTokenV1 is ProductToken {
         require(success, "selling token failed");
     }
 
-    /**
-    * @dev When user wants to trade in their token for retail product
-    *
-    * @param amount_                   amount of tokens that user wants to trade in.
-    */
-    function tradein(uint32 amount_) external virtual onlyIfTradable {
-        require(amount_ > 0, "Amount must be non-zero.");
-        require(balanceOf(msg.sender) >= amount_, "Insufficient tokens to burn.");
-
-        (uint256 reimburseAmount, uint fee) = _sellReturn(amount_);
-
-        uint256 tradinReturn = calculateTradinReturn(amount_);
-        _updateSupplierFee(fee.mul(1e12).div(2e12).add(tradinReturn));
-        reimburseAmount = reimburseAmount.sub(fee);
-        _addEscrow(amount_,  reimburseAmount);
-        _burn(msg.sender, amount_);
-        tradeinCount = tradeinCount + amount_;
-        tradeinReserveBalance = tradeinReserveBalance.add(tradinReturn);
-
-        emit Tradein(msg.sender, amount_);
-    }
-
     function setSupplier( address wallet_) external virtual onlyOwner {
         require(wallet_!=address(0), "Address is invalid");
         supplier.wallet = wallet_;
@@ -101,13 +79,6 @@ contract ProductTokenV1 is ProductToken {
         if( fee > 0 ) {
             supplier.amount = supplier.amount.add(fee);
         }
-    }
-
-    /**
-    * @dev this function returns the amount of reserve balance that the supplier can withdraw from the dapp.
-    */
-    function getSupplierBalance() public view virtual returns (uint256) {
-        return supplier.amount;
     }
 
     /**
