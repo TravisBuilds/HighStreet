@@ -187,18 +187,6 @@ contract ProductTokenV11 is ProductToken {
     }
 
     /**
-    * @dev A method that refunds the value of a product to a buyer/customer.
-    *
-    * @param buyer_       The wallet address of the owner whose product token is under the redemption process
-    * @param value_       The market value of the token being redeemed
-    *
-    */
-    function _refund(address buyer_, uint256 value_) internal virtual override {
-        bool success = high.transfer(buyer_, value_);
-        require(success, "refund token failed");
-    }
-
-    /**
     * @dev A method allow us to withdraw liquidity (eth) from the contract
     * Since eth is not used as a return currency, we need to withdraw eth from the system.
     *

@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "./ProductToken.sol";
 import "./interface/IVNFT.sol";
+import "./interface/INFTMint.sol";
 
 /// @title ProductTokenV1
 /// @notice This is version 1 of the product token implementation.
@@ -26,10 +27,11 @@ contract ProductTokenV1 is ProductToken {
     supplierInfo public supplier;
     voucherInfo public voucher;
     IERC20 private high;
+    INFTMint private nft;
 
-    function setHigh(address highAddress_) external onlyOwner {
-        require(highAddress_!=address(0), "Invalid address");
-        high = IERC20(highAddress_);
+    function setNft(address address_) external onlyOwner {
+        require(address_ != address(0), "Invalid address");
+        nft = INFTMint(address_);
     }
 
     function buy(uint256 maxPrice_) external virtual onlyIfTradable {
@@ -59,6 +61,34 @@ contract ProductTokenV1 is ProductToken {
         require(success, "selling token failed");
     }
 
+    /**
+    * @dev When user wants to trade in their token for retail product
+    *
+    * @param amount_                   amount of tokens that user wants to trade in.
+    */
+    function tradein(uint32 amount_) external virtual onlyIfTradable returns(uint256){
+        require(amount_ > 0, "Amount must be non-zero.");
+        require(balanceOf(msg.sender) >= amount_, "Insufficient tokens to burn.");
+
+        (uint256 reimburseAmount, uint fee) = _sellReturn(amount_);
+
+        uint256 tradinReturn = calculateTradinReturn(amount_);
+        _updateSupplierFee(fee.mul(1e12).div(2e12).add(tradinReturn));
+        reimburseAmount = reimburseAmount.sub(fee);
+        uint256 id = _addEscrow(amount_,  reimburseAmount);
+        _burn(msg.sender, amount_);
+
+        for(uint256 index = tradeinCount +1; index <= tradeinCount + amount_; index ++) {
+            nft.mint(msg.sender, index);
+        }
+
+        tradeinCount = tradeinCount + amount_;
+        tradeinReserveBalance = tradeinReserveBalance.add(tradinReturn);
+
+        emit Tradein(msg.sender, amount_);
+        return id;
+    }
+
     function setSupplier( address wallet_) external virtual onlyOwner {
         require(wallet_!=address(0), "Address is invalid");
         supplier.wallet = wallet_;
@@ -80,23 +110,4 @@ contract ProductTokenV1 is ProductToken {
             supplier.amount = supplier.amount.add(fee);
         }
     }
-
-    /**
-    * @dev A method that refunds the value of a product to a buyer/customer.
-    *
-    * @param buyer_       The wallet address of the owner whose product token is under the redemption process
-    * @param value_       The market value of the token being redeemed
-    *
-    */
-    function _refund(address buyer_, uint256 value_) internal virtual override {
-        bool success = high.transfer(buyer_, value_);
-        require(success, "refund token failed");
-    }
-
-    function claimHigh(uint256 amount_, address to_) external virtual onlyOwner {
-        require(to_ != address(0), "invalid address");
-        require(amount_ <= high.balanceOf(address(this)), 'invalid amount');
-        high.transfer(to_, amount_);
-    }
-
 }
