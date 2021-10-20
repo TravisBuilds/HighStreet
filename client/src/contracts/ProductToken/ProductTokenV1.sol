@@ -78,7 +78,7 @@ contract ProductTokenV1 is ProductToken {
         uint256 id = _addEscrow(amount_,  reimburseAmount);
         _burn(msg.sender, amount_);
 
-        for(uint256 index = tradeinCount +1; index <= tradeinCount + amount_; index ++) {
+        for(uint256 index = tradeinCount; index < tradeinCount + amount_; index ++) {
             nft.mint(msg.sender, index);
         }
 

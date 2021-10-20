@@ -11,8 +11,8 @@ contract PANTY is Context, ERC721Enumerable, Ownable {
     address private _manager;
     string private baseURI;
 
-    constructor() ERC721('FOMO\'s Secret PANTY', "FSP") {
-        baseURI = 'https://highstreet.market/panty#';
+    constructor() ERC721("FOMO\xE2\x80\x99s Secret", "PANTY") {
+        baseURI = 'https://highstreet.market/fomosecret/';
         _manager = _msgSender();
     }
 
@@ -32,7 +32,7 @@ contract PANTY is Context, ERC721Enumerable, Ownable {
 
     function mint(address to_, uint256 tokenId_) external {
         require(_msgSender() == owner() || _msgSender() == _manager, 'permission denied');
-        require(tokenId_ > 0 && tokenId_ <= HARD_CAP, "cap exceeded");
+        require(tokenId_ >= 0 && tokenId_ < HARD_CAP, "cap exceeded");
         _safeMint(to_, tokenId_);
     }
 
