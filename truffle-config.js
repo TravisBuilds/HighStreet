@@ -19,25 +19,8 @@
  */
 
 const wrapProvider = require('arb-ethers-web3-bridge').wrapProvider;
+require('dotenv').config();
 const HDWalletProvider = require('@truffle/hdwallet-provider');
-// const infuraKey = "fj4jll3k.....";
-//
-const fs = require('fs');
-// For Kovan testnet and mainnet using Infura
-let privateKeyTest ="";
-let privateKey ="";
-if (fs.existsSync(".secretTest")) {
-  privateKeyTest = fs.readFileSync(".secretTest").toString().trim();
-}
-if (fs.existsSync(".secret")) {
-  privateKey = fs.readFileSync(".secret").toString().trim();
-} else if(privateKeyTest !== "") {
-  privateKey = privateKeyTest;
-}
-
-const mainnetEndpointUrl = fs.readFileSync(".mainnetEndpoint").toString().trim();
-const kovanEndpointUrl = fs.readFileSync(".kovanEndpoint").toString().trim();
-const rinkebyEndpointUrl = fs.readFileSync(".rinkebyEndpoint").toString().trim();
 
 // Using Arbitrum chain on Kovan net.
 // const mnemonic = fs.readFileSync(".mnemonic").toString().trim();
@@ -52,7 +35,13 @@ module.exports = {
    *
    * $ truffle test --network <network-name>
    */
-
+  plugins: [
+    'truffle-plugin-verify'
+  ],
+  api_keys: {
+    bscscan: process.env.API_KEY_BSC,
+    etherscan: process.env.API_KEY_ETHER
+  },
   networks: {
     // Useful for testing. The `development` name is special - truffle uses it by default
     // if it's defined here and no other network is specified at the command line.
@@ -78,44 +67,48 @@ module.exports = {
     // Useful for deploying to a public network.
     // NB: It's important to wrap the provider as a function.
     mainnet: {
-      provider: () => new HDWalletProvider([privateKey], mainnetEndpointUrl),
+      provider: () => new HDWalletProvider([process.env.PRIVATE_KEY], process.env.ENDPOINT_MAINNET),
       network_id: 1,
       gas: 30000000,
       gasPrice: 10000000000,
       confirmations: 2,
       timeoutBlocks: 200,
       skipDryRun: true,
-      websocket: true,
+      websocket: false,
       timeoutBlocks: 50000,
       networkCheckTimeout: 10000000
     },
     kovan: {
-      provider: () => new HDWalletProvider([privateKeyTest], kovanEndpointUrl),
+      provider: () => new HDWalletProvider([process.env.PRIVATE_KEY], process.env.ENDPOINT_KOVAN),
       network_id: 42,
       gas: 12487794,
       gasPrice: 10000000000,
     },
     rinkeby: {
-      provider: () => new HDWalletProvider([privateKeyTest], rinkebyEndpointUrl),
+      provider: () => new HDWalletProvider([process.env.PRIVATE_KEY], process.env.ENDPOINT_RINKEBY),
       network_id: 4,
       gas: 20000000,
       gasPrice: 10000000000,
       confirmations: 2,
       timeoutBlocks: 200,
       skipDryRun: true,
-      websocket: true,
+      websocket: false,
       timeoutBlocks: 50000,
       networkCheckTimeout: 10000000
     },
-    arbitrum: {
-      provider: function () {
-        return wrapProvider(
-          new HDWalletProvider(mnemonic, 'https://rinkeby.arbitrum.io/rpc')
-        )
-      },
-      network_id: '*', // Match any network id
-      gas: 450000000,
-      gasPrice: 0,
+    bsc: {
+      provider: () => new HDWalletProvider(process.env.PRIVATE_KEY, process.env.ENDPOINT_BSC),
+      network_id: 56,
+      confirmations: 10,
+      timeoutBlocks: 200,
+      skipDryRun: true
+    },
+    bsc_testnet: {
+      provider: () => new HDWalletProvider(process.env.PRIVATE_KEY, process.env.ENDPOINT_BSC_TESTNET),
+      network_id: 97,
+      confirmations: 1,
+      timeoutBlocks: 200,
+      skipDryRun: true
     },
 
     // Useful for private networks
@@ -129,6 +122,8 @@ module.exports = {
   // Set default mocha options here, use special reporters etc.
   mocha: {
     // timeout: 100000
+    reporter: 'eth-gas-reporter',
+    reporterOptions : {}
   },
   contracts_directory: './client/src/contracts/',
   contracts_build_directory: './client/src/build/contracts',
@@ -141,7 +136,7 @@ module.exports = {
       settings: {          // See the solidity docs for advice about optimization and evmVersion
        optimizer: {
          enabled: true,
-         runs: 50
+         runs: 2000
        },
        evmVersion: "byzantium"
       }

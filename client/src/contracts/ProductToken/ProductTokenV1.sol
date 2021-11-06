@@ -5,7 +5,6 @@ pragma solidity ^0.8.3;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "./ProductToken.sol";
-import "./interface/IVNFT.sol";
 import "./interface/INFTMint.sol";
 
 /// @title ProductTokenV1
@@ -19,15 +18,15 @@ contract ProductTokenV1 is ProductToken {
         uint256 amount;
         address wallet;
     }
-    struct voucherInfo {
-        address addr;
-        uint256 tokenId;
-    }
 
-    supplierInfo public supplier;
-    voucherInfo public voucher;
+    supplierInfo private supplier;
     IERC20 private high;
     INFTMint private nft;
+
+    function setHigh(address highAddress_) external onlyOwner {
+        require(highAddress_!=address(0), "Invalid address");
+        high = IERC20(highAddress_);
+    }
 
     function setNft(address address_) external onlyOwner {
         require(address_ != address(0), "Invalid address");
@@ -78,8 +77,10 @@ contract ProductTokenV1 is ProductToken {
         uint256 id = _addEscrow(amount_,  reimburseAmount);
         _burn(msg.sender, amount_);
 
-        for(uint256 index = tradeinCount; index < tradeinCount + amount_; index ++) {
-            nft.mint(msg.sender, index);
+        if(nft != INFTMint(address(0))) {
+            for(uint256 index = tradeinCount; index < tradeinCount + amount_; index ++) {
+                nft.mint(msg.sender, index);
+            }
         }
 
         tradeinCount = tradeinCount + amount_;
