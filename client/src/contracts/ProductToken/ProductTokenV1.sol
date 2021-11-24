@@ -5,7 +5,7 @@ pragma solidity ^0.8.3;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "./ProductToken.sol";
-import "./interface/IVNFT.sol";
+import "./interface/INFTMint.sol";
 
 /// @title ProductTokenV1
 /// @notice This is version 1 of the product token implementation.
@@ -18,18 +18,19 @@ contract ProductTokenV1 is ProductToken {
         uint256 amount;
         address wallet;
     }
-    struct voucherInfo {
-        address addr;
-        uint256 tokenId;
-    }
 
-    supplierInfo public supplier;
-    voucherInfo public voucher;
-    IERC20 high;
+    supplierInfo private supplier;
+    IERC20 private high;
+    INFTMint private nft;
 
     function setHigh(address highAddress_) external onlyOwner {
         require(highAddress_!=address(0), "Invalid address");
         high = IERC20(highAddress_);
+    }
+
+    function setNft(address address_) external onlyOwner {
+        require(address_ != address(0), "Invalid address");
+        nft = INFTMint(address_);
     }
 
     function buy(uint256 maxPrice_) external virtual onlyIfTradable {
@@ -43,7 +44,7 @@ contract ProductTokenV1 is ProductToken {
             if(change > 0) {
                 high.transfer(msg.sender, change);
             }
-            _updateSupplierFee(fee.mul(1e12).div(8e12));
+            _updateSupplierFee(fee.mul(1e12).div(4e12));
         }else { // If token transaction failed
             high.transfer(msg.sender, maxPrice_);
         }
@@ -64,7 +65,7 @@ contract ProductTokenV1 is ProductToken {
     *
     * @param amount_                   amount of tokens that user wants to trade in.
     */
-    function tradein(uint32 amount_) external virtual onlyIfTradable {
+    function tradein(uint32 amount_) external virtual onlyIfTradable returns(uint256){
         require(amount_ > 0, "Amount must be non-zero.");
         require(balanceOf(msg.sender) >= amount_, "Insufficient tokens to burn.");
 
@@ -73,15 +74,23 @@ contract ProductTokenV1 is ProductToken {
         uint256 tradinReturn = calculateTradinReturn(amount_);
         _updateSupplierFee(fee.mul(1e12).div(2e12).add(tradinReturn));
         reimburseAmount = reimburseAmount.sub(fee);
-        _addEscrow(amount_,  reimburseAmount);
+        uint256 id = _addEscrow(amount_,  reimburseAmount);
         _burn(msg.sender, amount_);
+
+        if(nft != INFTMint(address(0))) {
+            for(uint256 index = tradeinCount; index < tradeinCount + amount_; index ++) {
+                nft.mint(msg.sender, index);
+            }
+        }
+
         tradeinCount = tradeinCount + amount_;
         tradeinReserveBalance = tradeinReserveBalance.add(tradinReturn);
 
         emit Tradein(msg.sender, amount_);
+        return id;
     }
 
-    function updateSupplierInfo( address wallet_) external onlyOwner {
+    function setSupplier( address wallet_) external virtual onlyOwner {
         require(wallet_!=address(0), "Address is invalid");
         supplier.wallet = wallet_;
     }
@@ -102,30 +111,4 @@ contract ProductTokenV1 is ProductToken {
             supplier.amount = supplier.amount.add(fee);
         }
     }
-
-    /**
-    * @dev this function returns the amount of reserve balance that the supplier can withdraw from the dapp.
-    */
-    function getSupplierBalance() public view virtual returns (uint256) {
-        return supplier.amount;
-    }
-
-    /**
-    * @dev A method that refunds the value of a product to a buyer/customer.
-    *
-    * @param buyer_       The wallet address of the owner whose product token is under the redemption process
-    * @param value_       The market value of the token being redeemed
-    *
-    */
-    function _refund(address buyer_, uint256 value_) internal virtual override {
-        bool success = high.transfer(buyer_, value_);
-        require(success, "refund token failed");
-    }
-
-    function withdrawHigh(uint256 amount_, address to_) external virtual onlyOwner {
-        require(to_ != address(0), "invalid address");
-        require(amount_ <= high.balanceOf(address(this)), 'invalid amount');
-        high.transfer(to_, amount_);
-    }
-
 }

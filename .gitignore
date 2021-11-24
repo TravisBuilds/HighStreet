@@ -12,3 +12,11 @@ server/server.*
 .rinkebyEndpoint
 .mainnetEndpoint
 .secretTest
+.env
+BeaconProxy.sol
+BondingCurve.sol
+ProductTokenV0.sol
+TokenFactory.sol
+UpgradeableBeacon.sol
+
+

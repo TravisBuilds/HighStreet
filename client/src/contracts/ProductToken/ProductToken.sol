@@ -296,33 +296,6 @@ contract ProductToken is ERC20Upgradeable, Escrow, OwnableUpgradeable {
     _updateUserCompleted(buyer, id);
   }
 
-  /**
-   * @dev used to update the status of redemption to "User Refunded" after an escrow process has been started.
-   *
-   * @param buyer                 the wallet address of product buyer
-   * @param id                    the id of the escrow, returned to the user after starting of redemption process
-  */
-  function updateUserRefund(address buyer, uint256 id) external virtual{
-    require(msg.sender == owner() || msg.sender == _manager, 'permission denied');
-    require(buyer != address(0), "Invalid buyer");
-    uint256 value = _updateUserRefund(buyer, id);
-    require(value >0 , "Invalid value");
-    _refund(buyer, value);
-  }
-
-  /**
-   * @dev refund function.
-   * This function returns the equivalent amount of Dai (reserve currency) to a product owner if an redemption fails
-   * This is only triggered in the extremely rare cases.
-   * This function is not implemented in Version 0 of Product Token
-   *
-   * @param _buyer       The wallet address of the owner whose product token is under the redemption process
-   * @param _value       The market value of the token being redeemed
-  */
-  function _refund(address _buyer, uint256 _value) internal virtual {
-    // override
-  }
-
   function setManager(address addr_) external virtual onlyOwner {
     require(addr_ != address(0), 'invalid address');
     _manager = addr_;

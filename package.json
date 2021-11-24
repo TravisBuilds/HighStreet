@@ -5,27 +5,30 @@
     "node": "15.x"
   },
   "dependencies": {
-    "@chainlink/contracts": "^0.1.7",
+    "@chainlink/contracts": "^0.2.2",
     "@openzeppelin/contracts": "^4.3.2",
     "@openzeppelin/contracts-upgradeable": "^4.0.0",
     "cookie-parser": "^1.4.5",
-    "dotenv": "^8.2.0",
+    "dotenv": "^8.6.0",
     "express": "^4.17.1",
     "express-jwt": "^6.0.0",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.6.6",
     "passport": "^0.4.1",
-    "passport-instagram-basic-api": "^1.0.0"
+    "passport-instagram-basic-api": "^1.0.0",
+    "truffle-flattener": "github:jplew/truffle-flattener",
+    "truffle-plugin-verify": "^0.5.16"
   },
   "devDependencies": {
-    "@openzeppelin/test-helpers": "^0.5.11",
-    "@openzeppelin/truffle-upgrades": "^1.5.2",
+    "@openzeppelin/test-helpers": "^0.5.15",
+    "@openzeppelin/truffle-upgrades": "^1.9.1",
     "@openzeppelin/upgrades": "^2.8.0",
-    "@truffle/hdwallet-provider": "^1.2.2",
+    "@truffle/hdwallet-provider": "^1.0.37",
     "arb-ethers-web3-bridge": "^0.7.3",
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
     "chai-bn": "^0.2.1",
+    "eth-gas-reporter": "^0.1.7",
     "solc": "^0.8.4",
     "token-test-suite": "^0.1.1"
   },
